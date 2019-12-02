@@ -219,8 +219,11 @@ public class JlineUtils {
                         .build();
         Attributes termAttribs = terminal.getAttributes();
 
+        // disable CTRL+D shortcut to exit
         // disable CTRL+C shortcut
-        termAttribs.setControlChar(ControlChar.VINTR, 4);
+        termAttribs.setControlChar(ControlChar.VEOF, 0);
+        termAttribs.setControlChar(ControlChar.VINTR, 0);
+
         terminal.setAttributes(termAttribs);
 
         return LineReaderBuilder.builder()

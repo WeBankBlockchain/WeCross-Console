@@ -9,6 +9,7 @@ public class Status {
     public static final int NO_CONFIG_FOUND = 1000;
     public static final int UNEXPECTED_SERVER = 1001;
     public static final int ILLEGAL_SERVER = 1002;
+    public static final int ILLEGAL_KEY = 1003;
 
     // status in param
     public static final int ILLEGAL_PARAM = 2000;
