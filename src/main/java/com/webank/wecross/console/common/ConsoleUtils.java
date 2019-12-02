@@ -23,9 +23,9 @@ public class ConsoleUtils {
             throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
         }
 
-        for (Integer i = 0; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i) {
             try {
-                Integer ipUnit = Integer.parseInt(ipUnits[i]);
+                int ipUnit = Integer.parseInt(ipUnits[i]);
                 if (ipUnit < 0 || ipUnit > 255) {
                     throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
                 }
@@ -40,7 +40,7 @@ public class ConsoleUtils {
         }
 
         try {
-            Integer ipUnit = Integer.parseInt(ipAndPort[0]);
+            int ipUnit = Integer.parseInt(ipAndPort[0]);
             if (ipUnit < 0 || ipUnit > 255) {
                 throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
             }
@@ -49,7 +49,7 @@ public class ConsoleUtils {
         }
 
         try {
-            Integer port = Integer.parseInt(ipAndPort[1]);
+            int port = Integer.parseInt(ipAndPort[1]);
             if (port < 1 || port > 65535) {
                 throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
             }
@@ -92,7 +92,7 @@ public class ConsoleUtils {
             Set<String> resourceVars,
             Set<String> pathVars,
             Map<String, String> pathMaps) {
-        Integer length = params.length;
+        int length = params.length;
         if (length < 3 || params[0].contains("\"") || params[0].contains("\'")) {
             return false;
         }
@@ -133,7 +133,7 @@ public class ConsoleUtils {
 
     // remove "" or '' of string
     public static String parseString(String input) {
-        Integer len = input.length();
+        int len = input.length();
         if (len < 2) {
             return input;
         }
@@ -146,11 +146,11 @@ public class ConsoleUtils {
 
     // parse args as string or int
     public static Object[] parseArgs(String params[], int start) throws ConsoleException {
-        Integer length = params.length;
+        int length = params.length;
         Object ret[] = new Object[length - start];
-        Integer i = 0, j = start;
+        int i = 0, j = start;
         for (; j < length; ++j) {
-            Integer len = params[j].length();
+            int len = params[j].length();
             if (params[j].charAt(0) == '\"' && params[j].charAt(len - 1) == '\"'
                     || params[j].charAt(0) == '\'' && params[j].charAt(len - 1) == '\'') {
                 // as string
@@ -324,9 +324,9 @@ public class ConsoleUtils {
 
         String result = "";
         Boolean isArgs = false;
-        Integer length = params.length;
-        Integer start = 0;
-        Integer startArgs = 1;
+        int length = params.length;
+        int start = 0;
+        int startArgs = 1;
         if (length != 0) {
             if (params[0].endsWith(".call") || params[0].endsWith(".sendTransaction")) {
                 isArgs = true;

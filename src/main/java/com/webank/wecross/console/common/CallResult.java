@@ -1,15 +1,16 @@
 package com.webank.wecross.console.common;
 
 public class CallResult {
-    private Integer errorCode;
+    private int errorCode;
     private String errorMessage;
+    private String hash;
     private Object result;
 
-    public Integer getErrorCode() {
+    public int getErrorCode() {
         return errorCode;
     }
 
-    public void setErrorCode(Integer errorCode) {
+    public void setErrorCode(int errorCode) {
         this.errorCode = errorCode;
     }
 
@@ -19,6 +20,14 @@ public class CallResult {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public Object getResult() {
@@ -34,12 +43,6 @@ public class CallResult {
         this.errorMessage = errorMessage;
     }
 
-    public CallResult(Integer errorCode, String errorMessage, Object result) {
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-        this.result = result;
-    }
-
     @Override
     public String toString() {
         return "CallResult{"
@@ -47,6 +50,9 @@ public class CallResult {
                 + errorCode
                 + ", errorMessage='"
                 + errorMessage
+                + '\''
+                + ", hash='"
+                + hash
                 + '\''
                 + ", result="
                 + result

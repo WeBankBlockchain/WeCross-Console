@@ -5,9 +5,9 @@ import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.WeCrossServers;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
-import com.webank.wecrosssdk.rpc.data.CallContractResult;
-import com.webank.wecrosssdk.rpc.data.Resources;
-import com.webank.wecrosssdk.rpc.data.WeCrossResource;
+import com.webank.wecrosssdk.rpc.common.CallContractResult;
+import com.webank.wecrosssdk.rpc.common.Resources;
+import com.webank.wecrosssdk.rpc.common.WeCrossResource;
 import com.webank.wecrosssdk.rpc.methods.Response;
 import com.webank.wecrosssdk.rpc.methods.response.GetDataResponse;
 import com.webank.wecrosssdk.rpc.methods.response.ResourcesResponse;
@@ -211,6 +211,27 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
+    public List<String> getPaths() {
+        List<String> paths = new ArrayList<>();
+        if (weCrossRPC == null) {
+            paths.add("");
+            return paths;
+        }
+
+        try {
+            ResourcesResponse resourcesResponse = weCrossRPC.list(false).send();
+            Resources resources = resourcesResponse.getResources();
+            for (WeCrossResource weCrossResource : resources.getResourceList()) {
+                paths.add(weCrossResource.getPath());
+            }
+        } catch (Exception e) {
+            paths.add("");
+            logger.warn("Get paths failed when starting console: {}", e.getMessage());
+        }
+        return paths;
+    }
+
+    @Override
     public void call(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("call");
@@ -295,20 +316,7 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.callInt(path, method, args).send();
         }
 
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        handleTransactionResponse(transactionResponse);
     }
 
     @Override
@@ -346,20 +354,7 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.callIntArray(path, method, args).send();
         }
 
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        handleTransactionResponse(transactionResponse);
     }
 
     @Override
@@ -397,20 +392,7 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.callString(path, method, args).send();
         }
 
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        handleTransactionResponse(transactionResponse);
     }
 
     @Override
@@ -448,20 +430,7 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.callStringArray(path, method, args).send();
         }
 
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        handleTransactionResponse(transactionResponse);
     }
 
     @Override
@@ -548,20 +517,7 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.sendTransactionInt(path, method, args).send();
         }
 
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        handleTransactionResponse(transactionResponse);
     }
 
     @Override
@@ -600,20 +556,7 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.sendTransactionIntArray(path, method, args).send();
         }
 
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        handleTransactionResponse(transactionResponse);
     }
 
     @Override
@@ -652,20 +595,7 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.sendTransactionString(path, method, args).send();
         }
 
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        handleTransactionResponse(transactionResponse);
     }
 
     @Override
@@ -704,6 +634,10 @@ public class RPCImpl implements RPCFace {
             transactionResponse = weCrossRPC.sendTransactionStringArray(path, method, args).send();
         }
 
+        handleTransactionResponse(transactionResponse);
+    }
+
+    private void handleTransactionResponse(TransactionResponse transactionResponse) {
         if (transactionResponse.getResult() != 0) {
             System.out.println(transactionResponse.toString());
             System.out.println();
@@ -716,28 +650,8 @@ public class RPCImpl implements RPCFace {
                         callContractResult.getErrorCode(), callContractResult.getErrorMessage());
         if (callContractResult.getErrorCode() == 0) {
             callResult.setResult(callContractResult.getResult()[0]);
+            callResult.setHash(callContractResult.getHash());
         }
         ConsoleUtils.printJson(callResult.toString());
-    }
-
-    @Override
-    public List<String> getPaths() {
-        List<String> paths = new ArrayList<>();
-        if (weCrossRPC == null) {
-            paths.add("");
-            return paths;
-        }
-
-        try {
-            ResourcesResponse resourcesResponse = weCrossRPC.list(false).send();
-            Resources resources = resourcesResponse.getResources();
-            for (WeCrossResource weCrossResource : resources.getResourceList()) {
-                paths.add(weCrossResource.getPath());
-            }
-        } catch (Exception e) {
-            paths.add("");
-            logger.warn("Get paths failed when starting console: {}", e.getMessage());
-        }
-        return paths;
     }
 }

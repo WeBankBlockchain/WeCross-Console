@@ -30,10 +30,7 @@ public class ConsoleInitializer {
             throw new ConsoleException(Status.NO_CONFIG_FOUND, errorMessage);
         }
 
-        if (!weCrossServers.areValidServers()) {
-            String errorMessage = "Illegal key found in configuration";
-            throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-        }
+        weCrossServers.checkKey();
 
         this.weCrossServers = weCrossServers;
 

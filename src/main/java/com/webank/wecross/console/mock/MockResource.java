@@ -3,7 +3,7 @@ package com.webank.wecross.console.mock;
 import com.webank.wecross.console.common.CallResult;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
-import com.webank.wecrosssdk.rpc.data.CallContractResult;
+import com.webank.wecrosssdk.rpc.common.CallContractResult;
 import com.webank.wecrosssdk.rpc.methods.Response;
 import com.webank.wecrosssdk.rpc.methods.response.GetDataResponse;
 import com.webank.wecrosssdk.rpc.methods.response.SetDataResponse;
@@ -164,6 +164,7 @@ public class MockResource implements Serializable {
                                     callContractResult.getErrorMessage());
                     if (callContractResult.getErrorCode() == 0) {
                         callResult.setResult(callContractResult.getResult()[0]);
+                        callResult.setHash(callContractResult.getHash());
                     }
                     ConsoleUtils.printJson(callResult.toString());
                 } else {

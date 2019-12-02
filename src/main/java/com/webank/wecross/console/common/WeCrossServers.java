@@ -1,5 +1,7 @@
 package com.webank.wecross.console.common;
 
+import com.webank.wecross.console.exception.ConsoleException;
+import com.webank.wecross.console.exception.Status;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,14 +14,17 @@ public class WeCrossServers {
         return servers;
     }
 
-    public Boolean areValidServers() {
+    public void checkKey() throws ConsoleException {
         String regex = "^[a-z0-9A-Z]+$";
-        for (String server : servers.keySet()) {
-            if (!server.matches(regex)) {
-                return false;
+        for (String key : servers.keySet()) {
+            if (!key.matches(regex)) {
+                throw new ConsoleException(
+                        Status.ILLEGAL_KEY,
+                        "Illegal key in servers config: "
+                                + key
+                                + "\nOnly numbers and letters are allowed");
             }
         }
-        return true;
     }
 
     public void setServers(Map<String, String> servers) {

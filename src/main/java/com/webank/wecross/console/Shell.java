@@ -104,13 +104,6 @@ public class Shell {
                     break;
                 }
                 switch (params[0]) {
-                    case "t":
-                        {
-                            System.out.println(params[1]);
-                            System.out.println(params[2]);
-                            System.out.println(request);
-                            break;
-                        }
                     case "h":
                     case "help":
                         {
