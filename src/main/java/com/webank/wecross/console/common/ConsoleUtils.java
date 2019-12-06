@@ -18,6 +18,13 @@ public class ConsoleUtils {
     public static void checkServer(String server) throws ConsoleException {
         String errorMessage = "Illegal ip:port: " + server;
 
+        if (server == null
+                || server.length() == 0
+                || server.charAt(0) == '.'
+                || server.endsWith(".")) {
+            throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
+        }
+
         String ipUnits[] = server.split("\\.");
         if (ipUnits.length != 4) {
             throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
@@ -50,7 +57,7 @@ public class ConsoleUtils {
 
         try {
             int port = Integer.parseInt(ipAndPort[1]);
-            if (port < 1 || port > 65535) {
+            if (port < 0 || port > 65535) {
                 throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
             }
         } catch (NumberFormatException e) {
@@ -59,14 +66,21 @@ public class ConsoleUtils {
     }
 
     public static boolean isValidPath(String path) {
-        String templateUrl = "http://127.0.0.1:8080/" + path.replace('.', '/');
-        try {
-            new URL(templateUrl);
-        } catch (Exception e) {
+        if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
         }
+
         String unit[] = path.split("\\.");
-        return (unit.length == 3);
+        if (unit.length == 3) {
+            String templateUrl = "http://127.0.0.1:8080/" + path.replace('.', '/');
+            try {
+                new URL(templateUrl);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public static String[] parseRetTypes(String retTypes) {

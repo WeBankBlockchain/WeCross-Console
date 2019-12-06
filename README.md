@@ -22,7 +22,7 @@ WeCross-Console是[WeCross](https://github.com/WeBankFinTech/WeCross)的重要�
 
 ```shell
 $ cd WeCross-Console
-$ ./gradlew build
+$ ./gradlew assemble
 ```
 如果编译成功，将在当前目录生成一个dist目录。
 

@@ -11,7 +11,7 @@ import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
 import java.io.Serializable;
 
 public class MockResource implements Serializable {
-    public String path;
+    private String path;
     private WeCrossRPC weCrossRPC;
 
     public MockResource(String path, WeCrossRPC weCrossRPC) {
@@ -71,7 +71,7 @@ public class MockResource implements Serializable {
         try {
             String types[] = retTypes.split(",");
             if (types[0].equals("Void")) {
-                types = null;
+                types = new String[0];
             }
             if (args.length == 0) {
                 TransactionResponse transactionResponse =
@@ -134,7 +134,7 @@ public class MockResource implements Serializable {
         try {
             String types[] = retTypes.split(",");
             if (types[0].equals("Void")) {
-                types = null;
+                types = new String[0];
             }
             if (args.length == 0) {
                 TransactionResponse transactionResponse =
