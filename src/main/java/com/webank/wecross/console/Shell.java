@@ -165,9 +165,9 @@ public class Shell {
                             rpcFace.listResources(listParams);
                             break;
                         }
-                    case "exists":
+                    case "status":
                         {
-                            rpcFace.existsResource(params, pathMaps);
+                            rpcFace.getResourceStatus(params, pathMaps);
                             break;
                         }
                     case "getData":

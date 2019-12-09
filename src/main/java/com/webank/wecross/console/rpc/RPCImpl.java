@@ -101,13 +101,13 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public void existsResource(String[] params, Map<String, String> pathMaps) throws Exception {
+    public void getResourceStatus(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length != 2) {
-            HelpInfo.promptHelp("existsResource");
+            HelpInfo.promptHelp("status");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.existsHelp();
+            HelpInfo.statusHelp();
             return;
         }
 
@@ -115,12 +115,12 @@ public class RPCImpl implements RPCFace {
         if (!ConsoleUtils.isValidPath(path)) {
             if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
                 System.out.println("Please provide a valid path");
-                HelpInfo.existsHelp();
+                HelpInfo.statusHelp();
                 return;
             }
             path = pathMaps.get(params[1]);
         }
-        Response response = weCrossRPC.exists(path).send();
+        Response response = weCrossRPC.status(path).send();
         if (response.getResult() != 0) {
             System.out.println(response.toString());
             return;

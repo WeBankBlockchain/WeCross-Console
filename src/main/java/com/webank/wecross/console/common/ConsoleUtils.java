@@ -371,7 +371,7 @@ public class ConsoleUtils {
                 start = 1;
                 startArgs = 1;
                 result = params[0] + " ";
-            } else if (params[0].endsWith(".exists")) {
+            } else if (params[0].endsWith(".status")) {
                 if (length != 1) {
                     throw new ConsoleException(Status.INTERNAL_ERROR, "Redundant parameters");
                 }

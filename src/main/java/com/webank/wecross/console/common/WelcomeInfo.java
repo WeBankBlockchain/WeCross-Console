@@ -28,7 +28,7 @@ public class WelcomeInfo {
                 "listLocalResources                 List local resources configured by WeCross server.\n");
         sb.append(
                 "listResources                      List all resources including remote resources.\n");
-        sb.append("exists                             Check if the resource exists.\n");
+        sb.append("status                             Check if the resource exists.\n");
         sb.append("getData                            Get data from contract.\n");
         sb.append("setData                            Set data for contract.\n");
         sb.append("call                               Call constant method of smart contract.\n");

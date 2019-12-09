@@ -104,10 +104,10 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void existsHelp() {
+    public static void statusHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Check if the resource exists.");
-        System.out.println("Usage: exists [path]");
+        System.out.println("Usage: status [path]");
         System.out.println("path: the path of resource in wecross server.");
         ConsoleUtils.singleLine();
     }
