@@ -64,8 +64,8 @@ public class ConsoleUtilsTest {
 
     @Test
     public void parseRequestTest() throws Exception {
-        String input = "r.exists";
-        String output = "r.exists()";
+        String input = "r.status";
+        String output = "r.status()";
         Assert.assertEquals(output, ConsoleUtils.parseRequest(ConsoleUtils.tokenizeCommand(input)));
 
         input = "r.call Int getInt 1";

@@ -19,9 +19,9 @@ public class MockResource implements Serializable {
         this.weCrossRPC = weCrossRPC;
     }
 
-    public void exists() {
+    public void status() {
         try {
-            Response response = weCrossRPC.exists(path).send();
+            Response response = weCrossRPC.status(path).send();
             if (response.getResult() != 0) {
                 System.out.println(response.toString());
                 System.out.println();

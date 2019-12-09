@@ -73,7 +73,7 @@ public class JlineUtils {
                         "switch",
                         "listLocalResources",
                         "listResources",
-                        "exists",
+                        "status",
                         "getData",
                         "setData",
                         "call",
@@ -119,7 +119,7 @@ public class JlineUtils {
 
         List<String> commands =
                 Arrays.asList(
-                        "exists",
+                        "status",
                         "getData",
                         "setData",
                         "call",
@@ -168,7 +168,7 @@ public class JlineUtils {
             }
         }
         for (String var : resourceVars) {
-            completers.add(new ArgumentCompleter(new StringsCompleter(var + ".exists")));
+            completers.add(new ArgumentCompleter(new StringsCompleter(var + ".status")));
         }
 
         // pathVars
@@ -186,7 +186,7 @@ public class JlineUtils {
 
         List<String> commands =
                 Arrays.asList(
-                        "exists",
+                        "status",
                         "getData",
                         "setData",
                         "call",
