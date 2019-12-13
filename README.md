@@ -1,7 +1,9 @@
 ![](docs/images/menu_logo_wecross.svg)
 
 # WeCross-Console
-
+[![CodeFactor](https://www.codefactor.io/repository/github/webankfintech/WeCross-Console/badge)](https://www.codefactor.io/repository/github/webankfintech/WeCross--Console) [![Build Status](https://travis-ci.org/WeBankFinTech/WeCross-Console.svg?branch=dev)](https://travis-ci.org/WeBankFinTech/WeCross-Console) [![Latest release](https://img.shields.io/github/release/WeBankFinTech/WeCross-Console.svg)](https://github.com/WeBankFinTech/WeCross-Console/releases/latest)
+![](https://img.shields.io/github/license/WeBankFinTech/WeCross) 
+#
 WeCross-Console是[WeCross](https://github.com/WeBankFinTech/WeCross)的重要交互式客户端工具。
 
 ## 关键特性
