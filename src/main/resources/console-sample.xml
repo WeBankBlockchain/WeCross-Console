@@ -8,8 +8,8 @@
     <bean id="weCrossServers" class="com.webank.wecross.console.common.WeCrossServers">
         <property name="servers">
             <map>
-                <entry key="server1" value="127.0.0.1:8080"/>
-                <entry key="server2" value="127.0.0.1:8085"/>
+                <entry key="server1" value="127.0.0.1:8250"/>
+                <entry key="server2" value="127.0.0.1:8251"/>
             </map>
         </property>
         <property name="defaultServer" value="server1"/>
