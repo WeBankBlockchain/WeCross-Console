@@ -2,5 +2,5 @@ package com.webank.wecross.console.common;
 
 public class ConsoleVersion {
 
-    public static final String Version = "0.2";
+    public static final String Version = "1.0-RC1";
 }
