@@ -54,7 +54,7 @@ download_wecross_console_pkg()
 
     LOG_INFO "Checking latest release"
     if [ -z "${compatibility_version}" ];then
-        compatibility_version=$(curl -s https://api.github.com/repos/WeBankFinTech/WeCross-Console/releases | grep "tag_name"|awk -F '\"' '{print $4}')
+        compatibility_version=$(curl -s https://api.github.com/repos/WeBankFinTech/WeCross-Console/releases/latest | grep "tag_name"|awk -F '\"' '{print $4}')
     fi
 
     latest_wecross_console=WeCross-Console.tar.gz
