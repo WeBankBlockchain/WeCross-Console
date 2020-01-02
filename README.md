@@ -1,20 +1,19 @@
 ![](docs/images/menu_logo_wecross.svg)
 
-# WeCross-Console
+# WeCross控制台
 [![CodeFactor](https://www.codefactor.io/repository/github/webankfintech/WeCross-Console/badge)](https://www.codefactor.io/repository/github/webankfintech/WeCross--Console) [![Build Status](https://travis-ci.org/WeBankFinTech/WeCross-Console.svg?branch=dev)](https://travis-ci.org/WeBankFinTech/WeCross-Console) [![Latest release](https://img.shields.io/github/release/WeBankFinTech/WeCross-Console.svg)](https://github.com/WeBankFinTech/WeCross-Console/releases/latest)
 ![](https://img.shields.io/github/license/WeBankFinTech/WeCross) 
 
-WeCross-Console是[WeCross](https://github.com/WeBankFinTech/WeCross)的重要交互式客户端工具。
+WeCross控制台是[WeCross](https://github.com/WeBankFinTech/WeCross)的重要交互式客户端工具。
 
 ## 关键特性
 
-- 命令支持脚本格式
-- 提供了区块链状态的查询命令
+- 支持交互式命令
 - 提供了针对跨链资源的操作命令
 
-## 下载使用
+## 部署使用
 
-* [WeCross开源文档](https://wecross.readthedocs.io/zh_CN/latest/docs/tutorial/index.html)
+* 可以直接下载WeCross控制台压缩包，然后解压并使用WeCross控制台。具体参考[WeCross控制台部署和使用文档](https://wecross.readthedocs.io/zh_CN/latest/docs/tutorial/setup.html#id5)
 
 ## 源码编译
 
