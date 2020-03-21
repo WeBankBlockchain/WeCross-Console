@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -19,18 +18,25 @@ import org.jline.terminal.TerminalBuilder;
 
 public class JlineUtils {
 
+    private static List<String> resourceCommands =
+            Arrays.asList("status", "detail", "call", "sendTransaction");
+
     public static List<Completer> getCompleters(
-            List<String> paths,
-            Set<String> resourceVars,
-            Set<String> pathVars,
-            Map<String, String> serverMaps) {
+            List<String> paths, Set<String> resourceVars, Set<String> pathVars) {
 
         List<Completer> completers = new ArrayList<>();
 
         addCommandCompleters(completers);
-        addServerCompleters(completers, serverMaps);
         addPathCompleters(completers, paths);
         addVarCompleters(completers, resourceVars, pathVars);
+
+        ArgumentCompleter argumentCompleter1 =
+                new ArgumentCompleter(
+                        new StringsCompleter(""),
+                        new StringsCompleter("="),
+                        new StringsCompleter("WeCross.getResource"));
+        argumentCompleter1.setStrict(false);
+        completers.add(argumentCompleter1);
 
         return completers;
     }
@@ -39,27 +45,14 @@ public class JlineUtils {
             List<Completer> completers,
             List<String> paths,
             Set<String> resourceVars,
-            Set<String> pathVars,
-            Map<String, String> serverMaps) {
+            Set<String> pathVars) {
         if (!completers.isEmpty()) {
             completers.clear();
         }
 
         addCommandCompleters(completers);
-        addServerCompleters(completers, serverMaps);
         addPathCompleters(completers, paths);
         addVarCompleters(completers, resourceVars, pathVars);
-    }
-
-    public static void addServerCompleters(
-            List<Completer> completers, Map<String, String> serverMaps) {
-        for (String server : serverMaps.keySet()) {
-            completers.add(
-                    new ArgumentCompleter(
-                            new StringsCompleter("switch"),
-                            new StringsCompleter(server),
-                            new StringsCompleter()));
-        }
     }
 
     public static void addCommandCompleters(List<Completer> completers) {
@@ -69,23 +62,14 @@ public class JlineUtils {
                         "help",
                         "quit",
                         "currentServer",
-                        "listServers",
-                        "switch",
+                        "supportedStubs",
+                        "listAccounts",
                         "listLocalResources",
-                        "listResources",
+                        "listAllResources",
                         "status",
-                        "getData",
-                        "setData",
+                        "detail",
                         "call",
-                        "callInt",
-                        "callIntArray",
-                        "callString",
-                        "callStringArray",
-                        "sendTransaction",
-                        "sendTransactionInt",
-                        "sendTransactionIntArray",
-                        "sendTransactionString",
-                        "sendTransactionStringArray");
+                        "sendTransaction");
 
         for (String command : commands) {
             completers.add(
@@ -117,22 +101,7 @@ public class JlineUtils {
             completers.add(argumentCompleter2);
         }
 
-        List<String> commands =
-                Arrays.asList(
-                        "status",
-                        "getData",
-                        "setData",
-                        "call",
-                        "callInt",
-                        "callIntArray",
-                        "callString",
-                        "callStringArray",
-                        "sendTransaction",
-                        "sendTransactionInt",
-                        "sendTransactionIntArray",
-                        "sendTransactionString",
-                        "sendTransactionStringArray");
-        for (String command : commands) {
+        for (String command : resourceCommands) {
             for (String path : paths) {
                 completers.add(
                         new ArgumentCompleter(
@@ -146,29 +115,19 @@ public class JlineUtils {
     public static void addVarCompleters(
             List<Completer> completers, Set<String> resourceVars, Set<String> pathVars) {
 
-        List<String> grovvyCommands =
-                Arrays.asList(
-                        ".getData",
-                        ".setData",
-                        ".call",
-                        ".callInt",
-                        ".callIntArray",
-                        ".callString",
-                        ".callStringArray",
-                        ".sendTransaction",
-                        ".sendTransactionInt",
-                        ".sendTransactionIntArray",
-                        ".sendTransactionString",
-                        ".sendTransactionStringArray");
-        for (String commod : grovvyCommands) {
-            for (String var : resourceVars) {
-                completers.add(
-                        new ArgumentCompleter(
-                                new StringsCompleter(var + commod), new StringsCompleter()));
-            }
+        for (String var : resourceVars) {
+            completers.add(
+                    new ArgumentCompleter(
+                            new StringsCompleter(var + ".call"), new StringsCompleter()));
+            completers.add(
+                    new ArgumentCompleter(
+                            new StringsCompleter(var + ".sendTransaction"),
+                            new StringsCompleter()));
         }
+
         for (String var : resourceVars) {
             completers.add(new ArgumentCompleter(new StringsCompleter(var + ".status")));
+            completers.add(new ArgumentCompleter(new StringsCompleter(var + ".detail")));
         }
 
         // pathVars
@@ -184,22 +143,7 @@ public class JlineUtils {
             completers.add(argumentCompleter);
         }
 
-        List<String> commands =
-                Arrays.asList(
-                        "status",
-                        "getData",
-                        "setData",
-                        "call",
-                        "callInt",
-                        "callIntArray",
-                        "callString",
-                        "callStringArray",
-                        "sendTransaction",
-                        "sendTransactionInt",
-                        "sendTransactionIntArray",
-                        "sendTransactionString",
-                        "sendTransactionStringArray");
-        for (String command : commands) {
+        for (String command : resourceCommands) {
             for (String var : pathVars) {
                 completers.add(
                         new ArgumentCompleter(

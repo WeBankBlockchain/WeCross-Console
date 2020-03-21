@@ -1,12 +1,12 @@
 package com.webank.wecross.console.exception;
 
-public class ConsoleException extends java.lang.Exception {
+public class WeCrossConsoleException extends java.lang.Exception {
 
     private static final long serialVersionUID = 3754251447587995515L;
 
     private Integer errorCode;
 
-    public ConsoleException(Integer code, String message) {
+    public WeCrossConsoleException(Integer code, String message) {
         super(message);
         errorCode = code;
     }

@@ -1,15 +1,12 @@
 package com.webank.wecross.console.exception;
 
-public class Status {
+public class ErrorCode {
 
     // common
     public static final int INTERNAL_ERROR = 1;
 
-    // status in config
-    public static final int NO_CONFIG_FOUND = 1000;
-    public static final int UNEXPECTED_SERVER = 1001;
-    public static final int ILLEGAL_SERVER = 1002;
-    public static final int ILLEGAL_KEY = 1003;
+    // init wecross service
+    public static final int INIT_WECROSS_SERVICE_ERROR = 1001;
 
     // status in param
     public static final int ILLEGAL_PARAM = 2000;

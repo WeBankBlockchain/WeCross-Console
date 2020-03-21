@@ -1,212 +1,82 @@
 package com.webank.wecross.console.mock;
 
-import com.webank.wecross.console.common.CallResult;
 import com.webank.wecross.console.common.ConsoleUtils;
+import com.webank.wecrosssdk.exception.WeCrossSDKException;
+import com.webank.wecrosssdk.resource.Resource;
+import com.webank.wecrosssdk.resource.ResourceFactory;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
-import com.webank.wecrosssdk.rpc.common.CallContractResult;
-import com.webank.wecrosssdk.rpc.methods.Response;
-import com.webank.wecrosssdk.rpc.methods.response.GetDataResponse;
-import com.webank.wecrosssdk.rpc.methods.response.SetDataResponse;
+import com.webank.wecrosssdk.rpc.methods.Request;
+import com.webank.wecrosssdk.rpc.methods.request.TransactionRequest;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
 import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MockResource implements Serializable {
-    private String path;
-    private WeCrossRPC weCrossRPC;
 
-    public MockResource(String path, WeCrossRPC weCrossRPC) {
-        this.path = path;
-        this.weCrossRPC = weCrossRPC;
+    private Logger logger = LoggerFactory.getLogger(MockResource.class);
+
+    Resource resource;
+
+    public MockResource(WeCrossRPC weCrossRPC, String path, String accountName) {
+        try {
+            resource = ResourceFactory.build(weCrossRPC, path, accountName);
+        } catch (WeCrossSDKException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void status() {
         try {
-            Response response = weCrossRPC.status(path).send();
-            if (response.getResult() != 0) {
-                System.out.println(response.toString());
-                System.out.println();
-                return;
-            }
-            System.out.println(path + " : " + response.getData());
-            System.out.println();
-        } catch (Exception e) {
+            System.out.println(resource.status());
+        } catch (WeCrossSDKException e) {
             System.out.println(e.getMessage());
-            System.out.println();
         }
     }
 
-    public void getData(String key) {
+    public void detail() {
         try {
-            GetDataResponse getDataResponse = weCrossRPC.getData(path, key).send();
-            if (getDataResponse.getResult() != 0) {
-                System.out.println(getDataResponse.toString());
-                System.out.println();
-                return;
-            }
-            String result = getDataResponse.getStatusAndValue().toString();
-            ConsoleUtils.printJson(result);
-        } catch (Exception e) {
+            ConsoleUtils.printJson(resource.detail().toString());
+        } catch (WeCrossSDKException e) {
             System.out.println(e.getMessage());
-            System.out.println();
         }
     }
 
-    public void setData(String key, String value) {
+    public void call(String method, String... args) {
         try {
-            SetDataResponse setDataResponse = weCrossRPC.setData(path, key, value).send();
-            if (setDataResponse.getResult() != 0) {
-                System.out.println(setDataResponse.toString());
-                System.out.println();
-                return;
-            }
-            String result = setDataResponse.getStatus().toString();
-            ConsoleUtils.printJson(result);
-        } catch (Exception e) {
+            Request<TransactionRequest> request = getRequest("call", method, args);
+            logger.info("Call request: {}", request);
+            TransactionResponse response = resource.call(request);
+            ConsoleUtils.printTransactionResponse(response);
+            logger.info("Call response: {}", response);
+        } catch (WeCrossSDKException e) {
+            logger.info("Call error: {}", e.getMessage());
             System.out.println(e.getMessage());
-            System.out.println();
         }
     }
 
-    public void call(String retTypes, String method, Object... args) {
+    public void sendTransaction(String method, String... args) {
         try {
-            String types[] = retTypes.split(",");
-            if (types[0].equals("Void")) {
-                types = new String[0];
-            }
-            if (args.length == 0) {
-                TransactionResponse transactionResponse =
-                        weCrossRPC.call(path, types, method).send();
-
-                if (transactionResponse.getResult() != 0) {
-                    System.out.println(transactionResponse.toString());
-                    return;
-                }
-                String result = transactionResponse.getCallContractResult().toString();
-                ConsoleUtils.printJson(result);
-            } else {
-                TransactionResponse transactionResponse =
-                        weCrossRPC.call(path, types, method, args).send();
-
-                if (transactionResponse.getResult() != 0) {
-                    System.out.println(transactionResponse.toString());
-                    System.out.println();
-                    return;
-                }
-                if (types.length == 1) {
-                    CallContractResult callContractResult =
-                            transactionResponse.getCallContractResult();
-                    CallResult callResult =
-                            new CallResult(
-                                    callContractResult.getErrorCode(),
-                                    callContractResult.getErrorMessage());
-                    if (callContractResult.getErrorCode() == 0) {
-                        callResult.setResult(callContractResult.getResult()[0]);
-                    }
-                    ConsoleUtils.printJson(callResult.toString());
-                } else {
-                    String result = transactionResponse.getCallContractResult().toString();
-                    ConsoleUtils.printJson(result);
-                }
-            }
-        } catch (Exception e) {
+            Request<TransactionRequest> request = getRequest("sendTransaction", method, args);
+            logger.info("SendTransaction request: {}", request);
+            TransactionResponse response = resource.sendTransaction(request);
+            ConsoleUtils.printTransactionResponse(response);
+            logger.info("SendTransaction response: {}", response);
+        } catch (WeCrossSDKException e) {
+            logger.info("SendTransaction error: {}", e.getMessage());
             System.out.println(e.getMessage());
-            System.out.println();
         }
     }
 
-    public void callInt(String method, Object... args) {
-        call("Int", method, args);
-    }
-
-    public void callIntArray(String method, Object... args) {
-        call("IntArray", method, args);
-    }
-
-    public void callString(String method, Object... args) {
-        call("String", method, args);
-    }
-
-    public void callStringArray(String method, Object... args) {
-        call("StringArray", method, args);
-    }
-
-    public void sendTransaction(String retTypes, String method, Object... args) {
-        try {
-            String types[] = retTypes.split(",");
-            if (types[0].equals("Void")) {
-                types = new String[0];
-            }
-            if (args.length == 0) {
-                TransactionResponse transactionResponse =
-                        weCrossRPC.sendTransaction(path, types, method).send();
-
-                if (transactionResponse.getResult() != 0) {
-                    System.out.println(transactionResponse.toString());
-                    return;
-                }
-                String result = transactionResponse.getCallContractResult().toString();
-                ConsoleUtils.printJson(result);
-            } else {
-                TransactionResponse transactionResponse =
-                        weCrossRPC.sendTransaction(path, types, method, args).send();
-
-                if (transactionResponse.getResult() != 0) {
-                    System.out.println(transactionResponse.toString());
-                    System.out.println();
-                    return;
-                }
-                if (types.length == 1) {
-                    CallContractResult callContractResult =
-                            transactionResponse.getCallContractResult();
-                    CallResult callResult =
-                            new CallResult(
-                                    callContractResult.getErrorCode(),
-                                    callContractResult.getErrorMessage());
-                    if (callContractResult.getErrorCode() == 0) {
-                        callResult.setResult(callContractResult.getResult()[0]);
-                        callResult.setHash(callContractResult.getHash());
-                    }
-                    ConsoleUtils.printJson(callResult.toString());
-                } else {
-                    String result = transactionResponse.getCallContractResult().toString();
-                    ConsoleUtils.printJson(result);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println();
-        }
-    }
-
-    public void sendTransactionInt(String method, Object... args) {
-        sendTransaction("Int", method, args);
-    }
-
-    public void sendTransactionIntArray(String method, Object... args) {
-        sendTransaction("IntArray", method, args);
-    }
-
-    public void sendTransactionString(String method, Object... args) {
-        sendTransaction("String", method, args);
-    }
-
-    public void sendTransactionStringArray(String method, Object... args) {
-        sendTransaction("StringArray", method, args);
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public WeCrossRPC getWeCrossRPC() {
-        return weCrossRPC;
-    }
-
-    public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
-        this.weCrossRPC = weCrossRPC;
+    private Request<TransactionRequest> getRequest(String method, String func, String... args) {
+        Request<TransactionRequest> request = new Request<>();
+        request.setMethod(method);
+        request.setPath(resource.getPath());
+        request.setAccountName(resource.getAccountName());
+        TransactionRequest transactionRequest = new TransactionRequest();
+        transactionRequest.setMethod(func);
+        transactionRequest.setArgs(args);
+        request.setData(transactionRequest);
+        return request;
     }
 }
