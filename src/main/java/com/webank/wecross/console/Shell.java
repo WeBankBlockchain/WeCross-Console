@@ -175,7 +175,6 @@ public class Shell {
                                 System.out.println(e.getMessage());
                             } catch (Exception e) {
                                 System.out.println("Error: unsupported command.");
-                                System.out.println(e);
                             }
                             break;
                         }
