@@ -35,4 +35,7 @@ logs
 .settings/
 .classpath
 .project
-src/main/resources/console.xml
+src/main/resources/application.toml
+
+*.key
+*.crt

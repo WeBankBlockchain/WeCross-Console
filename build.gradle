@@ -36,7 +36,7 @@ configurations.all {
 
 dependencies {
 
-    compile 'com.webank:wecross-java-sdk:1.0.0-rc2-0322-SNAPSHOT'
+    compile 'com.webank:wecross-java-sdk:1.0.0-rc2-0323-SNAPSHOT'
     compile 'org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE'
     compile 'org.apache.commons:commons-math3:3.6.1'
     compile 'org.jline:jline:3.12.0'
