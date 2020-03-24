@@ -65,7 +65,7 @@ public class JlineUtils {
                         "supportedStubs",
                         "listAccounts",
                         "listLocalResources",
-                        "listAllResources",
+                        "listResources",
                         "status",
                         "detail",
                         "call",

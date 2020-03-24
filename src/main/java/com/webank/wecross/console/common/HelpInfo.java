@@ -39,7 +39,7 @@ public class HelpInfo {
             case "listLocalResources":
                 listLocalResourcesHelp();
                 break;
-            case "listAllResources":
+            case "listResources":
                 listAllResourcesHelp();
                 break;
             case "quit":

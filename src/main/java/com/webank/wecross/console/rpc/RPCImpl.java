@@ -72,7 +72,7 @@ public class RPCImpl implements RPCFace {
         if (response.getResult() != 0) {
             ConsoleUtils.printJson(response.toString());
         } else {
-            ConsoleUtils.printJson(Arrays.toString(response.getAccounts().getAccountInfos()));
+            ConsoleUtils.printJson(response.getAccounts().getAccountInfos().toString());
         }
         logger.info("list acc response: {}", response);
     }
@@ -191,7 +191,7 @@ public class RPCImpl implements RPCFace {
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.callHelp();
+            HelpInfo.sendTransactionHelp();
             return;
         }
         if (params.length < 4) {

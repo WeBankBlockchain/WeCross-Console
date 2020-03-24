@@ -123,9 +123,9 @@ public class Shell {
                             rpcFace.listResources(listParams);
                             break;
                         }
-                    case "listAllResources":
+                    case "listResources":
                         {
-                            if (HelpInfo.promptNoParams(params, "listAllResources")) {
+                            if (HelpInfo.promptNoParams(params, "listResources")) {
                                 continue;
                             }
                             String[] listParams = {"listResources", "0"};
