@@ -53,7 +53,7 @@ public class RPCImpl implements RPCFace {
         }
 
         StubResponse stubResponse = weCrossRPC.supportedStubs().send();
-        if (stubResponse.getResult() != 0) {
+        if (stubResponse.getErrorCode() != 0) {
             ConsoleUtils.printJson(stubResponse.toString());
         } else {
             ConsoleUtils.printJson(stubResponse.getStubs().toString());
@@ -69,7 +69,7 @@ public class RPCImpl implements RPCFace {
         }
 
         AccountResponse response = weCrossRPC.listAccounts().send();
-        if (response.getResult() != 0) {
+        if (response.getErrorCode() != 0) {
             ConsoleUtils.printJson(response.toString());
         } else {
             ConsoleUtils.printJson(response.getAccounts().getAccountInfos().toString());
@@ -92,7 +92,7 @@ public class RPCImpl implements RPCFace {
         boolean ignoreRemote = option.equals("1");
 
         ResourceResponse resourcesResponse = weCrossRPC.listResources(ignoreRemote).send();
-        if (resourcesResponse.getResult() != 0) {
+        if (resourcesResponse.getErrorCode() != 0) {
             ConsoleUtils.printJson(resourcesResponse.toString());
         } else {
             ConsoleUtils.printJson(
@@ -116,7 +116,7 @@ public class RPCImpl implements RPCFace {
         if (path == null) return;
 
         Response response = weCrossRPC.status(path).send();
-        if (response.getResult() != 0) {
+        if (response.getErrorCode() != 0) {
             ConsoleUtils.printJson(response.toString());
         } else {
             System.out.println(response.getData());
@@ -139,7 +139,7 @@ public class RPCImpl implements RPCFace {
         if (path == null) return;
 
         ResourceDetailResponse response = weCrossRPC.detail(path).send();
-        if (response.getResult() != 0) {
+        if (response.getErrorCode() != 0) {
             ConsoleUtils.printJson(response.toString());
         } else {
             ConsoleUtils.printJson(response.getResourceDetail().toString());
