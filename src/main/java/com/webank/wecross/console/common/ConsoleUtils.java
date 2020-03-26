@@ -275,7 +275,7 @@ public class ConsoleUtils {
     public static void printTransactionResponse(TransactionResponse response) {
         if (response == null) {
             System.out.println("Response: null");
-        } else if (response.getResult() != StatusCode.SUCCESS) {
+        } else if (response.getErrorCode() != StatusCode.SUCCESS) {
             printJson(response.toString());
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
             printJson(response.getReceipt().toString());
