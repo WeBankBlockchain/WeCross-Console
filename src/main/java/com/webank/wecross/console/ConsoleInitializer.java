@@ -2,6 +2,7 @@ package com.webank.wecross.console;
 
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
+import com.webank.wecross.console.routine.HTLC;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.exception.WeCrossSDKException;
@@ -17,6 +18,7 @@ public class ConsoleInitializer {
 
     private WeCrossRPC weCrossRPC;
     private RPCFace rpcFace;
+    private HTLC htlc;
 
     public void init() throws WeCrossConsoleException {
         WeCrossRPCService weCrossRPCService = new WeCrossRPCService();
@@ -28,6 +30,8 @@ public class ConsoleInitializer {
         }
         rpcFace = new RPCImpl();
         rpcFace.setWeCrossRPC(weCrossRPC);
+        htlc = new HTLC();
+        htlc.setWeCrossRPC(weCrossRPC);
     }
 
     public WeCrossRPC getWeCrossRPC() {
@@ -44,5 +48,13 @@ public class ConsoleInitializer {
 
     public void setRpcFace(RPCFace rpcFace) {
         this.rpcFace = rpcFace;
+    }
+
+    public HTLC getHtlc() {
+        return htlc;
+    }
+
+    public void setHtlc(HTLC htlc) {
+        this.htlc = htlc;
     }
 }

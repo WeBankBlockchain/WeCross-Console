@@ -156,6 +156,19 @@ public class ConsoleUtils {
         }
     }
 
+    public static String parsePath(String[] params, Map<String, String> pathMaps) {
+        String path = parseString(params[1]);
+        if (!isValidPath(path)) {
+            if (!isValidPathVar(params[1], pathMaps)) {
+                System.out.println("Please provide a valid path");
+                HelpInfo.statusHelp();
+                return null;
+            }
+            path = pathMaps.get(params[1]);
+        }
+        return path;
+    }
+
     private static class CommandTokenizer extends StreamTokenizer {
         public CommandTokenizer(Reader r) {
             super(r);
@@ -280,8 +293,9 @@ public class ConsoleUtils {
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
             printJson(response.getReceipt().toString());
         } else {
-            System.out.println("Txhash: " + response.getReceipt().getHash());
-            System.out.println("Result: " + Arrays.toString(response.getReceipt().getResult()));
+            System.out.println(" Txhash : " + response.getReceipt().getHash());
+            System.out.println("BlockNum: " + response.getReceipt().getBlockNumber());
+            System.out.println(" Result : " + Arrays.toString(response.getReceipt().getResult()));
         }
     }
 
