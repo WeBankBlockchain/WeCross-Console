@@ -112,7 +112,7 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String path = parsePath(params, pathMaps);
+        String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) return;
 
         Response response = weCrossRPC.status(path).send();
@@ -135,7 +135,7 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String path = parsePath(params, pathMaps);
+        String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) return;
 
         ResourceDetailResponse response = weCrossRPC.detail(path).send();
@@ -162,7 +162,7 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String path = parsePath(params, pathMaps);
+        String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) return;
 
         String accountName = params[2];
@@ -199,7 +199,7 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String path = parsePath(params, pathMaps);
+        String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) return;
 
         String accountName = params[2];
@@ -219,18 +219,5 @@ public class RPCImpl implements RPCFace {
                             .send();
         }
         ConsoleUtils.printTransactionResponse(response);
-    }
-
-    private String parsePath(String[] params, Map<String, String> pathMaps) {
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.statusHelp();
-                return null;
-            }
-            path = pathMaps.get(params[1]);
-        }
-        return path;
     }
 }

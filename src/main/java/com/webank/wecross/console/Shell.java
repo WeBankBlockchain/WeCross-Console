@@ -8,6 +8,7 @@ import com.webank.wecross.console.common.JlineUtils;
 import com.webank.wecross.console.common.WelcomeInfo;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
+import com.webank.wecross.console.routine.HTLC;
 import com.webank.wecross.console.rpc.RPCFace;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -29,6 +30,8 @@ public class Shell {
 
     private static RPCFace rpcFace;
 
+    private static HTLC htlc;
+
     public static void main(String[] args) {
 
         LineReader lineReader;
@@ -44,6 +47,7 @@ public class Shell {
         try {
             consoleInitializer.init();
             rpcFace = consoleInitializer.getRpcFace();
+            htlc = consoleInitializer.getHtlc();
         } catch (WeCrossConsoleException e) {
             System.out.println(e.getMessage());
             return;
@@ -151,6 +155,21 @@ public class Shell {
                     case "sendTransaction":
                         {
                             rpcFace.sendTransaction(params, pathMaps);
+                            break;
+                        }
+                    case "generateTimelock":
+                        {
+                            htlc.generateTimelock(params);
+                            break;
+                        }
+                    case "generateSecretAndHash":
+                        {
+                            htlc.generateSecretAndHash(params);
+                            break;
+                        }
+                    case "newContract":
+                        {
+                            htlc.newContract(params, pathMaps);
                             break;
                         }
                     default:
