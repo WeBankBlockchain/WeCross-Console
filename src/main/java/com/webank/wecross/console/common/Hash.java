@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 
 public class Hash {
     public String getRandom(int numBytes) throws NoSuchAlgorithmException {
+        SecureRandom.getInstance("SHA1PRNG");
         SecureRandom random = new SecureRandom();
         return bytesToHex(random.generateSeed(numBytes));
     }

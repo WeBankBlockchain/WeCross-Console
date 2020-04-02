@@ -8,7 +8,7 @@ import com.webank.wecross.console.common.JlineUtils;
 import com.webank.wecross.console.common.WelcomeInfo;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
-import com.webank.wecross.console.routine.HTLC;
+import com.webank.wecross.console.routine.HTLCFace;
 import com.webank.wecross.console.rpc.RPCFace;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -30,7 +30,7 @@ public class Shell {
 
     private static RPCFace rpcFace;
 
-    private static HTLC htlc;
+    private static HTLCFace htlcFace;
 
     public static void main(String[] args) {
 
@@ -47,7 +47,7 @@ public class Shell {
         try {
             consoleInitializer.init();
             rpcFace = consoleInitializer.getRpcFace();
-            htlc = consoleInitializer.getHtlc();
+            htlcFace = consoleInitializer.getHtlcFace();
         } catch (WeCrossConsoleException e) {
             System.out.println(e.getMessage());
             return;
@@ -141,7 +141,7 @@ public class Shell {
                             rpcFace.getResourceStatus(params, pathMaps);
                             break;
                         }
-                    case "info":
+                    case "detail":
                         {
                             rpcFace.getResourceInfo(params, pathMaps);
                             break;
@@ -159,17 +159,17 @@ public class Shell {
                         }
                     case "generateTimelock":
                         {
-                            htlc.generateTimelock(params);
+                            htlcFace.generateTimelock(params);
                             break;
                         }
                     case "generateSecretAndHash":
                         {
-                            htlc.generateSecretAndHash(params);
+                            htlcFace.generateSecretAndHash(params);
                             break;
                         }
                     case "newContract":
                         {
-                            htlc.newContract(params, pathMaps);
+                            htlcFace.newContract(params, pathMaps);
                             break;
                         }
                     default:
