@@ -137,12 +137,12 @@ public class HelpInfo {
 
     public static void newContractHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("New a HTLC contract");
+        System.out.println("New a HTLCImpl contract");
         System.out.println("Usage:  newContract [path] [accountName] [...args]");
         System.out.println("path:   the path of the contract resource in wecross router");
         System.out.println("accountName:   choose an account to sign");
         System.out.println(
-                "args:   hash, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1");
+                "args:   hash, secret, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1");
         ConsoleUtils.singleLine();
     }
 
