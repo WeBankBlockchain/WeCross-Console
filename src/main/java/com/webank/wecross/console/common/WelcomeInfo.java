@@ -4,7 +4,7 @@ public class WelcomeInfo {
 
     public static void welcome() {
         ConsoleUtils.doubleLine();
-        System.out.println("Welcome to WeCross console(" + ConsoleVersion.Version + ")!");
+        System.out.println("Welcome to WeCross console(" + Version.Version + ")!");
         System.out.println("Type 'help' or 'h' for help. Type 'quit' or 'q' to quit console.");
         System.out.println();
         ConsoleUtils.doubleLine();

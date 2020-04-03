@@ -13,9 +13,9 @@ import com.webank.wecrosssdk.rpc.service.WeCrossRPCService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConsoleInitializer {
+public class Initializer {
 
-    private Logger logger = LoggerFactory.getLogger(ConsoleInitializer.class);
+    private Logger logger = LoggerFactory.getLogger(Initializer.class);
 
     private WeCrossRPC weCrossRPC;
     private RPCFace rpcFace;
@@ -26,7 +26,7 @@ public class ConsoleInitializer {
         try {
             weCrossRPC = WeCrossRPCFactory.build(weCrossRPCService);
         } catch (WeCrossSDKException e) {
-            logger.error("Init wecross service failed: {}", e);
+            logger.error("init wecross service failed: {}", e);
             throw new WeCrossConsoleException(ErrorCode.INIT_WECROSS_SERVICE_ERROR, e.getMessage());
         }
         rpcFace = new RPCImpl();

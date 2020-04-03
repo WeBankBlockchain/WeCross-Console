@@ -41,13 +41,13 @@ public class Shell {
         Set<String> resourceVars = new HashSet<>();
         Set<String> pathVars = new HashSet<>();
         Map<String, String> pathMaps = new HashMap<>();
-        ConsoleInitializer consoleInitializer = new ConsoleInitializer();
+        Initializer initializer = new Initializer();
         List<Completer> completers;
 
         try {
-            consoleInitializer.init();
-            rpcFace = consoleInitializer.getRpcFace();
-            htlcFace = consoleInitializer.getHtlcFace();
+            initializer.init();
+            rpcFace = initializer.getRpcFace();
+            htlcFace = initializer.getHtlcFace();
         } catch (WeCrossConsoleException e) {
             System.out.println(e.getMessage());
             return;
@@ -58,7 +58,7 @@ public class Shell {
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             Binding binding = new Binding();
             groovyShell = new GroovyShell(binding);
-            mockWeCross = new MockWeCross(consoleInitializer.getWeCrossRPC());
+            mockWeCross = new MockWeCross(initializer.getWeCrossRPC());
             groovyShell.setProperty("WeCross", mockWeCross);
 
             completers = JlineUtils.getCompleters(rpcFace.getPaths(), resourceVars, pathVars);
@@ -182,14 +182,10 @@ public class Shell {
                                     JlineUtils.addVarCompleters(
                                             completers, thisResourceVars, thisPathVars);
                                 }
-                                String thisRequest = ConsoleUtils.parseRequest(params);
-                                String result =
-                                        mapper.writeValueAsString(
-                                                groovyShell.evaluate(thisRequest));
-                                if (!result.startsWith("{}")) {
-                                    System.out.println(result);
-                                }
-                                System.out.println();
+                                logger.info("Origin command: {}", Arrays.toString(params));
+                                String newCommand = ConsoleUtils.parseCommand(params);
+                                logger.info("Groovy command: {}", newCommand);
+                                mapper.writeValueAsString(groovyShell.evaluate(newCommand));
                             } catch (WeCrossConsoleException e) {
                                 System.out.println(e.getMessage());
                             } catch (Exception e) {
@@ -198,6 +194,7 @@ public class Shell {
                             break;
                         }
                 }
+                System.out.println();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 System.out.println();

@@ -1,22 +1,21 @@
 package com.webank.wecross.console.common;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class Hash {
-    public String getRandom(int numBytes) throws NoSuchAlgorithmException {
-        SecureRandom.getInstance("SHA1PRNG");
+    public String getRandom(int numBytes) {
         SecureRandom random = new SecureRandom();
         return bytesToHex(random.generateSeed(numBytes));
     }
 
-    public String sha256(String msg) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public String sha256(String msg) throws NoSuchAlgorithmException {
         MessageDigest messageDigest;
         String encodestr;
         messageDigest = MessageDigest.getInstance("SHA-256");
-        messageDigest.update(msg.getBytes("UTF-8"));
+        messageDigest.update(msg.getBytes(StandardCharsets.UTF_8));
         encodestr = bytesToHex(messageDigest.digest());
         return encodestr;
     }

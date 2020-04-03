@@ -9,7 +9,7 @@ function run_console() {
         java -Djdk.tls.namedGroups="secp256k1" -cp 'apps/*;lib/*:conf' com.webank.wecross.console.Shell
     else
         # GNU/Linux
-        java -Djdk.tls.namedGroups="secp256k1" -cp 'apps/*:lib/*:conf' com.webank.wecross.console.Shell
+        java -Djdk.tls.namedGroups="secp256k1" -cp 'apps/*:lib/*:conf' -Djava.security.egd=file:/dev/./urandom com.webank.wecross.console.Shell
     fi
 }
 

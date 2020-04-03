@@ -61,7 +61,6 @@ public class JlineUtils {
                 Arrays.asList(
                         "help",
                         "quit",
-                        "currentServer",
                         "supportedStubs",
                         "listAccounts",
                         "listLocalResources",
