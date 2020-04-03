@@ -47,7 +47,7 @@ public class MockResource implements Serializable {
             Request<TransactionRequest> request = getRequest("call", method, args);
             logger.info("Call request: {}", request);
             TransactionResponse response = resource.call(request);
-            ConsoleUtils.printTransactionResponse(response);
+            ConsoleUtils.printTransactionResponse(response, true);
             logger.info("Call response: {}", response);
         } catch (WeCrossSDKException e) {
             logger.info("Call error: {}", e.getMessage());
@@ -60,7 +60,7 @@ public class MockResource implements Serializable {
             Request<TransactionRequest> request = getRequest("sendTransaction", method, args);
             logger.info("SendTransaction request: {}", request);
             TransactionResponse response = resource.sendTransaction(request);
-            ConsoleUtils.printTransactionResponse(response);
+            ConsoleUtils.printTransactionResponse(response, false);
             logger.info("SendTransaction response: {}", response);
         } catch (WeCrossSDKException e) {
             logger.info("SendTransaction error: {}", e.getMessage());

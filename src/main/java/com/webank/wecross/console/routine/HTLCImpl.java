@@ -44,7 +44,7 @@ public class HTLCImpl implements HTLCFace {
     @Override
     public void generateSecretAndHash(String[] params) throws Exception {
         if (params.length != 1) {
-            HelpInfo.promptHelp("generateSecretAndHash");
+            HelpInfo.generateSecretAndHashHelp();
             return;
         }
 
@@ -73,9 +73,9 @@ public class HTLCImpl implements HTLCFace {
         if (path == null) return;
         String accountName = params[2];
         String[] args = new String[10];
-        args[0] = params[3];
+        args[0] = ConsoleUtils.parseString(params[3]);
         for (int i = 1; i < 10; i++) {
-            args[i] = params[i + 4];
+            args[i] = ConsoleUtils.parseString(params[i + 4]);
         }
         TransactionResponse response =
                 weCrossRPC.sendTransaction(path, accountName, "newContract", args).send();
@@ -95,9 +95,14 @@ public class HTLCImpl implements HTLCFace {
         if (receipt.getResult()[0].trim().equalsIgnoreCase("success")) {
             String txHash = response.getReceipt().getHash();
             long blockNum = response.getReceipt().getBlockNumber();
-            setNewContractTxInfo(path, accountName, params[3], txHash, blockNum);
+            setNewContractTxInfo(
+                    path, accountName, ConsoleUtils.parseString(params[3]), txHash, blockNum);
             if (params[5].equalsIgnoreCase("true")) {
-                setSecret(path, accountName, params[3], params[4]);
+                setSecret(
+                        path,
+                        accountName,
+                        ConsoleUtils.parseString(params[3]),
+                        ConsoleUtils.parseString(params[4]));
             }
         }
     }

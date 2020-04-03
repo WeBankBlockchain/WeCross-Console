@@ -48,7 +48,7 @@ public class RPCImpl implements RPCFace {
     @Override
     public void supportedStubs(String[] params) throws Exception {
         if (params.length != 1) {
-            HelpInfo.promptHelp("supportedStubs");
+            HelpInfo.supportedStubsHelp();
             return;
         }
 
@@ -56,7 +56,7 @@ public class RPCImpl implements RPCFace {
         if (stubResponse.getErrorCode() != 0) {
             ConsoleUtils.printJson(stubResponse.toString());
         } else {
-            ConsoleUtils.printJson(stubResponse.getStubs().toString());
+            System.out.println(Arrays.toString(stubResponse.getStubs().getStubTypes()));
         }
         logger.info("supportedStubs response: {}", stubResponse);
     }
@@ -64,7 +64,7 @@ public class RPCImpl implements RPCFace {
     @Override
     public void listAccounts(String[] params) throws Exception {
         if (params.length != 1) {
-            HelpInfo.promptHelp("listAccounts");
+            HelpInfo.listAccountsHelp();
             return;
         }
 
@@ -178,10 +178,11 @@ public class RPCImpl implements RPCFace {
                                     path,
                                     accountName,
                                     method,
-                                    Arrays.copyOfRange(params, 4, params.length))
+                                    ConsoleUtils.parseAgrs(
+                                            Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        ConsoleUtils.printTransactionResponse(response);
+        ConsoleUtils.printTransactionResponse(response, true);
     }
 
     @Override
@@ -215,9 +216,10 @@ public class RPCImpl implements RPCFace {
                                     path,
                                     accountName,
                                     method,
-                                    Arrays.copyOfRange(params, 4, params.length))
+                                    ConsoleUtils.parseAgrs(
+                                            Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        ConsoleUtils.printTransactionResponse(response);
+        ConsoleUtils.printTransactionResponse(response, false);
     }
 }

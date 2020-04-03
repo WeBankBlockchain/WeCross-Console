@@ -76,6 +76,7 @@ public class ConsoleUtils {
         }
         return false;
     }
+
     // remove "" or '' of string
     public static String parseString(String input) {
         int len = input.length();
@@ -87,6 +88,14 @@ public class ConsoleUtils {
             return input.substring(1, len - 1);
         }
         return input;
+    }
+
+    public static String[] parseAgrs(String[] args) {
+        String[] result = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
+            result[i] = parseString(args[i]);
+        }
+        return result;
     }
 
     public static void printJson(String jsonStr) {
@@ -231,7 +240,7 @@ public class ConsoleUtils {
                 : tokens2.toArray(new String[tokens2.size()]);
     }
 
-    public static String parseRequest(String[] params) throws WeCrossConsoleException {
+    public static String parseCommand(String[] params) throws WeCrossConsoleException {
         StringBuilder result = new StringBuilder();
         boolean isArgs = false;
         int length = params.length;
@@ -258,15 +267,11 @@ public class ConsoleUtils {
                             ErrorCode.INTERNAL_ERROR, "Redundant parameters");
                 }
                 result = new StringBuilder(params[0] + " " + params[1] + " " + params[2] + " ");
+                String path = params[3];
                 if (ConsoleUtils.isValidPath(parseString(params[3]))) {
-                    result.append("\"")
-                            .append(params[3])
-                            .append("\"")
-                            .append(",")
-                            .append("\"")
-                            .append(params[4])
-                            .append("\"");
+                    path = "\"" + path + "\"";
                 }
+                result.append(path).append(",").append("\"").append(params[4]).append("\"");
                 return result.toString();
             }
             for (; start < length; ++start) {
@@ -285,7 +290,7 @@ public class ConsoleUtils {
         return result.toString();
     }
 
-    public static void printTransactionResponse(TransactionResponse response) {
+    public static void printTransactionResponse(TransactionResponse response, boolean isCall) {
         if (response == null) {
             System.out.println("Response: null");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
@@ -293,9 +298,14 @@ public class ConsoleUtils {
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
             printJson(response.getReceipt().toString());
         } else {
-            System.out.println(" Txhash : " + response.getReceipt().getHash());
-            System.out.println("BlockNum: " + response.getReceipt().getBlockNumber());
-            System.out.println(" Result : " + Arrays.toString(response.getReceipt().getResult()));
+            if (!isCall) {
+                System.out.println("Txhash  : " + response.getReceipt().getHash());
+                System.out.println("BlockNum: " + response.getReceipt().getBlockNumber());
+                System.out.println(
+                        "Result  : " + Arrays.toString(response.getReceipt().getResult()));
+            } else {
+                System.out.println("Result: " + Arrays.toString(response.getReceipt().getResult()));
+            }
         }
     }
 

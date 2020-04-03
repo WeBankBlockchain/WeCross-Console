@@ -33,22 +33,22 @@ public class ConsoleUtilsTest {
     public void parseRequestTest() throws Exception {
         String input = "r.status";
         String output = "r.status()";
-        Assert.assertEquals(output, ConsoleUtils.parseRequest(ConsoleUtils.tokenizeCommand(input)));
+        Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
 
         input = "r.detail";
         output = "r.detail()";
-        Assert.assertEquals(output, ConsoleUtils.parseRequest(ConsoleUtils.tokenizeCommand(input)));
+        Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
 
         input = "r.call Int getInt";
         output = "r.call \"Int\",\"getInt\"";
-        Assert.assertEquals(output, ConsoleUtils.parseRequest(ConsoleUtils.tokenizeCommand(input)));
+        Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
 
         input = "r.sendTransaction String getString \"hello world\"";
         output = "r.sendTransaction \"String\",\"getString\",\"hello world\"";
-        Assert.assertEquals(output, ConsoleUtils.parseRequest(ConsoleUtils.tokenizeCommand(input)));
+        Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
 
         input = "r = WeCross.getResource a.b.c account";
         output = "r = WeCross.getResource \"a.b.c\",\"account\"";
-        Assert.assertEquals(output, ConsoleUtils.parseRequest(ConsoleUtils.tokenizeCommand(input)));
+        Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
     }
 }
