@@ -257,14 +257,14 @@ public class ConsoleUtils {
             } else if (params[0].endsWith(".status") || params[0].endsWith(".detail")) {
                 if (length != 1) {
                     throw new WeCrossConsoleException(
-                            ErrorCode.INTERNAL_ERROR, "Redundant parameters");
+                            ErrorCode.ILLEGAL_PARAM, "Redundant parameters");
                 }
                 result = new StringBuilder(params[0] + "()");
                 return result.toString();
             } else if (length > 3 && params[2].equals("WeCross.getResource")) {
                 if (length != 5) {
                     throw new WeCrossConsoleException(
-                            ErrorCode.INTERNAL_ERROR, "Redundant parameters");
+                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path] [accountName]");
                 }
                 result = new StringBuilder(params[0] + " " + params[1] + " " + params[2] + " ");
                 String path = params[3];
