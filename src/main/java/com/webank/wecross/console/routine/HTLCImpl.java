@@ -51,7 +51,7 @@ public class HTLCImpl implements HTLCFace {
         Hash hash = new Hash();
         String secret = hash.getRandom(32);
         System.out.println("secret: " + secret);
-        System.out.println(" hash : " + hash.sha256(secret));
+        System.out.println("hash  : " + hash.sha256(secret));
     }
 
     @Override
