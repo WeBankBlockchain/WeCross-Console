@@ -6,9 +6,9 @@ import java.util.Map;
 public interface HTLCFace {
     void setWeCrossRPC(WeCrossRPC weCrossRPC);
 
-    void generateTimelock(String[] params);
+    void genTimelock(String[] params);
 
-    void generateSecretAndHash(String[] params) throws Exception;
+    void genSecretAndHash(String[] params) throws Exception;
 
     void newContract(String[] params, Map<String, String> pathMaps) throws Exception;
 }

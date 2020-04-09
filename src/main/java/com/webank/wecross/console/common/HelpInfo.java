@@ -42,8 +42,8 @@ public class HelpInfo {
             case "listResources":
                 listAllResourcesHelp();
                 break;
-            case "generateSecretAndHash":
-                generateSecretAndHashHelp();
+            case "genSecretAndHash":
+                genSecretAndHashHelp();
             case "quit":
             case "q":
                 quitHelp();
@@ -102,7 +102,7 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Check if the resource exists.");
         System.out.println("Usage: status [path]");
-        System.out.println("path: the path of resource in wecross router");
+        System.out.println("path -- the path of resource in wecross router");
         ConsoleUtils.singleLine();
     }
 
@@ -116,49 +116,53 @@ public class HelpInfo {
     public static void callHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Call constant method of smart contract");
-        System.out.println("Usage:  call [path] [accountName] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross router");
-        System.out.println("accountName:   choose an account to sign");
-        System.out.println("method: the method in contract");
-        System.out.println("args:   variable parameter list");
+        System.out.println("Usage: call [path] [accountName] [method] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- choose an account to sign");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
     }
 
     public static void sendTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Call non-constant method of smart contract");
-        System.out.println("Usage:  sendTransaction [path] [accountName] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross router");
-        System.out.println("accountName:   choose an account to sign");
-        System.out.println("method: the method in contract");
-        System.out.println("args:   variable parameter list");
+        System.out.println("Usage: sendTransaction [path] [accountName] [method] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- choose an account to sign");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
     }
 
     public static void newContractHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("New a HTLCImpl contract");
-        System.out.println("Usage:  newContract [path] [accountName] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross router");
-        System.out.println("accountName:   choose an account to sign");
+        System.out.println("Create a htlc transfer contract");
+        System.out.println("Usage: newContract [path] [accountName] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- sender's account name");
         System.out.println(
-                "args:   hash, secret, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1");
+                "args -- hash, secret, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1");
+        System.out.println(
+                "[note]: 1. only sender can create this contract, so [accountName] must be sender's account name");
+        System.out.println(
+                "[note]: 2. if you are initiator who holds the secret, [role] would be true, and *0 is your info. Else, the [role] is false and *1 is your info");
         ConsoleUtils.singleLine();
     }
 
-    public static void generateTimelockHelp() {
+    public static void genTimelockHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Generate two valid timelocks");
-        System.out.println("Usage:   generateTimelock [interval]");
+        System.out.println("Usage: genTimelock [interval]");
         System.out.println(
-                "interval: [timelock0 - interval] = timelock1 = [now + interval], interval >= 300(seconds)");
+                "interval -- [timelock0 - interval] = timelock1 = [now + interval], interval >= 300(seconds)");
         ConsoleUtils.singleLine();
     }
 
-    public static void generateSecretAndHashHelp() {
+    public static void genSecretAndHashHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Generate a random secret and its hash");
-        System.out.println("Usage:  generateSecretAndHash");
+        System.out.println("Usage: genSecretAndHash");
         ConsoleUtils.singleLine();
     }
 

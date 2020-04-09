@@ -70,8 +70,8 @@ public class JlineUtils {
                         "call",
                         "sendTransaction",
                         "newContract",
-                        "generateTimelock",
-                        "generateSecretAndHash");
+                        "genTimelock",
+                        "genSecretAndHash");
 
         for (String command : commands) {
             completers.add(

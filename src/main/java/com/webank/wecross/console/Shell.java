@@ -157,14 +157,14 @@ public class Shell {
                             rpcFace.sendTransaction(params, pathMaps);
                             break;
                         }
-                    case "generateTimelock":
+                    case "genTimelock":
                         {
-                            htlcFace.generateTimelock(params);
+                            htlcFace.genTimelock(params);
                             break;
                         }
-                    case "generateSecretAndHash":
+                    case "genSecretAndHash":
                         {
-                            htlcFace.generateSecretAndHash(params);
+                            htlcFace.genSecretAndHash(params);
                             break;
                         }
                     case "newContract":
