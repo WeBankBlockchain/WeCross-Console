@@ -34,7 +34,7 @@ public class HTLCImpl implements HTLCFace {
             System.out.println("condition: interval > 300");
         } else {
             BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
-            BigInteger t0 = now.add(BigInteger.valueOf(interval * 2));
+            BigInteger t0 = now.add(BigInteger.valueOf(interval + interval));
             BigInteger t1 = now.add(BigInteger.valueOf(interval));
             System.out.println("timelock0: " + t0);
             System.out.println("timelock1: " + t1);
@@ -77,6 +77,14 @@ public class HTLCImpl implements HTLCFace {
         for (int i = 1; i < 10; i++) {
             args[i] = ConsoleUtils.parseString(params[i + 4]);
         }
+        Hash hash = new Hash();
+        if (params[5].equalsIgnoreCase("true")) {
+            if (!params[3].equals(hash.sha256(params[4]))) {
+                System.out.println("hash not matched");
+                return;
+            }
+        }
+
         TransactionResponse response =
                 weCrossRPC.sendTransaction(path, accountName, "newContract", args).send();
         Receipt receipt = response.getReceipt();
@@ -120,11 +128,14 @@ public class HTLCImpl implements HTLCFace {
                                 txHash,
                                 String.valueOf(blockNum))
                         .send();
-        if (response == null
-                || response.getErrorCode() != StatusCode.SUCCESS
-                || response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println(
-                    "failed to setNewContractTxInfo: " + response.getReceipt().getErrorMessage());
+        Receipt receipt = response.getReceipt();
+        if (response.getErrorCode() != StatusCode.SUCCESS
+                || receipt.getErrorCode() != StatusCode.SUCCESS) {
+            if (receipt != null) {
+                System.out.println("failed to setNewContractTxInfo: " + receipt.getErrorMessage());
+            } else {
+                System.out.println("failed to setNewContractTxInfo: " + response.getMessage());
+            }
         } else {
             logger.info(
                     "newContract succeeded, path: {}, txHash: {}, blockNum: {}",
@@ -138,10 +149,14 @@ public class HTLCImpl implements HTLCFace {
             throws Exception {
         TransactionResponse response =
                 weCrossRPC.sendTransaction(path, accountName, "setSecret", hash, secret).send();
-        if (response == null
-                || response.getErrorCode() != StatusCode.SUCCESS
-                || response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println("failed to setSecret: " + response.getReceipt().getErrorMessage());
+        Receipt receipt = response.getReceipt();
+        if (response.getErrorCode() != StatusCode.SUCCESS
+                || receipt.getErrorCode() != StatusCode.SUCCESS) {
+            if (receipt != null) {
+                System.out.println("failed to setSecret: " + receipt.getErrorMessage());
+            } else {
+                System.out.println("failed to setSecret: " + response.getMessage());
+            }
         } else {
             logger.info("setSecret succeeded, path: {}, hashs: {}, secret: {}", path, hash, secret);
         }
