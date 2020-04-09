@@ -29,16 +29,16 @@ public class WelcomeInfo {
         sb.append(
                 "listResources                      List all resources including remote resources.\n");
         sb.append("status                             Check if the resource exists.\n");
-        sb.append("detail                             Get the resource information.\n");
+        sb.append("detail                             Get resource information.\n");
         sb.append("call                               Call constant method of smart contract.\n");
         sb.append(
                 "sendTransaction                    Call non-constant method of smart contract.\n");
-        sb.append("generateTimelock                   Generate two valid timelocks.\n");
-        sb.append("generateSecretAndHash              Generate a secret and its hash.\n");
-        sb.append("newContract                        New a HTLCImpl contract.\n");
+        sb.append("genTimelock                        Generate two valid timelocks.\n");
+        sb.append("genSecretAndHash                   Generate a secret and its hash.\n");
+        sb.append("newContract                        Create a htlc transfer contract.\n");
         sb.append(
-                "WeCross.getResource                Init resource by path, and assign it to a custom variable.\n");
-        sb.append("[resource].[command]               Equal to command: command [path].\n");
+                "WeCross.getResource                Init resource by path and account name, and assign it to a custom variable.\n");
+        sb.append("[resource].[command]               Equal to: command [path] [account name].\n");
 
         System.out.println(sb.toString());
         ConsoleUtils.singleLine();

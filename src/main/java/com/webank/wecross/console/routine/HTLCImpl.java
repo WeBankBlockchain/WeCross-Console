@@ -19,13 +19,13 @@ public class HTLCImpl implements HTLCFace {
     private Logger logger = LoggerFactory.getLogger(RPCImpl.class);
 
     @Override
-    public void generateTimelock(String[] params) {
+    public void genTimelock(String[] params) {
         if (params.length == 1) {
-            HelpInfo.promptHelp("generateTimelock");
+            HelpInfo.promptHelp("genTimelock");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.generateTimelockHelp();
+            HelpInfo.genTimelockHelp();
             return;
         }
 
@@ -42,9 +42,9 @@ public class HTLCImpl implements HTLCFace {
     }
 
     @Override
-    public void generateSecretAndHash(String[] params) throws Exception {
+    public void genSecretAndHash(String[] params) throws Exception {
         if (params.length != 1) {
-            HelpInfo.generateSecretAndHashHelp();
+            HelpInfo.genSecretAndHashHelp();
             return;
         }
 
