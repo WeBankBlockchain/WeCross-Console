@@ -9,6 +9,7 @@ import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.Receipt;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -64,8 +65,8 @@ public class HTLCImpl implements HTLCFace {
             HelpInfo.newContractHelp();
             return;
         }
-        if (params.length != 14) {
-            System.out.println("invalid number of parameters, 14 params needed");
+
+        if (!checkContract(params)) {
             return;
         }
 
@@ -76,13 +77,6 @@ public class HTLCImpl implements HTLCFace {
         args[0] = ConsoleUtils.parseString(params[3]);
         for (int i = 1; i < 10; i++) {
             args[i] = ConsoleUtils.parseString(params[i + 4]);
-        }
-        Hash hash = new Hash();
-        if (params[5].equalsIgnoreCase("true")) {
-            if (!params[3].equals(hash.sha256(params[4]))) {
-                System.out.println("hash not matched");
-                return;
-            }
         }
 
         TransactionResponse response =
@@ -112,6 +106,32 @@ public class HTLCImpl implements HTLCFace {
                         ConsoleUtils.parseString(params[3]),
                         ConsoleUtils.parseString(params[4]));
             }
+        }
+    }
+
+    private boolean checkContract(String[] params) throws NoSuchAlgorithmException {
+        if (params.length != 14) {
+            System.out.println("invalid number of parameters, 14 params needed");
+            return false;
+        }
+
+        Hash hash = new Hash();
+        if (params[5].equalsIgnoreCase("true")) {
+            if (!params[3].equals(hash.sha256(params[4]))) {
+                System.out.println("hash not matched");
+                return false;
+            }
+        }
+
+        BigInteger amount0 = new BigInteger(params[8]);
+        BigInteger amount1 = new BigInteger(params[12]);
+
+        if (amount0.compareTo(BigInteger.valueOf(0)) > 0
+                && amount1.compareTo(BigInteger.valueOf(0)) > 0) {
+            return true;
+        } else {
+            System.out.println("transfer amount must be greater than 0");
+            return false;
         }
     }
 
