@@ -170,7 +170,8 @@ public class RPCImpl implements RPCFace {
 
         TransactionResponse response;
         if (params.length == 4) {
-            response = weCrossRPC.call(path, accountName, method).send();
+            // no param given means: null (not String[0])
+            response = weCrossRPC.call(path, accountName, method, null).send();
         } else {
             response =
                     weCrossRPC
@@ -208,7 +209,8 @@ public class RPCImpl implements RPCFace {
 
         TransactionResponse response;
         if (params.length == 4) {
-            response = weCrossRPC.sendTransaction(path, accountName, method).send();
+            // no param given means: null (not String[0])
+            response = weCrossRPC.sendTransaction(path, accountName, method, null).send();
         } else {
             response =
                     weCrossRPC
