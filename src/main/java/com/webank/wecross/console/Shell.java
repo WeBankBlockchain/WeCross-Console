@@ -92,7 +92,10 @@ public class Shell {
                     System.out.print("");
                     continue;
                 }
-                if ("quit".equals(params[0]) || "q".equals(params[0])) {
+                if ("quit".equals(params[0])
+                        || "q".equals(params[0])
+                        || "exit".equals(params[0])
+                        || "e".equals(params[0])) {
                     if (HelpInfo.promptNoParams(params, "q")) {
                         continue;
                     } else if (params.length > 2) {

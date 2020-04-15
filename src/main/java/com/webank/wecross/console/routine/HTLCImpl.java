@@ -10,7 +10,6 @@ import com.webank.wecrosssdk.rpc.common.Receipt;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +90,10 @@ public class HTLCImpl implements HTLCFace {
         } else {
             System.out.println("Txhash: " + receipt.getHash());
             System.out.println("BlockNum: " + receipt.getBlockNumber());
-            System.out.println("Result: " + Arrays.toString(receipt.getResult()));
+            String result = receipt.getResult()[0].trim();
+            if (result.equalsIgnoreCase("success")) {
+                System.out.println("Result: create a transfer contract successfully");
+            }
         }
 
         if (receipt.getResult()[0].trim().equalsIgnoreCase("success")) {

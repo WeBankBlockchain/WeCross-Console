@@ -69,6 +69,9 @@ public class MockResource implements Serializable {
     }
 
     private Request<TransactionRequest> getRequest(String method, String func, String... args) {
+        if (args.length == 0) {
+            args = null;
+        }
         Request<TransactionRequest> request = new Request<>();
         request.setMethod(method);
         request.setPath(resource.getPath());
