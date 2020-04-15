@@ -46,6 +46,8 @@ public class HelpInfo {
                 genSecretAndHashHelp();
             case "quit":
             case "q":
+            case "exit":
+            case "e":
                 quitHelp();
                 break;
 

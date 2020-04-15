@@ -95,8 +95,17 @@ public class RPCImpl implements RPCFace {
         if (resourcesResponse.getErrorCode() != 0) {
             ConsoleUtils.printJson(resourcesResponse.toString());
         } else {
-            ConsoleUtils.printJson(
-                    Arrays.toString(resourcesResponse.getResources().getResourceDetails()));
+            ResourceDetail[] resourceDetails =
+                    resourcesResponse.getResources().getResourceDetails();
+            for (ResourceDetail resourceDetail : resourceDetails) {
+                System.out.println(
+                        "path: "
+                                + resourceDetail.getPath()
+                                + ", type: "
+                                + resourceDetail.getStubType()
+                                + ", distance: "
+                                + resourceDetail.getDistance());
+            }
         }
         logger.info("listResources response: {}", resourcesResponse);
     }
