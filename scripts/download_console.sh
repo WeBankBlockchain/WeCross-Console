@@ -6,6 +6,11 @@ LANG=en_US.utf8
 compatibility_version=
 enable_build_from_resource=0
 
+src_dir=$(pwd)'/src/'
+
+wecross_console_url=https://github.com/WeBankFinTech/WeCross-Console.git
+wecross_console_branch=master
+
 LOG_INFO()
 {
     local content=${1}
@@ -24,6 +29,7 @@ help()
     cat << EOF
 Usage:
     -s                              [Optional] Get wecross console by: gradle build from github Source Code.
+    -b                              [Optional] Download from certain branch if '-s' is set
     -h  call for help
 e.g
     bash $0 
@@ -35,11 +41,14 @@ exit 0
 
 parse_command()
 {
-while getopts "sh" option;do
+while getopts "b:sh" option;do
     # shellcheck disable=SC2220
     case ${option} in
     s)
         enable_build_from_resource=1
+    ;;
+    b)
+        wecross_console_branch=$OPTARG
     ;;
     h)  help;;
     esac
@@ -112,16 +121,44 @@ download_release_pkg()
     tar -zxf ${release_pkg}
 }
 
+download_latest_code()
+{
+    local name=${1}
+    local url=${2}
+    local branch=${3}
+
+    if [ -d ${name} ];then
+        cd ${name}
+        git checkout ${branch}
+        git pull
+        cd -
+    else
+        git clone --depth 1 -b ${branch} ${url}
+    fi
+}
+
 build_from_source()
 {
-    if [ -d WeCross-Console/apps ];then
+    LOG_INFO "Build WeCross Console from source"
+
+    local url=${wecross_console_url}
+    local branch=${wecross_console_branch}
+    local output_dir=$(pwd)
+
+    if [ -d WeCross-Console ];then
         LOG_INFO "./WeCross-Console/ exists"
-        exit 0
         return
     fi
-    git clone https://github.com/WeBankFinTech/WeCross-Console.git
+
+    mkdir -p ${src_dir}/
+    cd ${src_dir}/
+
+    download_latest_code WeCross ${url} ${branch}
+
     cd WeCross-Console
-    ./gradlew assemble 2>&1 | tee output.log
+    rm -rf dist
+    bash ./gradlew assemble 2>&1 | tee output.log
+    chmod +x dist/apps/*
     # shellcheck disable=SC2046
     # shellcheck disable=SC2006
     if [ `grep -c "BUILD SUCCESSFUL" output.log` -eq '0' ]; then
@@ -132,9 +169,10 @@ build_from_source()
     fi
     echo "================================================================"
     cd ..
-    mv WeCross-Console WeCross-Console-Source
-    mv WeCross-Console-Source/dist WeCross-Console
-    rm -rf WeCross-Console-Source
+
+    mv WeCross-Console/dist ${output_dir}/WeCross-Console
+
+    cd ${output_dir}
 
     LOG_INFO "Build WeCross Console successfully"
 }
