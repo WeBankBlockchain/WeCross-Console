@@ -10,5 +10,7 @@ public interface HTLCFace {
 
     void genSecretAndHash(String[] params) throws Exception;
 
+    void checkTransferStatus(String[] params, Map<String, String> pathMaps) throws Exception;
+
     void newContract(String[] params, Map<String, String> pathMaps) throws Exception;
 }

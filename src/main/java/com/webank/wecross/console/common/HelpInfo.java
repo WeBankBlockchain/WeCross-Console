@@ -139,8 +139,8 @@ public class HelpInfo {
 
     public static void newContractHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Create a htlc transfer contract");
-        System.out.println("Usage: newContract [path] [accountName] [...args]");
+        System.out.println("Create a htlc transfer proposal");
+        System.out.println("Usage: newHTLCTransferProposal [path] [accountName] [...args]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println("accountName -- sender's account name");
         System.out.println(
@@ -165,6 +165,16 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Generate a random secret and its hash");
         System.out.println("Usage: genSecretAndHash");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void checkTransferStatusHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Check htlc transfer status by hash");
+        System.out.println("Usage: checkTransferStatus [path] [accountName] [hash]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- choose an account to sign");
+        System.out.println("hash -- transfer contract-id");
         ConsoleUtils.singleLine();
     }
 

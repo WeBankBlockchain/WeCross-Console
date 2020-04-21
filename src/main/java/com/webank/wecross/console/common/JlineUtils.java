@@ -19,7 +19,13 @@ import org.jline.terminal.TerminalBuilder;
 public class JlineUtils {
 
     private static List<String> resourceCommands =
-            Arrays.asList("status", "detail", "call", "sendTransaction", "newContract");
+            Arrays.asList(
+                    "status",
+                    "detail",
+                    "call",
+                    "sendTransaction",
+                    "newHTLCTransferProposal",
+                    "checkTransferStatus");
 
     public static List<Completer> getCompleters(
             List<String> paths, Set<String> resourceVars, Set<String> pathVars) {
@@ -69,8 +75,9 @@ public class JlineUtils {
                         "detail",
                         "call",
                         "sendTransaction",
-                        "newContract",
+                        "newHTLCTransferProposal",
                         "genTimelock",
+                        "checkTransferStatus",
                         "genSecretAndHash");
 
         for (String command : commands) {

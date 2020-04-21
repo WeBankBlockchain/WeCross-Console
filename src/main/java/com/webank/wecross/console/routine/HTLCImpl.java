@@ -1,10 +1,13 @@
 package com.webank.wecross.console.routine;
 
 import com.webank.wecross.console.common.ConsoleUtils;
+import com.webank.wecross.console.common.Default;
 import com.webank.wecross.console.common.Hash;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.common.StatusCode;
+import com.webank.wecrosssdk.resource.Resource;
+import com.webank.wecrosssdk.resource.ResourceFactory;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.Receipt;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
@@ -55,9 +58,70 @@ public class HTLCImpl implements HTLCFace {
     }
 
     @Override
+    public void checkTransferStatus(String[] params, Map<String, String> pathMaps)
+            throws Exception {
+        if (params.length == 1) {
+            HelpInfo.promptHelp("checkTransferStatus");
+            return;
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.checkTransferStatusHelp();
+            return;
+        }
+
+        String path = ConsoleUtils.parsePath(params, pathMaps);
+        if (path == null) return;
+
+        String accountName = params[2];
+        String hash = params[3];
+
+        Resource resource = ResourceFactory.build(weCrossRPC, path, accountName);
+        BigInteger timelock;
+        try {
+            String timelockStr = resource.call("getSelfTimelock", hash)[0].trim();
+            if (timelockStr.equalsIgnoreCase("")) {
+                System.out.println("status: hash not found!");
+                return;
+            }
+            timelock = new BigInteger(timelockStr);
+        } catch (Exception e) {
+            System.out.println("status: hash not found!");
+            return;
+        }
+
+        if (resource.call("getSelfUnlockStatus", hash)[0].trim().equalsIgnoreCase(Default.TRUE_FLAG)
+                && resource.call("getCounterpartyUnlockStatus", hash)[0]
+                        .trim()
+                        .equalsIgnoreCase(Default.TRUE_FLAG)) {
+            System.out.println("status: succeeded!");
+            return;
+        }
+
+        if (resource.call("getCounterpartyRollbackStatus", hash)[0]
+                .trim()
+                .equalsIgnoreCase(Default.TRUE_FLAG)) {
+            System.out.println("status: rolled back!");
+            return;
+        }
+
+        if (resource.call("getSelfLockStatus", hash)[0]
+                .trim()
+                .equalsIgnoreCase(Default.FALSE_FLAG)) {
+
+            BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
+            if (timelock.compareTo(now) <= 0) {
+                System.out.println("status: failed!");
+                return;
+            }
+        }
+
+        System.out.println("status: ongoing!");
+    }
+
+    @Override
     public void newContract(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("newContract");
+            HelpInfo.promptHelp("newHTLCTransferProposal");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -92,21 +156,20 @@ public class HTLCImpl implements HTLCFace {
             System.out.println("BlockNum: " + receipt.getBlockNumber());
             String result = receipt.getResult()[0].trim();
             if (result.equalsIgnoreCase("success")) {
-                System.out.println("Result: create a transfer contract successfully");
-            }
-        }
-
-        if (receipt.getResult()[0].trim().equalsIgnoreCase("success")) {
-            String txHash = response.getReceipt().getHash();
-            long blockNum = response.getReceipt().getBlockNumber();
-            setNewContractTxInfo(
-                    path, accountName, ConsoleUtils.parseString(params[3]), txHash, blockNum);
-            if (params[5].equalsIgnoreCase("true")) {
-                setSecret(
-                        path,
-                        accountName,
-                        ConsoleUtils.parseString(params[3]),
-                        ConsoleUtils.parseString(params[4]));
+                String txHash = response.getReceipt().getHash();
+                long blockNum = response.getReceipt().getBlockNumber();
+                setNewContractTxInfo(
+                        path, accountName, ConsoleUtils.parseString(params[3]), txHash, blockNum);
+                if (params[5].equalsIgnoreCase("true")) {
+                    setSecret(
+                            path,
+                            accountName,
+                            ConsoleUtils.parseString(params[3]),
+                            ConsoleUtils.parseString(params[4]));
+                }
+                System.out.println("Result: create a htlc transfer proposal successfully");
+            } else {
+                System.out.println("Result: " + result);
             }
         }
     }
