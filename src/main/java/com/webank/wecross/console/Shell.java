@@ -170,9 +170,14 @@ public class Shell {
                             htlcFace.genSecretAndHash(params);
                             break;
                         }
-                    case "newContract":
+                    case "newHTLCTransferProposal":
                         {
                             htlcFace.newContract(params, pathMaps);
+                            break;
+                        }
+                    case "checkTransferStatus":
+                        {
+                            htlcFace.checkTransferStatus(params, pathMaps);
                             break;
                         }
                     default:

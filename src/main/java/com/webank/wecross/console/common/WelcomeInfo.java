@@ -35,7 +35,8 @@ public class WelcomeInfo {
                 "sendTransaction                    Call non-constant method of smart contract.\n");
         sb.append("genTimelock                        Generate two valid timelocks.\n");
         sb.append("genSecretAndHash                   Generate a secret and its hash.\n");
-        sb.append("newContract                        Create a htlc transfer contract.\n");
+        sb.append("newHTLCTransferProposal            Create a htlc transfer proposal .\n");
+        sb.append("checkTransferStatus                Check htlc transfer status by hash.\n");
         sb.append(
                 "WeCross.getResource                Init resource by path and account name, and assign it to a custom variable.\n");
         sb.append("[resource].[command]               Equal to: command [path] [account name].\n");
