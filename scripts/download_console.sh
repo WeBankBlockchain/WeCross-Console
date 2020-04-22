@@ -153,7 +153,7 @@ build_from_source()
     mkdir -p ${src_dir}/
     cd ${src_dir}/
 
-    download_latest_code WeCross ${url} ${branch}
+    download_latest_code WeCross-Console ${url} ${branch}
 
     cd WeCross-Console
     rm -rf dist
