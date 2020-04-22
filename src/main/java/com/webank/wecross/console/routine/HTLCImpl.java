@@ -97,7 +97,7 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
 
-        if (resource.call("getCounterpartyRollbackStatus", hash)[0]
+        if (resource.call("getSelfRollbackStatus", hash)[0]
                 .trim()
                 .equalsIgnoreCase(Default.TRUE_FLAG)) {
             System.out.println("status: rolled back!");
