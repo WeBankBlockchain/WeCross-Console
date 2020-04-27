@@ -85,7 +85,7 @@ public class HTLCImpl implements HTLCFace {
             }
             timelock = new BigInteger(timelockStr);
         } catch (Exception e) {
-            System.out.println("status: hash not found!");
+            System.out.println("error: please check path, account name or hash!");
             return;
         }
 
