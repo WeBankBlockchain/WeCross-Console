@@ -72,7 +72,12 @@ public class RPCImpl implements RPCFace {
         if (response.getErrorCode() != 0) {
             ConsoleUtils.printJson(response.toString());
         } else {
-            ConsoleUtils.printJson(response.getAccounts().getAccountInfos().toString());
+            List<Map<String, String>> accountInfos = response.getAccounts().getAccountInfos();
+            for (Map<String, String> accountInfo : accountInfos) {
+                System.out.println(
+                        "name: " + accountInfo.get("name") + ", type: " + accountInfo.get("type"));
+            }
+            System.out.println("total: " + accountInfos.size());
         }
         logger.info("list acc response: {}", response);
     }
@@ -106,6 +111,7 @@ public class RPCImpl implements RPCFace {
                                 + ", distance: "
                                 + resourceDetail.getDistance());
             }
+            System.out.println("total: " + resourceDetails.length);
         }
         logger.info("listResources response: {}", resourcesResponse);
     }
