@@ -37,7 +37,8 @@ public class HTLCImpl implements HTLCFace {
             System.out.println("condition: interval > 300");
         } else {
             BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
-            BigInteger t0 = now.add(BigInteger.valueOf(interval + interval));
+            int doubleInterval = interval * 2;
+            BigInteger t0 = now.add(BigInteger.valueOf(doubleInterval));
             BigInteger t1 = now.add(BigInteger.valueOf(interval));
             System.out.println("timelock0: " + t0);
             System.out.println("timelock1: " + t1);
