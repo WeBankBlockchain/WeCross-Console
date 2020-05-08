@@ -6,12 +6,13 @@ import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.JlineUtils;
 import com.webank.wecross.console.common.WelcomeInfo;
-import com.webank.wecross.console.exception.ConsoleException;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
+import com.webank.wecross.console.routine.HTLCFace;
 import com.webank.wecross.console.rpc.RPCFace;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,30 +22,33 @@ import org.jline.keymap.KeyMap;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Shell {
+    private static Logger logger = LoggerFactory.getLogger(Shell.class);
 
     private static RPCFace rpcFace;
 
+    private static HTLCFace htlcFace;
+
     public static void main(String[] args) {
 
-        LineReader lineReader = null;
-        GroovyShell groovyShell = null;
-        MockWeCross mockWeCross = null;
-        ObjectMapper mapper = null;
+        LineReader lineReader;
+        GroovyShell groovyShell;
+        MockWeCross mockWeCross;
+        ObjectMapper mapper;
         Set<String> resourceVars = new HashSet<>();
         Set<String> pathVars = new HashSet<>();
         Map<String, String> pathMaps = new HashMap<>();
-        Map<String, String> serverMaps = new HashMap<>();
-        ConsoleInitializer consoleInitializer = new ConsoleInitializer();
-
-        List<Completer> completers = new ArrayList<Completer>();
+        Initializer initializer = new Initializer();
+        List<Completer> completers;
 
         try {
-            consoleInitializer.init("");
-            rpcFace = consoleInitializer.getRpcFace();
-            serverMaps = consoleInitializer.getWeCrossServers().getServers();
-        } catch (ConsoleException e) {
+            initializer.init();
+            rpcFace = initializer.getRpcFace();
+            htlcFace = initializer.getHtlcFace();
+        } catch (WeCrossConsoleException e) {
             System.out.println(e.getMessage());
             return;
         }
@@ -54,12 +58,10 @@ public class Shell {
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             Binding binding = new Binding();
             groovyShell = new GroovyShell(binding);
-            mockWeCross = new MockWeCross(consoleInitializer.getWeCrossRPC());
+            mockWeCross = new MockWeCross(initializer.getWeCrossRPC());
             groovyShell.setProperty("WeCross", mockWeCross);
 
-            completers =
-                    JlineUtils.getCompleters(
-                            rpcFace.getPaths(), resourceVars, pathVars, serverMaps);
+            completers = JlineUtils.getCompleters(rpcFace.getPaths(), resourceVars, pathVars);
             lineReader = JlineUtils.getLineReader(completers);
 
             KeyMap<org.jline.reader.Binding> keymap = lineReader.getKeyMaps().get(LineReader.MAIN);
@@ -74,17 +76,13 @@ public class Shell {
         WelcomeInfo.welcome();
 
         while (true) {
+            logger.info(Arrays.toString(args));
             try {
 
-                String prompt = "[" + consoleInitializer.getCurrentServer().getKey() + "]> ";
+                String prompt = "[WeCross]> ";
                 String request = lineReader.readLine(prompt);
 
-                if (lineReader == null) {
-                    System.out.println("Console can not read commands.");
-                    break;
-                }
-
-                String[] params = null;
+                String[] params;
                 params = ConsoleUtils.tokenizeCommand(request);
                 if (params.length < 1) {
                     System.out.print("");
@@ -94,7 +92,10 @@ public class Shell {
                     System.out.print("");
                     continue;
                 }
-                if ("quit".equals(params[0]) || "q".equals(params[0])) {
+                if ("quit".equals(params[0])
+                        || "q".equals(params[0])
+                        || "exit".equals(params[0])
+                        || "e".equals(params[0])) {
                     if (HelpInfo.promptNoParams(params, "q")) {
                         continue;
                     } else if (params.length > 2) {
@@ -110,41 +111,14 @@ public class Shell {
                             WelcomeInfo.help(params);
                             break;
                         }
-                    case "currentServer":
+                    case "supportedStubs":
                         {
-                            if (HelpInfo.promptNoParams(params, "currentServer")) {
-                                continue;
-                            } else if (params.length > 2) {
-                                HelpInfo.promptHelp("currentServer");
-                                continue;
-                            }
-                            System.out.println(consoleInitializer.getCurrentServer());
-                            System.out.println();
+                            rpcFace.supportedStubs(params);
                             break;
                         }
-                    case "listServers":
+                    case "listAccounts":
                         {
-                            if (HelpInfo.promptNoParams(params, "listServers")) {
-                                continue;
-                            }
-                            System.out.println(consoleInitializer.getWeCrossServers().getServers());
-                            System.out.println();
-                            break;
-                        }
-                    case "switch":
-                        {
-                            if (rpcFace.switchServer(params)) {
-
-                                JlineUtils.updateCompleters(
-                                        completers,
-                                        rpcFace.getPaths(),
-                                        resourceVars,
-                                        pathVars,
-                                        serverMaps);
-                                consoleInitializer.init(params[1]);
-                                mockWeCross = new MockWeCross(consoleInitializer.getWeCrossRPC());
-                                groovyShell.setProperty("WeCross", mockWeCross);
-                            }
+                            rpcFace.listAccounts(params);
                             break;
                         }
                     case "listLocalResources":
@@ -152,7 +126,7 @@ public class Shell {
                             if (HelpInfo.promptNoParams(params, "listLocalResources")) {
                                 continue;
                             }
-                            String listParams[] = {"list", "1"};
+                            String[] listParams = {"listResources", "1"};
                             rpcFace.listResources(listParams);
                             break;
                         }
@@ -161,7 +135,7 @@ public class Shell {
                             if (HelpInfo.promptNoParams(params, "listResources")) {
                                 continue;
                             }
-                            String listParams[] = {"list", "0"};
+                            String[] listParams = {"listResources", "0"};
                             rpcFace.listResources(listParams);
                             break;
                         }
@@ -170,39 +144,14 @@ public class Shell {
                             rpcFace.getResourceStatus(params, pathMaps);
                             break;
                         }
-                    case "getData":
+                    case "detail":
                         {
-                            rpcFace.getData(params, pathMaps);
-                            break;
-                        }
-                    case "setData":
-                        {
-                            rpcFace.setData(params, pathMaps);
+                            rpcFace.getResourceInfo(params, pathMaps);
                             break;
                         }
                     case "call":
                         {
                             rpcFace.call(params, pathMaps);
-                            break;
-                        }
-                    case "callInt":
-                        {
-                            rpcFace.callInt(params, pathMaps);
-                            break;
-                        }
-                    case "callIntArray":
-                        {
-                            rpcFace.callIntArray(params, pathMaps);
-                            break;
-                        }
-                    case "callString":
-                        {
-                            rpcFace.callString(params, pathMaps);
-                            break;
-                        }
-                    case "callStringArray":
-                        {
-                            rpcFace.callStringArray(params, pathMaps);
                             break;
                         }
                     case "send":
@@ -211,24 +160,24 @@ public class Shell {
                             rpcFace.sendTransaction(params, pathMaps);
                             break;
                         }
-                    case "sendTransactionInt":
+                    case "genTimelock":
                         {
-                            rpcFace.sendTransactionInt(params, pathMaps);
+                            htlcFace.genTimelock(params);
                             break;
                         }
-                    case "sendTransactionIntArray":
+                    case "genSecretAndHash":
                         {
-                            rpcFace.sendTransactionIntArray(params, pathMaps);
+                            htlcFace.genSecretAndHash(params);
                             break;
                         }
-                    case "sendTransactionString":
+                    case "newHTLCTransferProposal":
                         {
-                            rpcFace.sendTransactionString(params, pathMaps);
+                            htlcFace.newContract(params, pathMaps);
                             break;
                         }
-                    case "sendTransactionStringArray":
+                    case "checkTransferStatus":
                         {
-                            rpcFace.sendTransactionStringArray(params, pathMaps);
+                            htlcFace.checkTransferStatus(params, pathMaps);
                             break;
                         }
                     default:
@@ -241,30 +190,19 @@ public class Shell {
                                     JlineUtils.addVarCompleters(
                                             completers, thisResourceVars, thisPathVars);
                                 }
-                                // System.out.println(thisPathVars);
-                                // System.out.println(thisResourceVars);
-                                String thisRequest = ConsoleUtils.parseRequest(params);
-                                // System.out.println(thisRequest);
-                                Object result = groovyShell.evaluate(thisRequest);
-
-                                // Object result = groovyShell.evaluate(request);
-                                if (result != null) {
-                                    System.out.println(
-                                            "Result ==> " + mapper.writeValueAsString(result));
-                                    System.out.println();
-                                } else {
-                                    System.out.println();
-                                }
-                            } catch (ConsoleException e) {
+                                logger.info("Origin command: {}", Arrays.toString(params));
+                                String newCommand = ConsoleUtils.parseCommand(params);
+                                logger.info("Groovy command: {}", newCommand);
+                                mapper.writeValueAsString(groovyShell.evaluate(newCommand));
+                            } catch (WeCrossConsoleException e) {
                                 System.out.println(e.getMessage());
-                                System.out.println();
                             } catch (Exception e) {
                                 System.out.println("Error: unsupported command.");
-                                System.out.println();
                             }
                             break;
                         }
                 }
+                System.out.println();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 System.out.println();

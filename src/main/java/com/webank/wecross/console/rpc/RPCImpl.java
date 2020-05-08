@@ -1,44 +1,28 @@
 package com.webank.wecross.console.rpc;
 
-import com.webank.wecross.console.common.CallResult;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
-import com.webank.wecross.console.common.WeCrossServers;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
-import com.webank.wecrosssdk.rpc.common.CallContractResult;
+import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
-import com.webank.wecrosssdk.rpc.common.WeCrossResource;
 import com.webank.wecrosssdk.rpc.methods.Response;
-import com.webank.wecrosssdk.rpc.methods.response.GetDataResponse;
-import com.webank.wecrosssdk.rpc.methods.response.ResourcesResponse;
-import com.webank.wecrosssdk.rpc.methods.response.SetDataResponse;
+import com.webank.wecrosssdk.rpc.methods.response.AccountResponse;
+import com.webank.wecrosssdk.rpc.methods.response.ResourceDetailResponse;
+import com.webank.wecrosssdk.rpc.methods.response.ResourceResponse;
+import com.webank.wecrosssdk.rpc.methods.response.StubResponse;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
-import com.webank.wecrosssdk.rpc.service.WeCrossRPCService;
-import com.webank.wecrosssdk.rpc.service.WeCrossService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RPCImpl implements RPCFace {
 
-    private WeCrossServers weCrossServers;
-    private Pair<String, String> currentServer;
     private WeCrossRPC weCrossRPC;
 
     private Logger logger = LoggerFactory.getLogger(RPCImpl.class);
-
-    @Override
-    public void setWeCrossServers(WeCrossServers weCrossServers) {
-        this.weCrossServers = weCrossServers;
-    }
-
-    @Override
-    public void setCurrentServer(Pair<String, String> currentServer) {
-        this.currentServer = currentServer;
-    }
 
     @Override
     public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
@@ -46,28 +30,56 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public Boolean switchServer(String[] params) {
-        if (params.length != 2) {
-            HelpInfo.promptHelp("switchServer");
-            return false;
+    public List<String> getPaths() {
+        List<String> paths = new ArrayList<>();
+        try {
+            ResourceResponse response = weCrossRPC.listResources(false).send();
+            Resources resources = response.getResources();
+            for (ResourceDetail resourceInfo : resources.getResourceDetails()) {
+                paths.add(resourceInfo.getPath());
+            }
+        } catch (Exception e) {
+            logger.warn(
+                    "Get paths failed when starting console: {}, exception: {}", e.getMessage(), e);
         }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.switchHelp();
-            return false;
+        return paths;
+    }
+
+    @Override
+    public void supportedStubs(String[] params) throws Exception {
+        if (params.length != 1) {
+            HelpInfo.supportedStubsHelp();
+            return;
         }
 
-        String option = ConsoleUtils.parseString(params[1]);
-        if (!weCrossServers.getServers().keySet().contains(option)) {
-            System.out.println("Please provide a valid option");
-            HelpInfo.switchHelp();
-            return false;
+        StubResponse stubResponse = weCrossRPC.supportedStubs().send();
+        if (stubResponse.getErrorCode() != 0) {
+            ConsoleUtils.printJson(stubResponse.toString());
+        } else {
+            System.out.println(Arrays.toString(stubResponse.getStubs().getStubTypes()));
+        }
+        logger.info("supportedStubs response: {}", stubResponse);
+    }
+
+    @Override
+    public void listAccounts(String[] params) throws Exception {
+        if (params.length != 1) {
+            HelpInfo.listAccountsHelp();
+            return;
         }
 
-        String server = weCrossServers.getServers().get(option);
-        currentServer = new Pair<>(option, server);
-        WeCrossService weCrossService = new WeCrossRPCService(server);
-        weCrossRPC = WeCrossRPC.init(weCrossService);
-        return true;
+        AccountResponse response = weCrossRPC.listAccounts().send();
+        if (response.getErrorCode() != 0) {
+            ConsoleUtils.printJson(response.toString());
+        } else {
+            List<Map<String, String>> accountInfos = response.getAccounts().getAccountInfos();
+            for (Map<String, String> accountInfo : accountInfos) {
+                System.out.println(
+                        "name: " + accountInfo.get("name") + ", type: " + accountInfo.get("type"));
+            }
+            System.out.println("total: " + accountInfos.size());
+        }
+        logger.info("list acc response: {}", response);
     }
 
     @Override
@@ -78,26 +90,30 @@ public class RPCImpl implements RPCFace {
         }
         String option = params[1];
         if ("-h".equals(option) || "--help".equals(option)) {
-            HelpInfo.listHelp();
+            HelpInfo.listResourcesHelp();
             return;
         }
 
-        Boolean ignoreRemote = false;
-        if (option.equals("1")) {
-            ignoreRemote = true;
-        } else if (option.equals("0")) {
-            ignoreRemote = false;
+        boolean ignoreRemote = option.equals("1");
+
+        ResourceResponse resourcesResponse = weCrossRPC.listResources(ignoreRemote).send();
+        if (resourcesResponse.getErrorCode() != 0) {
+            ConsoleUtils.printJson(resourcesResponse.toString());
         } else {
-            System.out.println("Please provide a valid option");
-            HelpInfo.listHelp();
-            return;
+            ResourceDetail[] resourceDetails =
+                    resourcesResponse.getResources().getResourceDetails();
+            for (ResourceDetail resourceDetail : resourceDetails) {
+                System.out.println(
+                        "path: "
+                                + resourceDetail.getPath()
+                                + ", type: "
+                                + resourceDetail.getStubType()
+                                + ", distance: "
+                                + resourceDetail.getDistance());
+            }
+            System.out.println("total: " + resourceDetails.length);
         }
-        ResourcesResponse resourcesResponse = weCrossRPC.list(ignoreRemote).send();
-        if (resourcesResponse.getResult() != 0) {
-            System.out.println(resourcesResponse.toString());
-            return;
-        }
-        ConsoleUtils.printJson(resourcesResponse.getResources().toString());
+        logger.info("listResources response: {}", resourcesResponse);
     }
 
     @Override
@@ -111,124 +127,39 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.statusHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
+        String path = ConsoleUtils.parsePath(params, pathMaps);
+        if (path == null) return;
+
         Response response = weCrossRPC.status(path).send();
-        if (response.getResult() != 0) {
-            System.out.println(response.toString());
-            return;
+        if (response.getErrorCode() != 0) {
+            ConsoleUtils.printJson(response.toString());
+        } else {
+            System.out.println(response.getData());
         }
-        System.out.println("Result ==> " + response.getData());
-        System.out.println();
+        logger.info("getResourceStatus response: {}", response);
     }
 
     @Override
-    public void getData(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("getData");
+    public void getResourceInfo(String[] params, Map<String, String> pathMaps) throws Exception {
+        if (params.length != 2) {
+            HelpInfo.promptHelp("info");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.getDataHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("getData");
+            HelpInfo.detailHelp();
             return;
         }
 
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.getDataHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
+        String path = ConsoleUtils.parsePath(params, pathMaps);
+        if (path == null) return;
+
+        ResourceDetailResponse response = weCrossRPC.detail(path).send();
+        if (response.getErrorCode() != 0) {
+            ConsoleUtils.printJson(response.toString());
+        } else {
+            ConsoleUtils.printJson(response.getResourceDetail().toString());
         }
-        String key = ConsoleUtils.parseString(params[2]);
-
-        GetDataResponse getDataResponse = null;
-
-        getDataResponse = weCrossRPC.getData(path, key).send();
-
-        if (getDataResponse.getResult() != 0) {
-            System.out.println(getDataResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        String result = getDataResponse.getStatusAndValue().toString();
-        ConsoleUtils.printJson(result);
-    }
-
-    @Override
-    public void setData(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("setData");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.setDataHelp();
-            return;
-        }
-        if (params.length < 4) {
-            HelpInfo.promptHelp("setData");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.setDataHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-        String key = ConsoleUtils.parseString(params[2]);
-        String value = ConsoleUtils.parseString(params[3]);
-
-        SetDataResponse setDataResponse = null;
-
-        setDataResponse = weCrossRPC.setData(path, key, value).send();
-
-        if (setDataResponse.getResult() != 0) {
-            System.out.println(setDataResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        String result = setDataResponse.getStatus().toString();
-        ConsoleUtils.printJson(result);
-    }
-
-    @Override
-    public List<String> getPaths() {
-        List<String> paths = new ArrayList<>();
-        if (weCrossRPC == null) {
-            paths.add("");
-            return paths;
-        }
-
-        try {
-            ResourcesResponse resourcesResponse = weCrossRPC.list(false).send();
-            Resources resources = resourcesResponse.getResources();
-            for (WeCrossResource weCrossResource : resources.getResourceList()) {
-                paths.add(weCrossResource.getPath());
-            }
-        } catch (Exception e) {
-            paths.add("");
-            logger.warn("Get paths failed when starting console: {}", e.getMessage());
-        }
-        return paths;
+        logger.info("getResourceInfo response: {}", response);
     }
 
     @Override
@@ -246,191 +177,28 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.callHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
+        String path = ConsoleUtils.parsePath(params, pathMaps);
+        if (path == null) return;
 
-        String retTypes[] = ConsoleUtils.parseRetTypes(params[2]);
-        if (retTypes[0].equals("Void")) {
-            retTypes = null;
-        }
+        String accountName = params[2];
+        String method = params[3];
 
-        String method = ConsoleUtils.parseString(params[3]);
-
-        TransactionResponse transactionResponse = null;
+        TransactionResponse response;
         if (params.length == 4) {
-            transactionResponse = weCrossRPC.call(path, retTypes, method).send();
+            // no param given means: null (not String[0])
+            response = weCrossRPC.call(path, accountName, method, null).send();
         } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 4);
-            transactionResponse = weCrossRPC.call(path, retTypes, method, args).send();
+            response =
+                    weCrossRPC
+                            .call(
+                                    path,
+                                    accountName,
+                                    method,
+                                    ConsoleUtils.parseAgrs(
+                                            Arrays.copyOfRange(params, 4, params.length)))
+                            .send();
         }
-
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        String result = transactionResponse.getCallContractResult().toString();
-        ConsoleUtils.printJson(result);
-    }
-
-    @Override
-    public void callInt(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("callInt");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.callIntHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("callInt");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.callHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.callInt(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.callInt(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
-    }
-
-    @Override
-    public void callIntArray(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("callIntArray");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.callIntArrayHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("callIntArray");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.callHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.callIntArray(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.callIntArray(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
-    }
-
-    @Override
-    public void callString(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("callString");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.callStringHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("callString");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.callHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.callString(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.callString(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
-    }
-
-    @Override
-    public void callStringArray(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("callStringArray");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.callStringArrayHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("callStringArray");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.callHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.callStringArray(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.callStringArray(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
+        ConsoleUtils.printTransactionResponse(response, true);
     }
 
     @Override
@@ -448,210 +216,27 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.sendTransactionHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
+        String path = ConsoleUtils.parsePath(params, pathMaps);
+        if (path == null) return;
 
-        String retTypes[] = ConsoleUtils.parseRetTypes(params[2]);
-        if (retTypes[0].equals("Void")) {
-            retTypes = null;
-        }
-        String method = ConsoleUtils.parseString(params[3]);
+        String accountName = params[2];
+        String method = params[3];
 
-        TransactionResponse transactionResponse = null;
+        TransactionResponse response;
         if (params.length == 4) {
-            transactionResponse = weCrossRPC.sendTransaction(path, retTypes, method).send();
+            // no param given means: null (not String[0])
+            response = weCrossRPC.sendTransaction(path, accountName, method, null).send();
         } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 4);
-            transactionResponse = weCrossRPC.sendTransaction(path, retTypes, method, args).send();
+            response =
+                    weCrossRPC
+                            .sendTransaction(
+                                    path,
+                                    accountName,
+                                    method,
+                                    ConsoleUtils.parseAgrs(
+                                            Arrays.copyOfRange(params, 4, params.length)))
+                            .send();
         }
-
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        String result = transactionResponse.getCallContractResult().toString();
-        ConsoleUtils.printJson(result);
-    }
-
-    @Override
-    public void sendTransactionInt(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("sendTransactionInt");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.sendTransactionIntHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("sendTransactionInt");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.sendTransactionHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.sendTransactionInt(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.sendTransactionInt(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
-    }
-
-    @Override
-    public void sendTransactionIntArray(String[] params, Map<String, String> pathMaps)
-            throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("sendTransactionIntArray");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.sendTransactionIntArrayHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("sendTransactionIntArray");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.sendTransactionHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.sendTransactionIntArray(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.sendTransactionIntArray(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
-    }
-
-    @Override
-    public void sendTransactionString(String[] params, Map<String, String> pathMaps)
-            throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("sendTransactionString");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.sendTransactionStringHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("sendTransactionString");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.sendTransactionHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.sendTransactionString(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.sendTransactionString(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
-    }
-
-    @Override
-    public void sendTransactionStringArray(String[] params, Map<String, String> pathMaps)
-            throws Exception {
-        if (params.length == 1) {
-            HelpInfo.promptHelp("sendTransactionStringArray");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.sendTransactionStringArrayHelp();
-            return;
-        }
-        if (params.length < 3) {
-            HelpInfo.promptHelp("sendTransactionStringArray");
-            return;
-        }
-
-        String path = ConsoleUtils.parseString(params[1]);
-        if (!ConsoleUtils.isValidPath(path)) {
-            if (!ConsoleUtils.isValidPathVar(params[1], pathMaps)) {
-                System.out.println("Please provide a valid path");
-                HelpInfo.sendTransactionHelp();
-                return;
-            }
-            path = pathMaps.get(params[1]);
-        }
-
-        String method = ConsoleUtils.parseString(params[2]);
-
-        TransactionResponse transactionResponse = null;
-        if (params.length == 3) {
-            transactionResponse = weCrossRPC.sendTransactionStringArray(path, method).send();
-        } else {
-            Object args[] = ConsoleUtils.parseArgs(params, 3);
-            transactionResponse = weCrossRPC.sendTransactionStringArray(path, method, args).send();
-        }
-
-        handleTransactionResponse(transactionResponse);
-    }
-
-    private void handleTransactionResponse(TransactionResponse transactionResponse) {
-        if (transactionResponse.getResult() != 0) {
-            System.out.println(transactionResponse.toString());
-            System.out.println();
-            return;
-        }
-
-        CallContractResult callContractResult = transactionResponse.getCallContractResult();
-        CallResult callResult =
-                new CallResult(
-                        callContractResult.getErrorCode(), callContractResult.getErrorMessage());
-        if (callContractResult.getErrorCode() == 0) {
-            callResult.setResult(callContractResult.getResult()[0]);
-            callResult.setHash(callContractResult.getHash());
-        }
-        ConsoleUtils.printJson(callResult.toString());
+        ConsoleUtils.printTransactionResponse(response, false);
     }
 }

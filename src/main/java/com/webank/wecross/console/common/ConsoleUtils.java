@@ -1,7 +1,9 @@
 package com.webank.wecross.console.common;
 
-import com.webank.wecross.console.exception.ConsoleException;
-import com.webank.wecross.console.exception.Status;
+import com.webank.wecross.console.exception.ErrorCode;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
+import com.webank.wecrosssdk.common.StatusCode;
+import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
@@ -15,62 +17,11 @@ import java.util.StringTokenizer;
 
 public class ConsoleUtils {
 
-    public static void checkServer(String server) throws ConsoleException {
-        String errorMessage = "Illegal ip:port: " + server;
-
-        if (server == null
-                || server.length() == 0
-                || server.charAt(0) == '.'
-                || server.endsWith(".")) {
-            throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-        }
-
-        String ipUnits[] = server.split("\\.");
-        if (ipUnits.length != 4) {
-            throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-        }
-
-        for (int i = 0; i < 3; ++i) {
-            try {
-                int ipUnit = Integer.parseInt(ipUnits[i]);
-                if (ipUnit < 0 || ipUnit > 255) {
-                    throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-                }
-            } catch (NumberFormatException e) {
-                throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-            }
-        }
-
-        String ipAndPort[] = ipUnits[3].split(":");
-        if (ipAndPort.length != 2) {
-            throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-        }
-
-        try {
-            int ipUnit = Integer.parseInt(ipAndPort[0]);
-            if (ipUnit < 0 || ipUnit > 255) {
-                throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-            }
-        } catch (NumberFormatException e) {
-            throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-        }
-
-        try {
-            int port = Integer.parseInt(ipAndPort[1]);
-            if (port < 0 || port > 65535) {
-                throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-            }
-        } catch (NumberFormatException e) {
-            throw new ConsoleException(Status.ILLEGAL_SERVER, errorMessage);
-        }
-    }
-
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
         }
-
-        String unit[] = path.split("\\.");
+        String[] unit = path.split("\\.");
         if (unit.length == 3) {
             String templateUrl = "http://127.0.0.1:8080/" + path.replace('.', '/');
             try {
@@ -83,61 +34,42 @@ public class ConsoleUtils {
         return false;
     }
 
-    public static String[] parseRetTypes(String retTypes) {
-        String[] types = retTypes.split(",");
-        String[] result = new String[types.length];
-        int i = 0;
-        for (String type : types) {
-            result[i++] = type.trim();
-        }
-        return result;
-    }
-
     public static boolean isValidPathVar(String path, Map<String, String> pathMaps) {
-        if (pathMaps.containsKey(path)) {
-            return true;
-        }
-        return false;
+        return pathMaps.containsKey(path);
     }
-
     // parse variables and save path variables
     public static Boolean parseVars(
-            String params[],
+            String[] params,
             Set<String> resourceVars,
             Set<String> pathVars,
             Map<String, String> pathMaps) {
         int length = params.length;
-        if (length < 3 || params[0].contains("\"") || params[0].contains("\'")) {
+        if (length < 3 || params[0].contains("\"") || params[0].contains("'")) {
             return false;
         }
-
         if (params[1].equals("=")) {
             if (params[2].equals("WeCross.getResource")) {
-                if (length != 4) {
-                    if (length > 5 || !params[4].equals(" ")) {
-                        return false;
-                    }
+                if (length != 5) {
+                    return false;
                 }
                 if (pathMaps.keySet().contains(params[3])) {
                     resourceVars.add(params[0]);
                     return true;
                 }
-
-                String out = parseString(params[3]);
-                if (ConsoleUtils.isValidPath(out)) {
+                String path = parseString(params[3]);
+                if (ConsoleUtils.isValidPath(path)) {
+                    pathVars.add(path);
                     resourceVars.add(params[0]);
                     return true;
                 }
             } else {
                 if (length != 3) {
-                    if (length > 4 || !params[3].equals(" ")) {
-                        return false;
-                    }
+                    return false;
                 }
-                String out = parseString(params[2]);
-                if (ConsoleUtils.isValidPath(out)) {
+                String path = parseString(params[2]);
+                if (ConsoleUtils.isValidPath(path)) {
                     pathVars.add(params[0]);
-                    pathMaps.put(params[0], out);
+                    pathMaps.put(params[0], path);
                     return true;
                 }
             }
@@ -158,31 +90,12 @@ public class ConsoleUtils {
         return input;
     }
 
-    // parse args as string or int
-    public static Object[] parseArgs(String params[], int start) throws ConsoleException {
-        int length = params.length;
-        Object ret[] = new Object[length - start];
-        int i = 0, j = start;
-        for (; j < length; ++j) {
-            int len = params[j].length();
-            if (params[j].charAt(0) == '\"' && params[j].charAt(len - 1) == '\"'
-                    || params[j].charAt(0) == '\'' && params[j].charAt(len - 1) == '\'') {
-                // as string
-                ret[i++] = params[j].substring(1, len - 1);
-            } else {
-                // as int
-                try {
-                    ret[i++] = Integer.parseInt(params[j]);
-                } catch (Exception e) {
-                    String errorMessage =
-                            "Cannot convert "
-                                    + params[j]
-                                    + " to int\nAllowed: -2147483648 to 2147483647\n";
-                    throw new ConsoleException(Status.ILLEGAL_PARAM, errorMessage);
-                }
-            }
+    public static String[] parseAgrs(String[] args) {
+        String[] result = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
+            result[i] = parseString(args[i]);
         }
-        return ret;
+        return result;
     }
 
     public static void printJson(String jsonStr) {
@@ -243,14 +156,26 @@ public class ConsoleUtils {
                     if (!(current == " ".charAt(0))) sb.append(current);
             }
         }
-
         return sb.toString();
     }
 
     private static void addIndentBlank(StringBuilder sb, int indent) {
         for (int i = 0; i < indent; i++) {
-            sb.append("    ");
+            sb.append(" ");
         }
+    }
+
+    public static String parsePath(String[] params, Map<String, String> pathMaps) {
+        String path = parseString(params[1]);
+        if (!isValidPath(path)) {
+            if (!isValidPathVar(params[1], pathMaps)) {
+                System.out.println("Please provide a valid path");
+                HelpInfo.statusHelp();
+                return null;
+            }
+            path = pathMaps.get(params[1]);
+        }
+        return path;
     }
 
     private static class CommandTokenizer extends StreamTokenizer {
@@ -315,100 +240,73 @@ public class ConsoleUtils {
                 : tokens2.toArray(new String[tokens2.size()]);
     }
 
-    private static Boolean isGrooveyCommand(String command) {
-        List<String> grovvyCommands =
-                Arrays.asList(
-                        ".callInt",
-                        ".callIntArray",
-                        ".callString",
-                        ".callStringArray",
-                        ".sendTransactionInt",
-                        ".sendTransactionIntArray",
-                        ".sendTransactionString",
-                        ".sendTransactionStringArray");
-        for (String grooveyCommand : grovvyCommands) {
-            if (command.endsWith(grooveyCommand)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static String parseRequest(String[] params) throws ConsoleException {
-
-        String result = "";
-        Boolean isArgs = false;
+    public static String parseCommand(String[] params) throws WeCrossConsoleException {
+        StringBuilder result = new StringBuilder();
+        boolean isArgs = false;
         int length = params.length;
         int start = 0;
-        int startArgs = 1;
         if (length != 0) {
             if (params[0].endsWith(".call") || params[0].endsWith(".sendTransaction")) {
                 isArgs = true;
                 if (length < 2) {
-                    throw new ConsoleException(Status.TYPES_MISSING, "Types is missing");
+                    throw new WeCrossConsoleException(
+                            ErrorCode.METHOD_MISSING, "Method is missing");
                 }
-                if (length < 3) {
-                    throw new ConsoleException(Status.METHOD_MISSING, "Method is missing");
-                }
-
-                params[1] = "\"" + parseString(params[1]) + "\"";
-                params[2] = "\"" + parseString(params[2]) + "\"";
                 start = 1;
-                startArgs = 3;
-                result = params[0] + " ";
-            } else if (isGrooveyCommand(params[0])) {
-                isArgs = true;
-                if (length < 2) {
-                    throw new ConsoleException(Status.METHOD_MISSING, "Method is missing");
-                }
-
-                params[1] = "\"" + parseString(params[1]) + "\"";
-                start = 1;
-                startArgs = 2;
-                result = params[0] + " ";
-            } else if (params[0].endsWith(".getData") || params[0].endsWith(".setData")) {
-                isArgs = true;
-                start = 1;
-                startArgs = 1;
-                result = params[0] + " ";
-            } else if (params[0].endsWith(".status")) {
+                result = new StringBuilder(params[0] + " ");
+            } else if (params[0].endsWith(".status") || params[0].endsWith(".detail")) {
                 if (length != 1) {
-                    throw new ConsoleException(Status.INTERNAL_ERROR, "Redundant parameters");
+                    throw new WeCrossConsoleException(
+                            ErrorCode.ILLEGAL_PARAM, "Redundant parameters");
                 }
-                result = params[0] + "()";
-                return result;
+                result = new StringBuilder(params[0] + "()");
+                return result.toString();
+            } else if (length > 3 && params[2].equals("WeCross.getResource")) {
+                if (length != 5) {
+                    throw new WeCrossConsoleException(
+                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path] [accountName]");
+                }
+                result = new StringBuilder(params[0] + " " + params[1] + " " + params[2] + " ");
+                String path = params[3];
+                if (ConsoleUtils.isValidPath(parseString(params[3]))) {
+                    path = "\"" + path + "\"";
+                }
+                result.append(path).append(",").append("\"").append(params[4]).append("\"");
+                return result.toString();
             }
-
             for (; start < length; ++start) {
                 String temp = parseString(params[start]);
                 if (!isArgs && ConsoleUtils.isValidPath(temp)) {
-                    result += ("\"" + temp + "\"" + " ");
+                    result.append("\"").append(temp).append("\"").append(" ");
                 } else if (isArgs) {
-                    // args1 args2 ...
-                    if (start >= startArgs) {
-                        if (temp.equals(params[start])) {
-                            // as int
-                            try {
-                                Integer.parseInt(temp);
-                            } catch (Exception e) {
-                                String errorMessage =
-                                        "Cannot convert "
-                                                + temp
-                                                + " to int\nAllowed: -2147483648 to 2147483647\n";
-                                throw new ConsoleException(Status.ILLEGAL_PARAM, errorMessage);
-                            }
-                        }
-                    }
-                    result += (params[start] + ",");
+                    result.append("\"").append(parseString(params[start])).append("\"").append(",");
                 } else {
-                    result += (params[start] + " ");
+                    result.append(params[start]).append(" ");
                 }
             }
-
-            result = result.substring(0, result.length() - 1);
+            result = new StringBuilder(result.substring(0, result.length() - 1));
         }
-        //        System.out.println(result);
-        return result;
+        // System.out.println(result);
+        return result.toString();
+    }
+
+    public static void printTransactionResponse(TransactionResponse response, boolean isCall) {
+        if (response == null) {
+            System.out.println("Response: null");
+        } else if (response.getErrorCode() != StatusCode.SUCCESS) {
+            printJson(response.toString());
+        } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
+            printJson(response.getReceipt().toString());
+        } else {
+            if (!isCall) {
+                System.out.println("Txhash  : " + response.getReceipt().getHash());
+                System.out.println("BlockNum: " + response.getReceipt().getBlockNumber());
+                System.out.println(
+                        "Result  : " + Arrays.toString(response.getReceipt().getResult()));
+            } else {
+                System.out.println("Result: " + Arrays.toString(response.getReceipt().getResult()));
+            }
+        }
     }
 
     public static void singleLine() {

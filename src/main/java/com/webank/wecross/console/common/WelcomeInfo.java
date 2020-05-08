@@ -4,7 +4,7 @@ public class WelcomeInfo {
 
     public static void welcome() {
         ConsoleUtils.doubleLine();
-        System.out.println("Welcome to WeCross console(" + ConsoleVersion.Version + ")!");
+        System.out.println("Welcome to WeCross console(" + Version.Version + ")!");
         System.out.println("Type 'help' or 'h' for help. Type 'quit' or 'q' to quit console.");
         System.out.println();
         ConsoleUtils.doubleLine();
@@ -21,38 +21,25 @@ public class WelcomeInfo {
         ConsoleUtils.singleLine();
         StringBuilder sb = new StringBuilder();
         sb.append("quit                               Quit console.\n");
-        sb.append("currentServer                      Show currently connected WeCross server.\n");
-        sb.append("listServers                        List all configured WeCross servers.\n");
-        sb.append("switch                             Switch to a specific WeCross server.\n");
+        sb.append("supportedStubs                     List supported stubs of WeCross router.\n");
+        sb.append(
+                "listAccounts                       List all accounts stored in WeCross router.\n");
         sb.append(
                 "listLocalResources                 List local resources configured by WeCross server.\n");
         sb.append(
                 "listResources                      List all resources including remote resources.\n");
         sb.append("status                             Check if the resource exists.\n");
-        sb.append("getData                            Get data from contract.\n");
-        sb.append("setData                            Set data for contract.\n");
+        sb.append("detail                             Get resource information.\n");
         sb.append("call                               Call constant method of smart contract.\n");
         sb.append(
-                "callInt                            Call constant method of smart contract with int returned.\n");
-        sb.append(
-                "callIntArray                       Call constant method of smart contract with int array returned.\n");
-        sb.append(
-                "callString                         Call constant method of smart contract with string returned.\n");
-        sb.append(
-                "callStringArray                    Call constant method of smart contract with string array returned.\n");
-        sb.append(
                 "sendTransaction                    Call non-constant method of smart contract.\n");
+        sb.append("genTimelock                        Generate two valid timelocks.\n");
+        sb.append("genSecretAndHash                   Generate a secret and its hash.\n");
+        sb.append("newHTLCTransferProposal            Create a htlc transfer proposal .\n");
+        sb.append("checkTransferStatus                Check htlc transfer status by hash.\n");
         sb.append(
-                "sendTransactionInt                 Call non-constant method of smart contract with int returned.\n");
-        sb.append(
-                "sendTransactionIntArray            Call non-constant method of smart contract with int array returned.\n");
-        sb.append(
-                "sendTransactionString              Call non-constant method of smart contract with string returned.\n");
-        sb.append(
-                "sendTransactionStringArray         Call non-constant method of smart contract with string array returned.\n");
-        sb.append(
-                "WeCross.getResource                Init resource by path, and assign it to a custom variable.\n");
-        sb.append("[resource].[command]               Equal to command: command [path].\n");
+                "WeCross.getResource                Init resource by path and account name, and assign it to a custom variable.\n");
+        sb.append("[resource].[command]               Equal to: command [path] [account name].\n");
 
         System.out.println(sb.toString());
         ConsoleUtils.singleLine();

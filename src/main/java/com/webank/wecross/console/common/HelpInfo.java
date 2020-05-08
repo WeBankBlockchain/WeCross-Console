@@ -30,20 +30,24 @@ public class HelpInfo {
             case "h":
                 help();
                 break;
-            case "currentServer":
-                currentServerHelp();
+            case "supportedStubs":
+                supportedStubsHelp();
                 break;
-            case "listServers":
-                listServersHelp();
+            case "listAccounts":
+                listAccountsHelp();
                 break;
             case "listLocalResources":
                 listLocalResourcesHelp();
                 break;
             case "listResources":
-                listResourcesHelp();
+                listAllResourcesHelp();
                 break;
+            case "genSecretAndHash":
+                genSecretAndHashHelp();
             case "quit":
             case "q":
+            case "exit":
+            case "e":
                 quitHelp();
                 break;
 
@@ -54,53 +58,45 @@ public class HelpInfo {
 
     public static void help() {
         ConsoleUtils.singleLine();
-        System.out.println("Provide help information.");
+        System.out.println("Provide help information");
         System.out.println("Usage: help");
         ConsoleUtils.singleLine();
     }
 
-    public static void currentServerHelp() {
+    public static void supportedStubsHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Show currently connected WeCross server..");
-        System.out.println("Usage: currentServer");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void listServersHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("List all configured WeCross servers.");
-        System.out.println("Usage: listServers");
+        System.out.println("List supported stubs of WeCross router");
+        System.out.println("Usage: supportedStubs");
         ConsoleUtils.singleLine();
     }
 
-    public static void switchHelp() {
+    public static void listAccountsHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Switch to a specific WeCross server.");
-        System.out.println("Usage: switch [server]");
-        System.out.println("server -- The key of a server in your configuration.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void listHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("List all resources configured by WeCross server.");
-        System.out.println("Usage: list [option]");
-        System.out.println("option -- 1: ignore remote source.");
-        System.out.println("option -- 0: not ignore remote source.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void listLocalResourcesHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("List local resources configured by WeCross server.");
-        System.out.println("Usage: listLocalResources ");
+        System.out.println("List all accounts stored in WeCross router");
+        System.out.println("Usage: listAccounts");
         ConsoleUtils.singleLine();
     }
 
     public static void listResourcesHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("List all resources including remote resources.");
-        System.out.println("Usage: listAllResources ");
+        System.out.println("List all resources configured by WeCross router");
+        System.out.println("Usage: list [option]");
+        System.out.println("option -- 1: ignore remote source");
+        System.out.println("option -- 0: not ignore remote source");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void listLocalResourcesHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("List local resources configured by WeCross router.");
+        System.out.println("Usage: listLocalResources ");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void listAllResourcesHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("List all resources including remote resources");
+        System.out.println("Usage: listResources");
         ConsoleUtils.singleLine();
     }
 
@@ -108,137 +104,83 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Check if the resource exists.");
         System.out.println("Usage: status [path]");
-        System.out.println("path: the path of resource in wecross server.");
+        System.out.println("path -- the path of resource in wecross router");
         ConsoleUtils.singleLine();
     }
 
-    public static void getDataHelp() {
+    public static void detailHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Get data from contract.");
-        System.out.println("Usage:  getData [path] [key]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("key:    the key of an entry");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void setDataHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Set data for contract.");
-        System.out.println("Usage:  setData [path] [key] [value]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("key:    the key of an entry");
-        System.out.println("value:  the value of an entry");
+        System.out.println("Get the resource information");
+        System.out.println("Usage: detail [path]");
         ConsoleUtils.singleLine();
     }
 
     public static void callHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Call constant method of smart contract.");
-        System.out.println("Usage:  call [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println(
-                "types:  the types of return values, support: Void, Int, IntArray, String, StringArray.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void callIntHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Call constant method of smart contract with int returned.");
-        System.out.println("Usage:  call [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void callIntArrayHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Call constant method of smart contract with int array returned.");
-        System.out.println("Usage:  call [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void callStringHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Call constant method of smart contract with string returned.");
-        System.out.println("Usage:  call [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void callStringArrayHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Call constant method of smart contract with string array returned.");
-        System.out.println("Usage:  call [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
+        System.out.println("Call constant method of smart contract");
+        System.out.println("Usage: call [path] [accountName] [method] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- choose an account to sign");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
     }
 
     public static void sendTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Call non-constant method of smart contract.");
-        System.out.println("Usage:  sendTransaction [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
+        System.out.println("Call non-constant method of smart contract");
+        System.out.println("Usage: sendTransaction [path] [accountName] [method] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- choose an account to sign");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void newContractHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Create a htlc transfer proposal");
+        System.out.println("Usage: newHTLCTransferProposal [path] [accountName] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- sender's account name");
         System.out.println(
-                "types:  the types of return values, support: Void, Int, IntArray, String, StringArray.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void sendTransactionIntHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Call non-constant method of smart contract with int returned.");
-        System.out.println("Usage:  sendTransaction [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void sendTransactionIntArrayHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Call non-constant method of smart contract with int array returned.");
-        System.out.println("Usage:  sendTransaction [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void sendTransactionStringHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Call non-constant method of smart contract with string returned.");
-        System.out.println("Usage:  sendTransaction [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
-        ConsoleUtils.singleLine();
-    }
-
-    public static void sendTransactionStringArrayHelp() {
-        ConsoleUtils.singleLine();
+                "args -- hash, secret, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1");
         System.out.println(
-                "Call non-constant method of smart contract with string array returned.");
-        System.out.println("Usage:  sendTransaction [path] [method] [...args]");
-        System.out.println("path:   the path of the contract resource in wecross server.");
-        System.out.println("method: the method in contract.");
-        System.out.println("args:   variable parameter list.");
+                "[note]: 1. only sender can create this contract, so [accountName] must be sender's account name");
+        System.out.println(
+                "[note]: 2. if you are initiator who holds the secret, [role] would be true, and *0 is your info. Else, the [role] is false and *1 is your info");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void genTimelockHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Generate two valid timelocks");
+        System.out.println("Usage: genTimelock [interval]");
+        System.out.println(
+                "interval -- [timelock0 - interval] = timelock1 = [now + interval], interval >= 300(seconds)");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void genSecretAndHashHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Generate a random secret and its hash");
+        System.out.println("Usage: genSecretAndHash");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void checkTransferStatusHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Check htlc transfer status by hash");
+        System.out.println("Usage: checkTransferStatus [path] [accountName] [hash]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("accountName -- choose an account to sign");
+        System.out.println("hash -- transfer contract-id");
         ConsoleUtils.singleLine();
     }
 
     public static void quitHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Quit console.");
+        System.out.println("Quit console");
         System.out.println("Usage: quit or exit");
         ConsoleUtils.singleLine();
     }
