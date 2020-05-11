@@ -1,17 +1,17 @@
 ### v1.0.0-rc2
 
-(2020-04-09)
+(2020-05-12)
 
 **新增**
 
 * 安全通讯：控制台和Router之间采用TLS协议通讯
 * 增加命令：
-- detail：查看资源详情信息
-- supportedStubs：查看连接Router支持的Stub插件列表
-- listAccounts：查看Router配置的账户列表
-- genSecretAndHash：跨链转账辅助命令，生成一个秘密和它的哈希
-- genTimelock：跨链转账辅助命令，生成两个合法的时间戳
-- newContract：创建一个基于哈希时间锁合约的跨链转账合同
+  * detail：查看资源详情信息
+  * supportedStubs：查看连接Router支持的Stub插件列表
+  * listAccounts：查看Router配置的账户列表
+  * genSecretAndHash：跨链转账辅助命令，生成一个秘密和它的哈希
+  * genTimelock：跨链转账辅助命令，生成两个合法的时间戳
+  * newContract：创建一个基于哈希时间锁合约的跨链转账合同
 
 **更新**
 
