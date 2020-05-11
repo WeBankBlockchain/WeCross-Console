@@ -2,7 +2,7 @@ name: Publish binaries
 
 on:
   release:
-    types: [prereleased, published, created]
+    types: [prereleased]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assemble
     - name: Pack
-      run: mv dist WeCross-Console && tar -zcvf WeCross-Console.tar.gz WeCross-Console
+      run: chmod +x dist/*.sh && mv dist WeCross-Console && tar -zcvf WeCross-Console.tar.gz WeCross-Console
     - name: Checksum
       run: md5sum WeCross-Console.tar.gz > WeCross-Console.tar.gz.md5
     - name: Upload binaries to release
