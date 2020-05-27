@@ -208,5 +208,6 @@ public class Shell {
                 System.out.println();
             }
         }
+        System.exit(0);
     }
 }
