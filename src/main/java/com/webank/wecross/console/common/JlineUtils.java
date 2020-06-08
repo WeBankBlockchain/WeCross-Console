@@ -24,7 +24,7 @@ public class JlineUtils {
                     "detail",
                     "call",
                     "sendTransaction",
-                    "newHTLCTransferProposal",
+                    "newHTLCProposal",
                     "checkTransferStatus");
 
     public static List<Completer> getCompleters(
@@ -75,7 +75,7 @@ public class JlineUtils {
                         "detail",
                         "call",
                         "sendTransaction",
-                        "newHTLCTransferProposal",
+                        "newHTLCProposal",
                         "genTimelock",
                         "checkTransferStatus",
                         "genSecretAndHash");
