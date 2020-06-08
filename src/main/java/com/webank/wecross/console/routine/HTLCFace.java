@@ -12,5 +12,5 @@ public interface HTLCFace {
 
     void checkTransferStatus(String[] params, Map<String, String> pathMaps) throws Exception;
 
-    void newContract(String[] params, Map<String, String> pathMaps) throws Exception;
+    void newProposal(String[] params, Map<String, String> pathMaps) throws Exception;
 }

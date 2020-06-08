@@ -128,7 +128,9 @@ public class RPCImpl implements RPCFace {
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) return;
+        if (path == null) {
+            return;
+        }
 
         Response response = weCrossRPC.status(path).send();
         if (response.getErrorCode() != 0) {
@@ -151,7 +153,9 @@ public class RPCImpl implements RPCFace {
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) return;
+        if (path == null) {
+            return;
+        }
 
         ResourceDetailResponse response = weCrossRPC.detail(path).send();
         if (response.getErrorCode() != 0) {
@@ -178,7 +182,9 @@ public class RPCImpl implements RPCFace {
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) return;
+        if (path == null) {
+            return;
+        }
 
         String accountName = params[2];
         String method = params[3];
@@ -217,7 +223,9 @@ public class RPCImpl implements RPCFace {
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) return;
+        if (path == null) {
+            return;
+        }
 
         String accountName = params[2];
         String method = params[3];
