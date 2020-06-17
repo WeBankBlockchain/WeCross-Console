@@ -137,10 +137,10 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void newContractHelp() {
+    public static void newProposaltHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Create a htlc transfer proposal");
-        System.out.println("Usage: newHTLCTransferProposal [path] [accountName] [...args]");
+        System.out.println("Usage: newHTLCProposal [path] [accountName] [...args]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println("accountName -- sender's account name");
         System.out.println(
