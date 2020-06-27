@@ -33,6 +33,18 @@ public class WelcomeInfo {
         sb.append("call                               Call constant method of smart contract.\n");
         sb.append(
                 "sendTransaction                    Call non-constant method of smart contract.\n");
+        sb.append(
+                "callTransaction                    Call constant method of smart contract during transaction.\n");
+        sb.append(
+                "execTransaction                    Call non-constant method of smart contract during transaction.\n");
+        sb.append("startTransaction                   Start a 2pc transaction.\n");
+        sb.append("commitTransaction                  Commit a 2pc transaction.\n");
+        sb.append("rollbackTransaction                Rollback a 2pc transaction.\n");
+        sb.append("getTransactionInfo                 Get info of specified transaction.\n");
+        sb.append("BCOSDeploy                         Deploy contract in BCOS chain.\n");
+        sb.append("BCOSRegister                       Register contract abi in BCOS chain.\n");
+        sb.append("fabricInstall                      Install chaincode in fabric chain.\n");
+        sb.append("fabricInstantiate                  Instantiate chaincode in fabric chain.\n");
         sb.append("genTimelock                        Generate two valid timelocks.\n");
         sb.append("genSecretAndHash                   Generate a secret and its hash.\n");
         sb.append("newHTLCProposal                    Create a htlc transfer proposal .\n");

@@ -9,7 +9,7 @@ apply plugin: 'java'
 apply plugin: 'jacoco'
 
 group = 'com.webank'
-version = '1.0.0-rc3'
+version = '1.0.0-rc4'
 sourceCompatibility = '1.8'
 
 repositories {
@@ -31,7 +31,7 @@ verifyGoogleJavaFormat {
 }
 
 dependencies {
-    compile 'com.webank:wecross-java-sdk:1.0.0-rc3'
+    compile 'com.webank:wecross-java-sdk:1.0.0-rc4-06260-SNAPSHOT'
     compile 'org.jline:jline:3.12.0'
     compile 'org.codehaus.groovy:groovy-all:2.5.8'
 

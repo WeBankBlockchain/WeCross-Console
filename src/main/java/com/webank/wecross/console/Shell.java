@@ -6,9 +6,12 @@ import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.JlineUtils;
 import com.webank.wecross.console.common.WelcomeInfo;
+import com.webank.wecross.console.custom.BCOSCommand;
+import com.webank.wecross.console.custom.FabricCommand;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
 import com.webank.wecross.console.routine.HTLCFace;
+import com.webank.wecross.console.routine.TwoPcFace;
 import com.webank.wecross.console.rpc.RPCFace;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -29,8 +32,10 @@ public class Shell {
     private static Logger logger = LoggerFactory.getLogger(Shell.class);
 
     private static RPCFace rpcFace;
-
     private static HTLCFace htlcFace;
+    private static TwoPcFace twoPcFace;
+    private static BCOSCommand bcosCommand;
+    private static FabricCommand fabricCommand;
 
     public static void main(String[] args) {
 
@@ -48,6 +53,9 @@ public class Shell {
             initializer.init();
             rpcFace = initializer.getRpcFace();
             htlcFace = initializer.getHtlcFace();
+            twoPcFace = initializer.getTwoPcFace();
+            bcosCommand = initializer.getBcosCommand();
+            fabricCommand = initializer.getFabricCommand();
         } catch (WeCrossConsoleException e) {
             System.out.println(e.getMessage());
             return;
@@ -61,7 +69,9 @@ public class Shell {
             mockWeCross = new MockWeCross(initializer.getWeCrossRPC());
             groovyShell.setProperty("WeCross", mockWeCross);
 
-            completers = JlineUtils.getCompleters(rpcFace.getPaths(), resourceVars, pathVars);
+            completers =
+                    JlineUtils.getCompleters(
+                            rpcFace.getPaths(), rpcFace.getAccounts(), resourceVars, pathVars);
             lineReader = JlineUtils.getLineReader(completers);
 
             KeyMap<org.jline.reader.Binding> keymap = lineReader.getKeyMaps().get(LineReader.MAIN);
@@ -180,6 +190,56 @@ public class Shell {
                             htlcFace.checkTransferStatus(params, pathMaps);
                             break;
                         }
+                    case "callTransaction":
+                        {
+                            twoPcFace.callTransaction(params, pathMaps);
+                            break;
+                        }
+                    case "execTransaction":
+                        {
+                            twoPcFace.execTransaction(params, pathMaps);
+                            break;
+                        }
+                    case "startTransaction":
+                        {
+                            twoPcFace.startTransaction(params);
+                            break;
+                        }
+                    case "commitTransaction":
+                        {
+                            twoPcFace.commitTransaction(params);
+                            break;
+                        }
+                    case "rollbackTransaction":
+                        {
+                            twoPcFace.rollbackTransaction(params);
+                            break;
+                        }
+                    case "getTransactionInfo":
+                        {
+                            twoPcFace.getTransactionInfo(params);
+                            break;
+                        }
+                    case "BCOSDeploy":
+                        {
+                            bcosCommand.deploy(params);
+                            break;
+                        }
+                    case "BCOSRegister":
+                        {
+                            bcosCommand.register(params);
+                            break;
+                        }
+                    case "fabricInstall":
+                        {
+                            fabricCommand.install(params);
+                            break;
+                        }
+                    case "fabricInstantiate":
+                        {
+                            fabricCommand.instantiate(params);
+                            break;
+                        }
                     default:
                         {
                             try {
@@ -188,7 +248,10 @@ public class Shell {
                                 if (ConsoleUtils.parseVars(
                                         params, thisResourceVars, thisPathVars, pathMaps)) {
                                     JlineUtils.addVarCompleters(
-                                            completers, thisResourceVars, thisPathVars);
+                                            completers,
+                                            thisResourceVars,
+                                            thisPathVars,
+                                            rpcFace.getAccounts());
                                 }
                                 logger.info("Origin command: {}", Arrays.toString(params));
                                 String newCommand = ConsoleUtils.parseCommand(params);

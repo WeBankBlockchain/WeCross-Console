@@ -1,6 +1,7 @@
 package com.webank.wecross.console.mock;
 
 import com.webank.wecross.console.common.ConsoleUtils;
+import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecrosssdk.exception.WeCrossSDKException;
 import com.webank.wecrosssdk.resource.Resource;
 import com.webank.wecrosssdk.resource.ResourceFactory;
@@ -16,11 +17,11 @@ public class MockResource implements Serializable {
 
     private Logger logger = LoggerFactory.getLogger(MockResource.class);
 
-    Resource resource;
+    private Resource resource;
 
-    public MockResource(WeCrossRPC weCrossRPC, String path, String accountName) {
+    public MockResource(WeCrossRPC weCrossRPC, String path, String account) {
         try {
-            resource = ResourceFactory.build(weCrossRPC, path, accountName);
+            resource = ResourceFactory.build(weCrossRPC, path, account);
         } catch (WeCrossSDKException e) {
             System.out.println(e.getMessage());
         }
@@ -47,7 +48,7 @@ public class MockResource implements Serializable {
             Request<TransactionRequest> request = getRequest("call", method, args);
             logger.info("Call request: {}", request);
             TransactionResponse response = resource.call(request);
-            ConsoleUtils.printTransactionResponse(response, true);
+            PrintUtils.printTransactionResponse(response, true);
             logger.info("Call response: {}", response);
         } catch (WeCrossSDKException e) {
             logger.info("Call error: {}", e.getMessage());
@@ -60,7 +61,7 @@ public class MockResource implements Serializable {
             Request<TransactionRequest> request = getRequest("sendTransaction", method, args);
             logger.info("SendTransaction request: {}", request);
             TransactionResponse response = resource.sendTransaction(request);
-            ConsoleUtils.printTransactionResponse(response, false);
+            PrintUtils.printTransactionResponse(response, false);
             logger.info("SendTransaction response: {}", response);
         } catch (WeCrossSDKException e) {
             logger.info("SendTransaction error: {}", e.getMessage());
@@ -75,7 +76,7 @@ public class MockResource implements Serializable {
         Request<TransactionRequest> request = new Request<>();
         request.setMethod(method);
         request.setPath(resource.getPath());
-        request.setAccountName(resource.getAccountName());
+        request.setAccount(resource.getAccount());
         TransactionRequest transactionRequest = new TransactionRequest();
         transactionRequest.setMethod(func);
         transactionRequest.setArgs(args);

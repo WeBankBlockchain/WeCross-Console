@@ -2,21 +2,11 @@ package com.webank.wecross.console.common;
 
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
-import com.webank.wecrosssdk.common.StatusCode;
-import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
-import java.io.Reader;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class ConsoleUtils {
-
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
@@ -103,7 +93,9 @@ public class ConsoleUtils {
     }
 
     public static String formatJson(String jsonStr) {
-        if (null == jsonStr || "".equals(jsonStr)) return "";
+        if (null == jsonStr || "".equals(jsonStr)) {
+            return "";
+        }
         jsonStr = jsonStr.replace("\\n", "");
         StringBuilder sb = new StringBuilder();
         char last = '\0';
@@ -288,25 +280,6 @@ public class ConsoleUtils {
         }
         // System.out.println(result);
         return result.toString();
-    }
-
-    public static void printTransactionResponse(TransactionResponse response, boolean isCall) {
-        if (response == null) {
-            System.out.println("Response: null");
-        } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            printJson(response.toString());
-        } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
-            printJson(response.getReceipt().toString());
-        } else {
-            if (!isCall) {
-                System.out.println("Txhash  : " + response.getReceipt().getHash());
-                System.out.println("BlockNum: " + response.getReceipt().getBlockNumber());
-                System.out.println(
-                        "Result  : " + Arrays.toString(response.getReceipt().getResult()));
-            } else {
-                System.out.println("Result: " + Arrays.toString(response.getReceipt().getResult()));
-            }
-        }
     }
 
     public static void singleLine() {
