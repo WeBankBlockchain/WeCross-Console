@@ -2,6 +2,7 @@ package com.webank.wecross.console.custom;
 
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
+import com.webank.wecross.console.common.TarUtils;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
@@ -40,9 +41,8 @@ public class FabricCommand {
         String orgName = params[4];
         String language = params[5];
 
-        // todo get bytes from "contacts/chaincode"
-        byte[] codes = null;
-
+        byte[] codes =
+                TarUtils.generateTarGzInputStreamBytes("classpath:contracts/solidity/" + name);
         Object[] args = new Object[] {name, version, orgName, language, codes};
 
         CommandResponse response = weCrossRPC.customCommand("install", path, account, args).send();

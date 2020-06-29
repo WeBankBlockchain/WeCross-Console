@@ -259,7 +259,7 @@ public class TwoPcImpl implements TwoPcFace {
                 accountList.add(accountInfo.get("name"));
             }
         } catch (Exception e) {
-            logger.warn("error,", e);
+            logger.warn("errorl,", e);
         }
         return accountList;
     }

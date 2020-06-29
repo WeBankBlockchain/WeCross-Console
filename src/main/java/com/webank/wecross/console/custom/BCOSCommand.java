@@ -1,8 +1,8 @@
 package com.webank.wecross.console.custom;
 
-import com.webank.wecross.console.common.FileUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
+import com.webank.wecross.console.common.ZipUtils;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
@@ -45,7 +45,7 @@ public class BCOSCommand {
 
         String contractsPath =
                 BCOSCommand.class.getClassLoader().getResource("contracts/solidity/").getPath();
-        FileUtils.zipDir(contractsPath);
+        ZipUtils.zipDir(contractsPath);
         File file = new File("solidity.zip");
         byte[] contractBytes = Files.readAllBytes(file.toPath());
         file.delete();

@@ -7,7 +7,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-public class FileUtils {
+public class ZipUtils {
     private static final String SEPARATOR = "/";
     private static final String SUFFIX = ".zip";
     private static final int BUFFER_SIZE = 500000;
