@@ -77,10 +77,10 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
 
-        String accountName = params[2];
+        String account = params[2];
         String hash = params[3];
 
-        Resource resource = ResourceFactory.build(weCrossRPC, path, accountName);
+        Resource resource = ResourceFactory.build(weCrossRPC, path, account);
         String proposalInfo = resource.call("getProposalInfo", hash)[0].trim();
         if (NULL_FLAG.equals(proposalInfo)) {
             System.out.println("status: proposal not found!");
@@ -131,7 +131,7 @@ public class HTLCImpl implements HTLCFace {
         if (path == null) {
             return;
         }
-        String accountName = params[2];
+        String account = params[2];
         String[] args = new String[10];
         args[0] = ConsoleUtils.parseString(params[3]);
         for (int i = 1; i < 10; i++) {
@@ -139,7 +139,7 @@ public class HTLCImpl implements HTLCFace {
         }
 
         TransactionResponse response =
-                weCrossRPC.sendTransaction(path, accountName, "newProposal", args).send();
+                weCrossRPC.sendTransaction(path, account, "newProposal", args).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS) {
             ConsoleUtils.printJson(response.toString());
@@ -155,11 +155,11 @@ public class HTLCImpl implements HTLCFace {
                 String txHash = response.getReceipt().getHash();
                 long blockNum = response.getReceipt().getBlockNumber();
                 setNewContractTxInfo(
-                        path, accountName, ConsoleUtils.parseString(params[3]), txHash, blockNum);
+                        path, account, ConsoleUtils.parseString(params[3]), txHash, blockNum);
                 if (TRUE_FLAG.equalsIgnoreCase(params[5])) {
                     setSecret(
                             path,
-                            accountName,
+                            account,
                             ConsoleUtils.parseString(params[3]),
                             ConsoleUtils.parseString(params[4]));
                 }
@@ -197,13 +197,13 @@ public class HTLCImpl implements HTLCFace {
     }
 
     private void setNewContractTxInfo(
-            String path, String accountName, String hash, String txHash, long blockNum)
+            String path, String account, String hash, String txHash, long blockNum)
             throws Exception {
         TransactionResponse response =
                 weCrossRPC
                         .sendTransaction(
                                 path,
-                                accountName,
+                                account,
                                 "setNewProposalTxInfo",
                                 hash,
                                 txHash,
@@ -226,10 +226,10 @@ public class HTLCImpl implements HTLCFace {
         }
     }
 
-    private void setSecret(String path, String accountName, String hash, String secret)
+    private void setSecret(String path, String account, String hash, String secret)
             throws Exception {
         TransactionResponse response =
-                weCrossRPC.sendTransaction(path, accountName, "setSecret", hash, secret).send();
+                weCrossRPC.sendTransaction(path, account, "setSecret", hash, secret).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {

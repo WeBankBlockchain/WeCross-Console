@@ -28,13 +28,16 @@ public class JlineUtils {
                     "checkTransferStatus");
 
     public static List<Completer> getCompleters(
-            List<String> paths, Set<String> resourceVars, Set<String> pathVars) {
+            List<String> paths,
+            List<String> accounts,
+            Set<String> resourceVars,
+            Set<String> pathVars) {
 
         List<Completer> completers = new ArrayList<>();
 
         addCommandCompleters(completers);
-        addPathCompleters(completers, paths);
-        addVarCompleters(completers, resourceVars, pathVars);
+        addPathCompleters(completers, paths, accounts);
+        addVarCompleters(completers, resourceVars, pathVars, accounts);
 
         ArgumentCompleter argumentCompleter1 =
                 new ArgumentCompleter(
@@ -50,6 +53,7 @@ public class JlineUtils {
     public static void updateCompleters(
             List<Completer> completers,
             List<String> paths,
+            List<String> accounts,
             Set<String> resourceVars,
             Set<String> pathVars) {
         if (!completers.isEmpty()) {
@@ -57,8 +61,8 @@ public class JlineUtils {
         }
 
         addCommandCompleters(completers);
-        addPathCompleters(completers, paths);
-        addVarCompleters(completers, resourceVars, pathVars);
+        addPathCompleters(completers, paths, accounts);
+        addVarCompleters(completers, resourceVars, pathVars, accounts);
     }
 
     public static void addCommandCompleters(List<Completer> completers) {
@@ -78,7 +82,17 @@ public class JlineUtils {
                         "newHTLCProposal",
                         "genTimelock",
                         "checkTransferStatus",
-                        "genSecretAndHash");
+                        "genSecretAndHash",
+                        "callTransaction",
+                        "execTransaction",
+                        "startTransaction",
+                        "commitTransaction",
+                        "rollbackTransaction",
+                        "getTransactionInfo",
+                        "BCOSDeploy",
+                        "BCOSRegister",
+                        "fabricInstall",
+                        "fabricInstantiate");
 
         for (String command : commands) {
             completers.add(
@@ -87,7 +101,8 @@ public class JlineUtils {
         }
     }
 
-    public static void addPathCompleters(List<Completer> completers, List<String> paths) {
+    public static void addPathCompleters(
+            List<Completer> completers, List<String> paths, List<String> accounts) {
 
         for (String path : paths) {
             ArgumentCompleter argumentCompleter1 =
@@ -99,30 +114,39 @@ public class JlineUtils {
             argumentCompleter1.setStrict(false);
             completers.add(argumentCompleter1);
 
-            ArgumentCompleter argumentCompleter2 =
-                    new ArgumentCompleter(
-                            new StringsCompleter(""),
-                            new StringsCompleter("="),
-                            new StringsCompleter("WeCross.getResource"),
-                            new StringsCompleter(path),
-                            new StringsCompleter());
-            argumentCompleter2.setStrict(false);
-            completers.add(argumentCompleter2);
+            for (String account : accounts) {
+                ArgumentCompleter argumentCompleter2 =
+                        new ArgumentCompleter(
+                                new StringsCompleter(""),
+                                new StringsCompleter("="),
+                                new StringsCompleter("WeCross.getResource"),
+                                new StringsCompleter(path),
+                                new StringsCompleter(account),
+                                new StringsCompleter());
+                argumentCompleter2.setStrict(false);
+                completers.add(argumentCompleter2);
+            }
         }
 
         for (String command : resourceCommands) {
             for (String path : paths) {
-                completers.add(
-                        new ArgumentCompleter(
-                                new StringsCompleter(command),
-                                new StringsCompleter(path),
-                                new StringsCompleter()));
+                for (String account : accounts) {
+                    completers.add(
+                            new ArgumentCompleter(
+                                    new StringsCompleter(command),
+                                    new StringsCompleter(path),
+                                    new StringsCompleter(account),
+                                    new StringsCompleter()));
+                }
             }
         }
     }
 
     public static void addVarCompleters(
-            List<Completer> completers, Set<String> resourceVars, Set<String> pathVars) {
+            List<Completer> completers,
+            Set<String> resourceVars,
+            Set<String> pathVars,
+            List<String> accounts) {
 
         for (String var : resourceVars) {
             completers.add(
@@ -141,24 +165,30 @@ public class JlineUtils {
 
         // pathVars
         for (String var : pathVars) {
-            ArgumentCompleter argumentCompleter =
-                    new ArgumentCompleter(
-                            new StringsCompleter(""),
-                            new StringsCompleter("="),
-                            new StringsCompleter("WeCross.getResource"),
-                            new StringsCompleter(var),
-                            new StringsCompleter());
-            argumentCompleter.setStrict(false);
-            completers.add(argumentCompleter);
+            for (String account : accounts) {
+                ArgumentCompleter argumentCompleter2 =
+                        new ArgumentCompleter(
+                                new StringsCompleter(""),
+                                new StringsCompleter("="),
+                                new StringsCompleter("WeCross.getResource"),
+                                new StringsCompleter(var),
+                                new StringsCompleter(account),
+                                new StringsCompleter());
+                argumentCompleter2.setStrict(false);
+                completers.add(argumentCompleter2);
+            }
         }
 
         for (String command : resourceCommands) {
             for (String var : pathVars) {
-                completers.add(
-                        new ArgumentCompleter(
-                                new StringsCompleter(command),
-                                new StringsCompleter(var),
-                                new StringsCompleter()));
+                for (String account : accounts) {
+                    completers.add(
+                            new ArgumentCompleter(
+                                    new StringsCompleter(command),
+                                    new StringsCompleter(var),
+                                    new StringsCompleter(account),
+                                    new StringsCompleter()));
+                }
             }
         }
     }

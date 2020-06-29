@@ -2,15 +2,12 @@ package com.webank.wecross.console.rpc;
 
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
+import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
 import com.webank.wecrosssdk.rpc.methods.Response;
-import com.webank.wecrosssdk.rpc.methods.response.AccountResponse;
-import com.webank.wecrosssdk.rpc.methods.response.ResourceDetailResponse;
-import com.webank.wecrosssdk.rpc.methods.response.ResourceResponse;
-import com.webank.wecrosssdk.rpc.methods.response.StubResponse;
-import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
+import com.webank.wecrosssdk.rpc.methods.response.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,10 +36,24 @@ public class RPCImpl implements RPCFace {
                 paths.add(resourceInfo.getPath());
             }
         } catch (Exception e) {
-            logger.warn(
-                    "Get paths failed when starting console: {}, exception: {}", e.getMessage(), e);
+            logger.warn("Get paths failed when starting console,", e);
         }
         return paths;
+    }
+
+    @Override
+    public List<String> getAccounts() {
+        List<String> accountList = new ArrayList<>();
+        try {
+            AccountResponse response = weCrossRPC.listAccounts().send();
+            List<Map<String, String>> accountInfos = response.getAccounts().getAccountInfos();
+            for (Map<String, String> accountInfo : accountInfos) {
+                accountList.add(accountInfo.get("name"));
+            }
+        } catch (Exception e) {
+            logger.warn("error,", e);
+        }
+        return accountList;
     }
 
     @Override
@@ -186,25 +197,25 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String accountName = params[2];
+        String account = params[2];
         String method = params[3];
 
         TransactionResponse response;
         if (params.length == 4) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.call(path, accountName, method, null).send();
+            response = weCrossRPC.call(path, account, method, null).send();
         } else {
             response =
                     weCrossRPC
                             .call(
                                     path,
-                                    accountName,
+                                    account,
                                     method,
                                     ConsoleUtils.parseAgrs(
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        ConsoleUtils.printTransactionResponse(response, true);
+        PrintUtils.printTransactionResponse(response, true);
     }
 
     @Override
@@ -227,24 +238,24 @@ public class RPCImpl implements RPCFace {
             return;
         }
 
-        String accountName = params[2];
+        String account = params[2];
         String method = params[3];
 
         TransactionResponse response;
         if (params.length == 4) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.sendTransaction(path, accountName, method, null).send();
+            response = weCrossRPC.sendTransaction(path, account, method, null).send();
         } else {
             response =
                     weCrossRPC
                             .sendTransaction(
                                     path,
-                                    accountName,
+                                    account,
                                     method,
                                     ConsoleUtils.parseAgrs(
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        ConsoleUtils.printTransactionResponse(response, false);
+        PrintUtils.printTransactionResponse(response, false);
     }
 }
