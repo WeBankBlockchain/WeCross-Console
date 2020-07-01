@@ -42,7 +42,7 @@ public class FabricCommand {
         String language = params[5];
 
         byte[] codes =
-                TarUtils.generateTarGzInputStreamBytes("classpath:contracts/solidity/" + name);
+                TarUtils.generateTarGzInputStreamBytes("classpath:contracts/chaincode/" + name);
         Object[] args = new Object[] {name, version, orgName, language, codes};
 
         CommandResponse response = weCrossRPC.customCommand("install", path, account, args).send();
