@@ -1,10 +1,13 @@
 package com.webank.wecross.console.common;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConsoleUtils {
     public static boolean isValidPath(String path) {
@@ -170,6 +173,7 @@ public class ConsoleUtils {
         return path;
     }
 
+    /*
     private static class CommandTokenizer extends StreamTokenizer {
         public CommandTokenizer(Reader r) {
             super(r);
@@ -230,6 +234,70 @@ public class ConsoleUtils {
         return tokens1.size() <= tokens2.size()
                 ? tokens1.toArray(new String[tokens1.size()])
                 : tokens2.toArray(new String[tokens2.size()]);
+    }
+    */
+
+    public static String[] tokenizeCommand(String line) throws Exception {
+        // example: callByCNS HelloWorld.sol set"Hello" parse [callByCNS, HelloWorld.sol,
+        // set"Hello"]
+
+        BiMap<Character, Character> tokens = HashBiMap.create();
+
+        tokens.put('"', '"');
+        tokens.put('\'', '\'');
+        tokens.put('{', '}');
+        tokens.put('[', ']');
+        tokens.put('(', ')');
+
+        String trimLine = line.trim();
+
+        LinkedList<StringBuffer> items = new LinkedList<StringBuffer>();
+        items.add(new StringBuffer());
+
+        boolean isEscape = false;
+        Stack<Character> tokenStack = new Stack<Character>();
+
+        for (int i = 0; i < trimLine.length(); ++i) {
+            Character c = trimLine.charAt(i);
+
+            if (!isEscape) {
+                if (c == '\\') {
+                    isEscape = true;
+                    continue;
+                }
+
+                if ((c == ' ' || c == '\t') && tokenStack.isEmpty()) {
+                    if (items.getLast().length() > 0) {
+                        items.add(new StringBuffer());
+                    }
+
+                    continue;
+                }
+
+                Character token = tokens.get(c);
+                if (token == null) {
+                    token = tokens.inverse().get(c);
+                }
+
+                if (token != null) {
+                    if (!tokenStack.isEmpty() && tokenStack.peek().equals(token)) {
+                        tokenStack.pop();
+                    } else {
+                        tokenStack.add(c);
+                    }
+                }
+            }
+
+            items.getLast().append(c);
+        }
+
+        return items.stream()
+                .map(
+                        (s) -> {
+                            return s.toString();
+                        })
+                .collect(Collectors.toList())
+                .toArray(new String[] {});
     }
 
     public static String parseCommand(String[] params) throws WeCrossConsoleException {
