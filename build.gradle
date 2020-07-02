@@ -31,7 +31,7 @@ verifyGoogleJavaFormat {
 }
 
 dependencies {
-    compile 'com.webank:wecross-java-sdk:1.0.0-rc4-07010-SNAPSHOT'
+    compile 'com.webank:wecross-java-sdk:1.0.0-rc4-07020-SNAPSHOT'
     compile 'org.jline:jline:3.12.0'
     compile 'org.codehaus.groovy:groovy-all:2.5.8'
     compile 'org.apache.commons:commons-compress:1.20'

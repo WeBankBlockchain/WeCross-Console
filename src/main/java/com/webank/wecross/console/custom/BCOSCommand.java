@@ -22,11 +22,11 @@ public class BCOSCommand {
     /**
      * deploy contract
      *
-     * @params BCOSDeploy [path] [account] [version]
+     * @params bcosDeploy [path] [account] [version]
      */
     public void deploy(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("BCOSDeploy");
+            HelpInfo.promptHelp("bcosDeploy");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -34,7 +34,7 @@ public class BCOSCommand {
             return;
         }
         if (params.length != 4) {
-            HelpInfo.promptHelp("BCOSDeploy");
+            HelpInfo.promptHelp("bcosDeploy");
             return;
         }
 
@@ -59,11 +59,11 @@ public class BCOSCommand {
     /**
      * register abi in cns
      *
-     * @params BCOSRegister [path] [account] [version] [address]
+     * @params bcosRegister [path] [account] [version] [address]
      */
     public void register(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("BCOSRegister");
+            HelpInfo.promptHelp("bcosRegister");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -71,7 +71,7 @@ public class BCOSCommand {
             return;
         }
         if (params.length != 5) {
-            HelpInfo.promptHelp("BCOSRegister");
+            HelpInfo.promptHelp("bcosRegister");
             return;
         }
 

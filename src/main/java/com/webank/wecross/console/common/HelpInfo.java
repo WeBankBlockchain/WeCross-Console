@@ -240,7 +240,7 @@ public class HelpInfo {
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Deploy contract in BCOS chain");
-        System.out.println("Usage: BCOSDeploy [path] [account] [version]");
+        System.out.println("Usage: bcosDeploy [path] [account] [version]");
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be deployed by name");
         System.out.println("account -- choose an account to sign");
@@ -251,7 +251,7 @@ public class HelpInfo {
     public static void BCOSRegisterHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Register contract abi in BCOS chain");
-        System.out.println("Usage: BCOSRegister [path] [account] [version] [address]");
+        System.out.println("Usage: bcosRegister [path] [account] [version] [address]");
         System.out.println(
                 "path -- [zone.chain.abiName], specify which abi to be registered by name");
         System.out.println("account -- choose an account to sign");
