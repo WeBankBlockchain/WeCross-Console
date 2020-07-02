@@ -22,7 +22,7 @@ public class ZipUtils {
         fos.close();
     }
 
-    private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut)
+    public static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut)
             throws IOException {
         if (fileToZip.isHidden()) {
             return;

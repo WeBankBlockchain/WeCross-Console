@@ -240,11 +240,13 @@ public class HelpInfo {
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Deploy contract in BCOS chain");
-        System.out.println("Usage: BCOSDeploy [path] [account] [version]");
+        System.out.println("Usage: BCOSDeploy [Path] [Account] [Source file path] [Class name] [Version]");
         System.out.println(
-                "path -- [zone.chain.contractName], specify which contract to be deployed by name");
-        System.out.println("account -- choose an account to sign");
-        System.out.println("version -- contract version");
+                "Path -- e.g: [zone.chain.res], specify which the path to be deployed");
+        System.out.println("Account -- Choose an account to send transaction");
+        System.out.println("Source file path -- The solidity source code file path, e.g: HelloWorld.sol");
+        System.out.println("Class name -- The contract to be deploy");
+        System.out.println("Version -- The contract version");
         ConsoleUtils.singleLine();
     }
 
