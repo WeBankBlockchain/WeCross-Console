@@ -269,7 +269,12 @@ public class HelpInfo {
         System.out.println("account -- choose an account to sign");
         System.out.println("version -- contract version");
         System.out.println("orgName -- organization");
-        System.out.println("language -- contract language");
+        System.out.println("language -- contract language GO_LANG/JAVA");
+        System.out.println("Example:");
+        System.out.println(
+                "    fabricInstall payment.fabric.sacc fabric_admin_org1 1.0 Org1 GO_LANG");
+        System.out.println(
+                "    fabricInstall payment.fabric.sacc fabric_admin_org2 1.0 Org2 GO_LANG");
         ConsoleUtils.singleLine();
     }
 
@@ -286,6 +291,9 @@ public class HelpInfo {
         System.out.println("language -- contract language");
         System.out.println("policy -- endorsement policy");
         System.out.println("initArgs -- args of int function");
+        System.out.println("Example:");
+        System.out.println(
+                "    fabricInstantiate payment.fabric.sacc fabric_admin 1.0 [\"Org1\",\"Org2\"] GO_LANG OR(\"Org1MSP.peer\",\"Org2MSP.peer\") [\"a\",\"10\"]");
         ConsoleUtils.singleLine();
     }
 

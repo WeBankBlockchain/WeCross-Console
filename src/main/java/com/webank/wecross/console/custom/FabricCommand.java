@@ -20,6 +20,9 @@ public class FabricCommand {
      * @params fabricInstall [path] [account] [version] [orgName] [language]
      */
     public void install(String[] params) throws Exception {
+        // The command is
+        // fabricInstall payment.fabric.sacc fabric_admin_org1 1.0 Org1 GO_LANG
+        // fabricInstall payment.fabric.sacc fabric_admin_org2 1.0 Org2 GO_LANG
         if (params.length == 1) {
             HelpInfo.promptHelp("fabricInstall");
             return;
@@ -41,8 +44,9 @@ public class FabricCommand {
         String orgName = params[4];
         String language = params[5];
 
-        byte[] codes =
-                TarUtils.generateTarGzInputStreamBytes("classpath:contracts/chaincode/" + name);
+        String codes =
+                TarUtils.generateTarGzInputStreamEncodedString(
+                        "classpath:contracts/chaincode/" + name);
         Object[] args = new Object[] {name, version, orgName, language, codes};
 
         CommandResponse response = weCrossRPC.customCommand("install", path, account, args).send();
@@ -55,6 +59,10 @@ public class FabricCommand {
      * @params fabricInstantiate [path] [account] [version] [orgName] [language] [policy] [initArgs]
      */
     public void instantiate(String[] params) throws Exception {
+        // The command is:
+        // fabricInstantiate payment.fabric.sacc fabric_admin 1.0 ["Org1","Org2"] GO_LANG
+        // OR("Org1MSP.peer","Org2MSP.peer") ["a","10"]
+
         if (params.length == 1) {
             HelpInfo.promptHelp("fabricInstantiate");
             return;
@@ -70,15 +78,15 @@ public class FabricCommand {
 
         String path = params[1];
         RPCUtils.checkPath(path);
-        String name = path.split("\\.")[2] + ".abi";
+        String name = path.split("\\.")[2];
         String account = params[2];
         String version = params[3];
-        String orgName = params[4];
+        String orgNames = params[4];
         String language = params[5];
         String policy = params[6];
         String initArgs = params[7];
 
-        Object[] args = new Object[] {name, version, orgName, language, policy, initArgs};
+        Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
 
         CommandResponse response =
                 weCrossRPC.customCommand("instantiate", path, account, args).send();
