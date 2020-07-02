@@ -220,12 +220,12 @@ public class Shell {
                             twoPcFace.getTransactionInfo(params);
                             break;
                         }
-                    case "BCOSDeploy":
+                    case "bcosDeploy":
                         {
                             bcosCommand.deploy(params);
                             break;
                         }
-                    case "BCOSRegister":
+                    case "bcosRegister":
                         {
                             bcosCommand.register(params);
                             break;

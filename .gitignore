@@ -39,3 +39,5 @@ src/main/resources/application.toml
 
 *.key
 *.crt
+
+out/*
