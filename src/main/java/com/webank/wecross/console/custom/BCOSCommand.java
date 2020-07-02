@@ -23,11 +23,12 @@ public class BCOSCommand {
     public BCOSCommand(WeCrossRPC weCrossRPC) {
         this.weCrossRPC = weCrossRPC;
     }
-    
+
     public String mergeSource(
-            String currentDir, String sourceFile, PathMatchingResourcePatternResolver resolver) throws Exception {
+            String currentDir, String sourceFile, PathMatchingResourcePatternResolver resolver)
+            throws Exception {
         StringBuffer sourceBuffer = new StringBuffer();
-        
+
         String fullPath = currentDir + sourceFile;
         String dir = fullPath.substring(0, fullPath.lastIndexOf(File.separator)) + File.separator;
 
@@ -35,27 +36,25 @@ public class BCOSCommand {
                 resolver.getResource("file:" + fullPath);
         if (!sourceResource.exists()) {
             logger.error("Source file: {} not found!", fullPath);
-            
+
             throw new Exception("Source file:" + fullPath + " not found");
         }
 
         Pattern pattern = Pattern.compile("^\\s*import\\s+[\"'](.+)[\"']\\s*;\\s*$");
         Scanner scanner = new Scanner(sourceResource.getInputStream(), "UTF-8");
         try {
-            while(scanner.hasNextLine()) {
+            while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 Matcher matcher = pattern.matcher(line);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     String depSourcePath = matcher.group(1);
                     sourceBuffer.append(mergeSource(dir, depSourcePath, resolver));
-                }
-                else {
-                   sourceBuffer.append(line);
-                   sourceBuffer.append(System.lineSeparator());
+                } else {
+                    sourceBuffer.append(line);
+                    sourceBuffer.append(System.lineSeparator());
                 }
             }
-        }
-        finally {
+        } finally {
             scanner.close();
         }
 
@@ -69,7 +68,7 @@ public class BCOSCommand {
      */
     public void deploy(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("BCOSDeploy");
+            HelpInfo.promptHelp("bcosDeploy");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -87,23 +86,21 @@ public class BCOSCommand {
         String sourcePath = params[3];
         String className = params[4];
         String version = params[5];
-        
-        
-        
+
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         org.springframework.core.io.Resource resource = resolver.getResource("file:" + sourcePath);
-        if(!resource.exists()) {
+        if (!resource.exists()) {
             resource = resolver.getResource("classpath:" + sourcePath);
-            if(!resource.exists()) {
+            if (!resource.exists()) {
                 logger.error("Source file: {} not exists", sourcePath);
                 throw new Exception("Source file: " + sourcePath + " not exists");
             }
         }
-        
+
         String filename = resource.getFilename();
         String realPath = resource.getFile().getAbsolutePath();
         String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
-        
+
         String sourceContent = mergeSource(dir, filename, resolver);
 
         Object[] args = new Object[] {cnsName, sourceContent, className, version};
@@ -115,11 +112,11 @@ public class BCOSCommand {
     /**
      * register abi in cns
      *
-     * @params BCOSRegister [path] [account] [version] [address]
+     * @params bcosRegister [path] [account] [version] [address]
      */
     public void register(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("BCOSRegister");
+            HelpInfo.promptHelp("bcosRegister");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -127,7 +124,7 @@ public class BCOSCommand {
             return;
         }
         if (params.length != 5) {
-            HelpInfo.promptHelp("BCOSRegister");
+            HelpInfo.promptHelp("bcosRegister");
             return;
         }
 

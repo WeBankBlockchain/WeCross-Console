@@ -41,8 +41,8 @@ public class WelcomeInfo {
         sb.append("commitTransaction                  Commit a 2pc transaction.\n");
         sb.append("rollbackTransaction                Rollback a 2pc transaction.\n");
         sb.append("getTransactionInfo                 Get info of specified transaction.\n");
-        sb.append("BCOSDeploy                         Deploy contract in BCOS chain.\n");
-        sb.append("BCOSRegister                       Register contract abi in BCOS chain.\n");
+        sb.append("bcosDeploy                         Deploy contract in BCOS chain.\n");
+        sb.append("bcosRegister                       Register contract abi in BCOS chain.\n");
         sb.append("fabricInstall                      Install chaincode in fabric chain.\n");
         sb.append("fabricInstantiate                  Instantiate chaincode in fabric chain.\n");
         sb.append("genTimelock                        Generate two valid timelocks.\n");

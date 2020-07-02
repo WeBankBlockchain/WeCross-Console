@@ -89,8 +89,8 @@ public class JlineUtils {
                         "commitTransaction",
                         "rollbackTransaction",
                         "getTransactionInfo",
-                        "BCOSDeploy",
-                        "BCOSRegister",
+                        "bcosDeploy",
+                        "bcosRegister",
                         "fabricInstall",
                         "fabricInstantiate");
 
