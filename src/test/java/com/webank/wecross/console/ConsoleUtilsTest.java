@@ -7,6 +7,26 @@ import org.junit.Test;
 public class ConsoleUtilsTest {
 
     @Test
+    public void testTokenizeCommand() throws Exception {
+        String[] commands =
+                ConsoleUtils.tokenizeCommand(
+                        "  callByCNS [ ( ) ] HelloWorld.sol set \"{Hello}\" { \"a\":123, \"b\": 567 } \"  hello!  \"  ");
+
+        Assert.assertEquals(commands.length, 7);
+        Assert.assertArrayEquals(
+                new String[] {
+                    "callByCNS",
+                    "[ ( ) ]",
+                    "HelloWorld.sol",
+                    "set",
+                    "\"{Hello}\"",
+                    "{ \"a\":123, \"b\": 567 }",
+                    "\"  hello!  \"",
+                },
+                commands);
+    }
+
+    @Test
     public void isValidPathTest() {
         boolean isTrue;
         boolean isFalse;
