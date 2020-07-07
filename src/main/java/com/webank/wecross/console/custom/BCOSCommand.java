@@ -1,5 +1,6 @@
 package com.webank.wecross.console.custom;
 
+import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
@@ -9,6 +10,9 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,7 +68,7 @@ public class BCOSCommand {
     /**
      * deploy contract
      *
-     * @params BCOSDeploy [path] [cnsName] [account] [version]
+     * @params BCOSDeploy [path] [account] [fileName] [className] [version]
      */
     public void deploy(String[] params) throws Exception {
         if (params.length == 1) {
@@ -75,8 +79,8 @@ public class BCOSCommand {
             HelpInfo.BCOSDeployHelp();
             return;
         }
-        if (params.length != 6) {
-            HelpInfo.promptHelp("BCOSDeploy");
+        if (params.length < 6) {
+            HelpInfo.promptHelp("bcosDeploy");
             return;
         }
 
@@ -103,9 +107,15 @@ public class BCOSCommand {
 
         String sourceContent = mergeSource(dir, filename, resolver);
 
-        Object[] args = new Object[] {cnsName, sourceContent, className, version};
+        List<Object> args =
+                new ArrayList<>(Arrays.asList(cnsName, sourceContent, className, version));
+        for (int i = 6; i < params.length; i++) {
+            // for constructor
+            args.add(ConsoleUtils.parseString(params[i]));
+        }
 
-        CommandResponse response = weCrossRPC.customCommand("deploy", path, account, args).send();
+        CommandResponse response =
+                weCrossRPC.customCommand("deploy", path, account, args.toArray()).send();
         PrintUtils.printCommandResponse(response);
     }
 

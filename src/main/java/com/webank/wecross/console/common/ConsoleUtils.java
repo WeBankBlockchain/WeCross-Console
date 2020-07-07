@@ -33,8 +33,8 @@ public class ConsoleUtils {
     // parse variables and save path variables
     public static Boolean parseVars(
             String[] params,
-            Set<String> resourceVars,
-            Set<String> pathVars,
+            List<String> resourceVars,
+            List<String> pathVars,
             Map<String, String> pathMaps) {
         int length = params.length;
         if (length < 3 || params[0].contains("\"") || params[0].contains("'")) {
