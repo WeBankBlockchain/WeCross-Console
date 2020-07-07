@@ -248,6 +248,9 @@ public class HelpInfo {
                 "Source file path -- The solidity source code file path, e.g: HelloWorld.sol");
         System.out.println("Class name -- The contract to be deploy");
         System.out.println("Version -- The contract version");
+        System.out.println("Example:");
+        System.out.println(
+                "    bcosDeploy payment.bcos.HelloWorld bcos_user1 conf/contracts/solidity/HelloWorld.sol HelloWorld 1.0");
         ConsoleUtils.singleLine();
     }
 
