@@ -8,10 +8,7 @@ import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
 import com.webank.wecrosssdk.rpc.methods.Response;
 import com.webank.wecrosssdk.rpc.methods.response.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +24,8 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public List<String> getPaths() {
-        List<String> paths = new ArrayList<>();
+    public Set<String> getPaths() {
+        Set<String> paths = new HashSet<>();
         try {
             ResourceResponse response = weCrossRPC.listResources(false).send();
             Resources resources = response.getResources();
@@ -42,8 +39,8 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public List<String> getAccounts() {
-        List<String> accountList = new ArrayList<>();
+    public Set<String> getAccounts() {
+        Set<String> accountList = new HashSet<>();
         try {
             AccountResponse response = weCrossRPC.listAccounts().send();
             List<Map<String, String>> accountInfos = response.getAccounts().getAccountInfos();

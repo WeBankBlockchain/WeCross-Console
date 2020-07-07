@@ -13,14 +13,10 @@ import com.webank.wecross.console.mock.MockWeCross;
 import com.webank.wecross.console.routine.HTLCFace;
 import com.webank.wecross.console.routine.TwoPcFace;
 import com.webank.wecross.console.rpc.RPCFace;
+import com.webank.wecrosssdk.utils.RPCUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -129,6 +125,7 @@ public class Shell {
                     case "listAccounts":
                         {
                             rpcFace.listAccounts(params);
+                            JlineUtils.updateAccountsCompleters(completers, rpcFace.getAccounts());
                             break;
                         }
                     case "listLocalResources":
@@ -223,16 +220,25 @@ public class Shell {
                     case "bcosDeploy":
                         {
                             bcosCommand.deploy(params);
+                            if (params.length > 2 && isPath(params[1])) {
+                                JlineUtils.addPathCompleters(completers, params[1]);
+                            }
                             break;
                         }
                     case "bcosRegister":
                         {
                             bcosCommand.register(params);
+                            if (params.length > 2 && isPath(params[1])) {
+                                JlineUtils.addPathCompleters(completers, params[1]);
+                            }
                             break;
                         }
                     case "fabricInstall":
                         {
                             fabricCommand.install(params);
+                            if (params.length > 2 && isPath(params[1])) {
+                                JlineUtils.addPathCompleters(completers, params[1]);
+                            }
                             break;
                         }
                     case "fabricInstantiate":
@@ -243,15 +249,18 @@ public class Shell {
                     default:
                         {
                             try {
-                                Set<String> thisResourceVars = new HashSet<>();
-                                Set<String> thisPathVars = new HashSet<>();
+                                List<String> newResourceVars = new ArrayList<>();
+                                List<String> newPathVars = new ArrayList<>();
                                 if (ConsoleUtils.parseVars(
-                                        params, thisResourceVars, thisPathVars, pathMaps)) {
-                                    JlineUtils.addVarCompleters(
-                                            completers,
-                                            thisResourceVars,
-                                            thisPathVars,
-                                            rpcFace.getAccounts());
+                                        params, newResourceVars, newPathVars, pathMaps)) {
+                                    if (!newResourceVars.isEmpty()) {
+                                        JlineUtils.addResourceVarCompleters(
+                                                completers, newResourceVars.get(0));
+                                    }
+                                    if (!newPathVars.isEmpty()) {
+                                        JlineUtils.addPathVarCompleters(
+                                                completers, newPathVars.get(0));
+                                    }
                                 }
                                 logger.info("Origin command: {}", Arrays.toString(params));
                                 String newCommand = ConsoleUtils.parseCommand(params);
@@ -272,5 +281,14 @@ public class Shell {
             }
         }
         System.exit(0);
+    }
+
+    private static boolean isPath(String path) {
+        try {
+            RPCUtils.checkPath(path);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }

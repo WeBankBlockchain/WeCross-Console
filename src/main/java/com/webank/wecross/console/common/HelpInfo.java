@@ -241,7 +241,7 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Deploy contract in BCOS chain");
         System.out.println(
-                "Usage: BCOSDeploy [Path] [Account] [Source file path] [Class name] [Version]");
+                "Usage: bcosDeploy [Path] [Account] [Source file path] [Class name] [Version]");
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be deployed");
         System.out.println("Account -- Choose an account to send transaction");
         System.out.println(
