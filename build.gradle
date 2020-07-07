@@ -43,6 +43,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+sourceSets {
+    main {
+        resources {
+            exclude 'contracts/*'
+        }
+    }
+}
+
 jar {
     destinationDir file('dist/apps')
     archiveName project.name + "-" + project.version + '.jar'
