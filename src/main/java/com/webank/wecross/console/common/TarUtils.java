@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Collection;
@@ -96,10 +95,12 @@ public class TarUtils {
     }
 
     public static byte[] generateTarGzInputStreamBytes(String path) throws IOException {
+        System.out.println("path: " + path);
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Path file = Paths.get(resolver.getResource(path).getURI());
+
+        File file = resolver.getResource(path).getFile();
         return generateTarGzInputStreamBytes(
-                file.toFile()); // Inside tar.gz is: src/chaincode/<where chaincode_main.go is>
+                file); // Inside tar.gz is: src/chaincode/<where chaincode_main.go is>
     }
 
     public static String generateTarGzInputStreamEncodedString(String path) throws IOException {
