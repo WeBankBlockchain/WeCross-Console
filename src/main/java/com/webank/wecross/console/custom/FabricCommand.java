@@ -7,6 +7,7 @@ import com.webank.wecross.console.common.TarUtils;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
+import java.io.File;
 
 public class FabricCommand {
     private WeCrossRPC weCrossRPC;
@@ -91,7 +92,9 @@ public class FabricCommand {
         if (policyFile.equals("default")) {
             policy = "";
         } else {
-            policy = FileUtils.readFileToBytesString("classpath:contracts/chaincode/" + policyFile);
+            policy =
+                    FileUtils.readFileToBytesString(
+                            "classpath:contracts/chaincode/" + name + File.separator + policyFile);
         }
 
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
