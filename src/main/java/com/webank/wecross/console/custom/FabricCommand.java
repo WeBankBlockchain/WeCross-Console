@@ -1,11 +1,13 @@
 package com.webank.wecross.console.custom;
 
+import com.webank.wecross.console.common.FileUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.common.TarUtils;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
+import java.io.File;
 
 public class FabricCommand {
     private WeCrossRPC weCrossRPC;
@@ -83,8 +85,17 @@ public class FabricCommand {
         String version = params[3];
         String orgNames = params[4];
         String language = params[5];
-        String policy = params[6];
+        String policyFile = params[6];
         String initArgs = params[7];
+
+        String policy;
+        if (policyFile.equals("default")) {
+            policy = "";
+        } else {
+            policy =
+                    FileUtils.readFileToBytesString(
+                            "classpath:contracts/chaincode/" + name + File.separator + policyFile);
+        }
 
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
 

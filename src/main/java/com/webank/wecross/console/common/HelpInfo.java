@@ -295,11 +295,14 @@ public class HelpInfo {
         System.out.println("version -- contract version");
         System.out.println("orgName -- organization");
         System.out.println("language -- contract language");
-        System.out.println("policy -- endorsement policy");
+        System.out.println(
+                "policy -- endorsement policy file name (default means OR(every endorser))");
         System.out.println("initArgs -- args of int function");
         System.out.println("Example:");
         System.out.println(
-                "    fabricInstantiate payment.fabric.sacc fabric_admin 1.0 [\"Org1\",\"Org2\"] GO_LANG OR(\"Org1MSP.peer\",\"Org2MSP.peer\") [\"a\",\"10\"]");
+                "    fabricInstantiate payment.fabric.sacc fabric_admin 1.0 [\"Org1\",\"Org2\"] GO_LANG default [\"a\",\"10\"]");
+        System.out.println(
+                "    fabricInstantiate payment.fabric.sacc fabric_admin 1.0 [\"Org1\",\"Org2\"] GO_LANG policy.yaml [\"a\",\"10\"]");
         ConsoleUtils.singleLine();
     }
 
