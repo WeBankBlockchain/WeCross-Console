@@ -102,4 +102,10 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
         uint b = LedgerSample(assetContract).balance(stringToAddress(account));
         result = uint256ToString(b);
     }
+
+    function queryAddress() public view
+    returns(address)
+    {
+        return tx.origin;
+    }
 }
