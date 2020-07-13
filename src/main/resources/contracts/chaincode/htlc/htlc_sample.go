@@ -100,6 +100,8 @@ func (a *HtlcChaincode) Invoke(stub shim.ChaincodeStubInterface) (res peer.Respo
 		res = a.setCounterpartyRollbackState(stub, args)
 	case "balanceOf":
 		res = a.balanceOf(stub, args)
+	case "queryAddress":
+		res = a.queryAddress(stub)
 	default:
 		res = shim.Error("invalid function name")
 	}
@@ -371,6 +373,10 @@ func (a *HtlcChaincode) balanceOf(stub shim.ChaincodeStubInterface, args []strin
 		return shim.Success([]byte(response.Message))
 	}
 	return shim.Success(response.Payload)
+}
+
+func (a *HtlcChaincode) queryAddress(stub shim.ChaincodeStubInterface) peer.Response {
+	return shim.Success([]byte(getTxOrigin(stub)))
 }
 
 func getSugarAccountKey(hash string) string {
