@@ -23,7 +23,7 @@ contract Evidence {
         delete infos[evidenceInfo.id];
     }
     
-    function queryEvidence(string memory id) public returns(EvidenceInfo memory evidenceInfo) {
+    function queryEvidence(string memory id) public view returns(EvidenceInfo memory evidenceInfo) {
         return infos[id];
     }
 }
