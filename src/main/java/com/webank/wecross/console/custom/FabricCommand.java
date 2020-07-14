@@ -19,12 +19,14 @@ public class FabricCommand {
     /**
      * install contract
      *
-     * @params fabricInstall [path] [account] [version] [orgName] [language]
+     * @params fabricInstall [path] [account] [orgName] [sourcePath] [version] [language]
      */
     public void install(String[] params) throws Exception {
         // The command is
-        // fabricInstall payment.fabric.sacc fabric_admin_org1 1.0 Org1 GO_LANG
-        // fabricInstall payment.fabric.sacc fabric_admin_org2 1.0 Org2 GO_LANG
+        // fabricInstall payment.fabric.sacc fabric_admin_org1 Org1 contracts/chaincode/sacc 1.0
+        // GO_LANG
+        // fabricInstall payment.fabric.sacc fabric_admin_org2 Org2 contracts/chaincode/sacc 1.0
+        // GO_LANG
         if (params.length == 1) {
             HelpInfo.promptHelp("fabricInstall");
             return;
@@ -33,7 +35,7 @@ public class FabricCommand {
             HelpInfo.fabricInstallHelp();
             return;
         }
-        if (params.length != 6) {
+        if (params.length != 7) {
             HelpInfo.promptHelp("fabricInstall");
             return;
         }
@@ -42,13 +44,12 @@ public class FabricCommand {
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
         String account = params[2];
-        String version = params[3];
-        String orgName = params[4];
-        String language = params[5];
+        String orgName = params[3];
+        String sourcePath = params[4];
+        String version = params[5];
+        String language = params[6];
 
-        String codes =
-                TarUtils.generateTarGzInputStreamEncodedString(
-                        "classpath:contracts/chaincode/" + name);
+        String codes = TarUtils.generateTarGzInputStreamEncodedString("classpath:" + sourcePath);
         Object[] args = new Object[] {name, version, orgName, language, codes};
 
         CommandResponse response = weCrossRPC.customCommand("install", path, account, args).send();
@@ -58,12 +59,13 @@ public class FabricCommand {
     /**
      * instantiate chaincode
      *
-     * @params fabricInstantiate [path] [account] [version] [orgName] [language] [policy] [initArgs]
+     * @params fabricInstantiate [path] [account] [orgNames] [sourcePath] [version] [language]
+     *     [policyFile] [initArgs]
      */
     public void instantiate(String[] params) throws Exception {
         // The command is:
-        // fabricInstantiate payment.fabric.sacc fabric_admin 1.0 ["Org1","Org2"] GO_LANG
-        // OR("Org1MSP.peer","Org2MSP.peer") ["a","10"]
+        // fabricInstantiate payment.fabric.sacc fabric_admin ["Org1","Org2"]
+        // contracts/chaincode/sacc 1.0 GO_LANG policy.yaml ["a","10"]
 
         if (params.length == 1) {
             HelpInfo.promptHelp("fabricInstantiate");
@@ -73,7 +75,7 @@ public class FabricCommand {
             HelpInfo.fabricInstantiateHelp();
             return;
         }
-        if (params.length != 8) {
+        if (params.length != 9) {
             HelpInfo.promptHelp("fabricInstantiate");
             return;
         }
@@ -82,11 +84,12 @@ public class FabricCommand {
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
         String account = params[2];
-        String version = params[3];
-        String orgNames = params[4];
-        String language = params[5];
-        String policyFile = params[6];
-        String initArgs = params[7];
+        String orgNames = params[3];
+        String sourcePath = params[4];
+        String version = params[5];
+        String language = params[6];
+        String policyFile = params[7];
+        String initArgs = params[8];
 
         String policy;
         if (policyFile.equals("default")) {
@@ -94,7 +97,7 @@ public class FabricCommand {
         } else {
             policy =
                     FileUtils.readFileToBytesString(
-                            "classpath:contracts/chaincode/" + name + File.separator + policyFile);
+                            "classpath:" + sourcePath + File.separator + policyFile);
         }
 
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};

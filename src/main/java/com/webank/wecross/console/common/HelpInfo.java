@@ -273,14 +273,15 @@ public class HelpInfo {
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be installed by name");
         System.out.println("account -- choose an account to sign");
-        System.out.println("version -- contract version");
         System.out.println("orgName -- organization");
+        System.out.println("sourcePath -- chaincode project dir from conf/");
+        System.out.println("version -- contract version");
         System.out.println("language -- contract language GO_LANG/JAVA");
         System.out.println("Example:");
         System.out.println(
-                "    fabricInstall payment.fabric.sacc fabric_admin_org1 1.0 Org1 GO_LANG");
+                "    fabricInstall payment.fabric.sacc fabric_admin_org1 Org1 contracts/chaincode/sacc 1.0 GO_LANG");
         System.out.println(
-                "    fabricInstall payment.fabric.sacc fabric_admin_org2 1.0 Org2 GO_LANG");
+                "    fabricInstall payment.fabric.sacc fabric_admin_org2 Org2 contracts/chaincode/sacc 1.0 GO_LANG");
         ConsoleUtils.singleLine();
     }
 
@@ -292,17 +293,18 @@ public class HelpInfo {
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be instantiated by name");
         System.out.println("account -- choose an account to sign");
+        System.out.println("orgNames -- every organization which has installed the chaincode");
+        System.out.println("sourcePath -- chaincode project dir from conf/");
         System.out.println("version -- contract version");
-        System.out.println("orgName -- organization");
         System.out.println("language -- contract language");
         System.out.println(
                 "policy -- endorsement policy file name (default means OR(every endorser))");
         System.out.println("initArgs -- args of int function");
         System.out.println("Example:");
         System.out.println(
-                "    fabricInstantiate payment.fabric.sacc fabric_admin 1.0 [\"Org1\",\"Org2\"] GO_LANG default [\"a\",\"10\"]");
+                "    fabricInstantiate payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG default [\"a\",\"10\"]");
         System.out.println(
-                "    fabricInstantiate payment.fabric.sacc fabric_admin 1.0 [\"Org1\",\"Org2\"] GO_LANG policy.yaml [\"a\",\"10\"]");
+                "    fabricInstantiate payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG policy.yaml [\"a\",\"10\"]");
         ConsoleUtils.singleLine();
     }
 
