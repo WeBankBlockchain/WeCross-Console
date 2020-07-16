@@ -49,7 +49,15 @@ public class FabricCommand {
         String version = params[5];
         String language = params[6];
 
-        String codes = TarUtils.generateTarGzInputStreamEncodedString("classpath:" + sourcePath);
+        String codes;
+        if (language.equals("GO_LANG")) {
+            codes =
+                    TarUtils.generateTarGzInputStreamEncodedStringFoGoChaincode(
+                            "classpath:" + sourcePath);
+        } else {
+            codes = TarUtils.generateTarGzInputStreamEncodedString("classpath:" + sourcePath);
+        }
+
         Object[] args = new Object[] {name, version, orgName, language, codes};
 
         CommandResponse response = weCrossRPC.customCommand("install", path, account, args).send();
