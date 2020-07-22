@@ -113,7 +113,7 @@ public class FabricCommand {
 
     private String uniformPath(String path) {
         if (path.startsWith("/") || path.startsWith("\\") || path.startsWith(File.pathSeparator)) {
-            return path;
+            return "file:" + path;
         } else {
             return "classpath:" + path;
         }
