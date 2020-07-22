@@ -6,8 +6,12 @@ import com.webank.wecrosssdk.rpc.methods.response.RoutineInfoResponse;
 import com.webank.wecrosssdk.rpc.methods.response.RoutineResponse;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PrintUtils {
+    private static Logger logger = LoggerFactory.getLogger(PrintUtils.class);
+
     public static void printTransactionResponse(TransactionResponse response, boolean isCall) {
         if (response == null) {
             System.out.println("Response: null");
@@ -15,6 +19,7 @@ public class PrintUtils {
             ConsoleUtils.printJson(response.toString());
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
             ConsoleUtils.printJson(response.getReceipt().toString());
+            logger.warn("TxError: " + response.getReceipt().toString());
         } else {
             if (!isCall) {
                 System.out.println("Txhash  : " + response.getReceipt().getHash());
