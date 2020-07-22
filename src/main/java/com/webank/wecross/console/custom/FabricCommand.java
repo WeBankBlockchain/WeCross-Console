@@ -45,17 +45,15 @@ public class FabricCommand {
         String name = path.split("\\.")[2];
         String account = params[2];
         String orgName = params[3];
-        String sourcePath = params[4];
+        String sourcePath = uniformPath(params[4]);
         String version = params[5];
         String language = params[6];
 
         String codes;
         if (language.equals("GO_LANG")) {
-            codes =
-                    TarUtils.generateTarGzInputStreamEncodedStringFoGoChaincode(
-                            "classpath:" + sourcePath);
+            codes = TarUtils.generateTarGzInputStreamEncodedStringFoGoChaincode(sourcePath);
         } else {
-            codes = TarUtils.generateTarGzInputStreamEncodedString("classpath:" + sourcePath);
+            codes = TarUtils.generateTarGzInputStreamEncodedString(sourcePath);
         }
 
         Object[] args = new Object[] {name, version, orgName, language, codes};
@@ -93,7 +91,7 @@ public class FabricCommand {
         String name = path.split("\\.")[2];
         String account = params[2];
         String orgNames = params[3];
-        String sourcePath = params[4];
+        String sourcePath = uniformPath(params[4]);
         String version = params[5];
         String language = params[6];
         String policyFile = params[7];
@@ -103,9 +101,7 @@ public class FabricCommand {
         if (policyFile.equals("default")) {
             policy = "";
         } else {
-            policy =
-                    FileUtils.readFileToBytesString(
-                            "classpath:" + sourcePath + File.separator + policyFile);
+            policy = FileUtils.readFileToBytesString(sourcePath + File.separator + policyFile);
         }
 
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
@@ -113,5 +109,13 @@ public class FabricCommand {
         CommandResponse response =
                 weCrossRPC.customCommand("instantiate", path, account, args).send();
         PrintUtils.printCommandResponse(response);
+    }
+
+    private String uniformPath(String path) {
+        if (path.startsWith("/") || path.startsWith("\\") || path.startsWith(File.pathSeparator)) {
+            return "file:" + path;
+        } else {
+            return "classpath:" + path;
+        }
     }
 }

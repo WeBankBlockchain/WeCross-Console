@@ -145,6 +145,7 @@ public class HTLCImpl implements HTLCFace {
             ConsoleUtils.printJson(response.toString());
             return;
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
+            logger.warn("TxError: " + response.getReceipt().toString());
             ConsoleUtils.printJson(receipt.toString());
             return;
         } else {
