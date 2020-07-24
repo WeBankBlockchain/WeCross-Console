@@ -135,6 +135,7 @@ public class Shell {
                             }
                             String[] listParams = {"listResources", "1"};
                             rpcFace.listResources(listParams);
+                            JlineUtils.updatePathsCompleters(completers, rpcFace.getPaths());
                             break;
                         }
                     case "listResources":
@@ -144,6 +145,7 @@ public class Shell {
                             }
                             String[] listParams = {"listResources", "0"};
                             rpcFace.listResources(listParams);
+                            JlineUtils.updatePathsCompleters(completers, rpcFace.getPaths());
                             break;
                         }
                     case "status":
@@ -276,7 +278,7 @@ public class Shell {
                 }
                 System.out.println();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("Error: " + e.getMessage());
                 System.out.println();
             }
         }

@@ -36,9 +36,9 @@ public class PrintUtils {
         if (response == null) {
             System.out.println("Response: null");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            ConsoleUtils.printJson(response.toString());
+            System.out.println("Error: " + response.getMessage());
         } else {
-            System.out.println("Result: " + response.getResult());
+            System.out.println("Result: success!");
         }
     }
 
@@ -46,7 +46,7 @@ public class PrintUtils {
         if (response == null) {
             System.out.println("Response: null");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            ConsoleUtils.printJson(response.toString());
+            System.out.println("Error: " + response.getMessage());
         } else {
             ConsoleUtils.printJson(response.getInfo());
         }
