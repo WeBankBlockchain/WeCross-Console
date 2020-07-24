@@ -239,7 +239,7 @@ public class HelpInfo {
 
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Deploy contract in BCOS chain");
+        System.out.println("Deploy contract and register contract info to CNS in BCOS chain ");
         System.out.println(
                 "Usage: bcosDeploy [Path] [Account] [Source file path] [Class name] [Version]");
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be deployed");
@@ -256,13 +256,20 @@ public class HelpInfo {
 
     public static void BCOSRegisterHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Register contract abi in BCOS chain");
-        System.out.println("Usage: bcosRegister [path] [account] [version] [address]");
+        System.out.println("Register contract info to CNS in BCOS chain");
         System.out.println(
-                "path -- [zone.chain.abiName], specify which abi to be registered by name");
-        System.out.println("account -- choose an account to sign");
-        System.out.println("version -- contract version");
-        System.out.println("address -- contract address");
+                "Usage: bcosRegister [Path] [Account] [Source file path] [Contract address] [Version]");
+        System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be register");
+        System.out.println("Account -- Choose an account to send transaction");
+        System.out.println(
+                "Source file path -- The solidity source code/solidity abi file path, e.g: HelloWorld.sol or HelloWorld.abi");
+        System.out.println("Contract address -- contract address");
+        System.out.println("Version -- The contract version");
+        System.out.println("Example:");
+        System.out.println(
+                "    bcosRegister payment.bcos.HelloWorld bcos_user1 conf/contracts/solidity/HelloWorld.sol 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
+        System.out.println(
+                "    bcosRegister payment.bcos.HelloWorld bcos_user1 /data/app/HelloWorld.abi 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
         ConsoleUtils.singleLine();
     }
 

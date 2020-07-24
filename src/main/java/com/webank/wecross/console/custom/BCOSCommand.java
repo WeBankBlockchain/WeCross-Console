@@ -7,9 +7,6 @@ import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +65,7 @@ public class BCOSCommand {
     /**
      * deploy contract
      *
-     * @params BCOSDeploy [path] [account] [fileName] [className] [version]
+     * @params BCOSDeploy [path] [account] [filePath] [className] [version]
      */
     public void deploy(String[] params) throws Exception {
         if (params.length == 1) {
@@ -85,6 +82,7 @@ public class BCOSCommand {
         }
 
         String path = params[1];
+        RPCUtils.checkPath(path);
         String cnsName = path.split("\\.")[2];
         String account = params[2];
         String sourcePath = params[3];
@@ -122,7 +120,7 @@ public class BCOSCommand {
     /**
      * register abi in cns
      *
-     * @params bcosRegister [path] [account] [version] [address]
+     * @params bcosRegister [path] [account] [filePath] [address] [version]
      */
     public void register(String[] params) throws Exception {
         if (params.length == 1) {
@@ -133,23 +131,47 @@ public class BCOSCommand {
             HelpInfo.BCOSRegisterHelp();
             return;
         }
-        if (params.length != 5) {
+
+        if (params.length < 6) {
             HelpInfo.promptHelp("bcosRegister");
             return;
         }
 
         String path = params[1];
         RPCUtils.checkPath(path);
-        String name = path.split("\\.")[2] + ".abi";
+        String cnsName = path.split("\\.")[2];
         String account = params[2];
-        String version = params[3];
+        String sourcePath = params[3];
         String address = params[4];
+        String version = params[5];
 
-        String abiPath = BCOSCommand.class.getClassLoader().getResource("abi/" + name).getPath();
-        String abi = new String(Files.readAllBytes(Paths.get(abiPath)), StandardCharsets.UTF_8);
-        Object[] args = new Object[] {version, address, abi};
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        org.springframework.core.io.Resource resource = resolver.getResource("file:" + sourcePath);
+        if (!resource.exists()) {
+            resource = resolver.getResource("classpath:" + sourcePath);
+            if (!resource.exists()) {
+                logger.error("Source file: {} not exists", sourcePath);
+                throw new Exception("Source file: " + sourcePath + " not exists");
+            }
+        }
 
-        CommandResponse response = weCrossRPC.customCommand("register", path, account, args).send();
+        String filename = resource.getFilename();
+        String realPath = resource.getFile().getAbsolutePath();
+        String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
+
+        String sourceContent = mergeSource(dir, filename, resolver);
+
+        List<Object> args =
+                new ArrayList<>(
+                        Arrays.asList(
+                                cnsName,
+                                sourcePath.endsWith("abi") ? "abi" : "sol",
+                                sourceContent,
+                                address,
+                                version));
+
+        CommandResponse response =
+                weCrossRPC.customCommand("register", path, account, args.toArray()).send();
         PrintUtils.printCommandResponse(response);
     }
 }
