@@ -278,6 +278,7 @@ public class Shell {
                 }
                 System.out.println();
             } catch (Exception e) {
+                logger.info("Exception: ", e);
                 System.out.println("Error: " + e.getMessage());
                 System.out.println();
             }
