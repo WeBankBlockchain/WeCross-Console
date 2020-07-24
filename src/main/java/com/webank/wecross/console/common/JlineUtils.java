@@ -143,6 +143,14 @@ public class JlineUtils {
         }
     }
 
+    public static void updatePathsCompleters(List<Completer> completers, Set<String> paths) {
+        for (String path : paths) {
+            if (!JlineUtils.paths.contains(path)) {
+                addPathCompleters(completers, path);
+            }
+        }
+    }
+
     public static void updateAccountsCompleters(List<Completer> completers, Set<String> accounts) {
         if (!completers.isEmpty()) {
             completers.clear();
