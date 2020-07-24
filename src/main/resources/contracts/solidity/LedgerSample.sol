@@ -259,7 +259,7 @@ contract LedgerSample is IssuerRole, Suspendable {
         _description = description;
         _shortName = shortName;
         _minUnit = minUnit;
-        _issue(msg.sender, totalAmount * (10 ** uint256(minUnit)), "");
+        _issue(tx.origin, totalAmount * (10 ** uint256(minUnit)), "");
     }
 
 
