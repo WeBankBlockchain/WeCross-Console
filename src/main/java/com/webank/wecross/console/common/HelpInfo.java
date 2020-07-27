@@ -237,6 +237,15 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void getTransactionIDsHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Get all transaction ids");
+        System.out.println("Usage: getTransactionIDs [path] [account]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("account -- choose an account to sign");
+        ConsoleUtils.singleLine();
+    }
+
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Deploy contract and register contract info to CNS in BCOS chain ");
