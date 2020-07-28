@@ -32,7 +32,12 @@ public class JlineUtils {
                     "execTransaction");
 
     private static List<String> pathVarNotSupportedCommands =
-            Arrays.asList("bcosDeploy", "bcosRegister", "fabricInstall", "fabricInstantiate");
+            Arrays.asList(
+                    "bcosDeploy",
+                    "bcosRegister",
+                    "fabricInstall",
+                    "fabricInstantiate",
+                    "getTransactionIDs");
 
     private static List<String> allCommands =
             Arrays.asList(
@@ -56,6 +61,7 @@ public class JlineUtils {
                     "commitTransaction",
                     "rollbackTransaction",
                     "getTransactionInfo",
+                    "getTransactionIDs",
                     "bcosDeploy",
                     "bcosRegister",
                     "fabricInstall",

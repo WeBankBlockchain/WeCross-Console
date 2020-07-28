@@ -6,6 +6,7 @@ import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
+import com.webank.wecrosssdk.rpc.methods.response.RoutineIDResponse;
 import com.webank.wecrosssdk.rpc.methods.response.RoutineInfoResponse;
 import com.webank.wecrosssdk.rpc.methods.response.RoutineResponse;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
@@ -45,7 +46,7 @@ public class TwoPcImpl implements TwoPcFace {
         String transactionID = params[3];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
-                    "Result: " + transactionID + " is not a valid id, only number allowed!");
+                    "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
@@ -95,14 +96,14 @@ public class TwoPcImpl implements TwoPcFace {
         String transactionID = params[3];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
-                    "Result: " + transactionID + " is not a valid id, only number allowed!");
+                    "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
         String seq = params[4];
         if (!ConsoleUtils.isNaturalInteger(seq)) {
             System.out.println(
-                    "Result: " + seq + " is not a valid seq, only natural integer allowed!");
+                    "Error: " + seq + " is not a valid seq, only natural integer allowed!");
             return;
         }
 
@@ -149,7 +150,7 @@ public class TwoPcImpl implements TwoPcFace {
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
-                    "Result: " + transactionID + " is not a valid id, only number allowed!");
+                    "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
@@ -185,7 +186,7 @@ public class TwoPcImpl implements TwoPcFace {
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
-                    "Result: " + transactionID + " is not a valid id, only number allowed!");
+                    "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
@@ -221,7 +222,7 @@ public class TwoPcImpl implements TwoPcFace {
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
-                    "Result: " + transactionID + " is not a valid id, only number allowed!");
+                    "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
@@ -257,7 +258,7 @@ public class TwoPcImpl implements TwoPcFace {
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
-                    "Result: " + transactionID + " is not a valid id, only number allowed!");
+                    "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
@@ -273,6 +274,28 @@ public class TwoPcImpl implements TwoPcFace {
                                 paths.toArray(new String[0]))
                         .send();
         PrintUtils.printRoutineInfoResponse(response);
+    }
+
+    @Override
+    public void getTransactionIDs(String[] params) throws Exception {
+        if (params.length == 1) {
+            HelpInfo.promptHelp("getTransactionIDs");
+            return;
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.getTransactionIDsHelp();
+            return;
+        }
+        if (params.length != 3) {
+            HelpInfo.promptHelp("getTransactionIDs");
+            return;
+        }
+
+        String path = params[1];
+        String account = params[2];
+
+        RoutineIDResponse response = weCrossRPC.getTransactionIDs(path, account).send();
+        PrintUtils.printRoutineIDResponse(response);
     }
 
     private void parseTransactionParam(String[] params, List<String> accounts, List<String> paths)

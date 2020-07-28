@@ -544,7 +544,7 @@ contract HTLC {
     function hashMatched(string memory _hash, string memory _secret) internal pure
     returns (bool)
     {
-        bytes memory a  = abi.encodePacked(sha256(abi.encodePacked(_secret)));
+        bytes memory a  = abi.encodePacked(sha256(bytes(_secret)));
         bytes memory b  = hexStringToBytes(_hash);
         return sha256(a) == sha256(b);
     }
@@ -567,7 +567,7 @@ contract HTLC {
     function sameString(string memory _str1, string memory _str2) internal pure
     returns (bool)
     {
-        return keccak256(abi.encodePacked(_str1)) == keccak256(abi.encodePacked(_str2));
+        return keccak256(bytes(_str1)) == keccak256(bytes(_str2));
     }
 
     // these are utilities

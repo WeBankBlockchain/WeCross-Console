@@ -219,6 +219,11 @@ public class Shell {
                             twoPcFace.getTransactionInfo(params);
                             break;
                         }
+                    case "getTransactionIDs":
+                        {
+                            twoPcFace.getTransactionIDs(params);
+                            break;
+                        }
                     case "bcosDeploy":
                         {
                             bcosCommand.deploy(params);
@@ -271,7 +276,7 @@ public class Shell {
                             } catch (WeCrossConsoleException e) {
                                 System.out.println(e.getMessage());
                             } catch (Exception e) {
-                                System.out.println("Error: unsupported command.");
+                                System.out.println("Error: unsupported command");
                             }
                             break;
                         }
