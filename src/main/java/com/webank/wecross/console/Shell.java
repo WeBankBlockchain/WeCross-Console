@@ -253,6 +253,11 @@ public class Shell {
                             fabricCommand.instantiate(params);
                             break;
                         }
+                    case "fabricUpgrade":
+                        {
+                            fabricCommand.upgrade(params);
+                            break;
+                        }
                     default:
                         {
                             try {

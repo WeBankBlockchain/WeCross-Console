@@ -111,6 +111,54 @@ public class FabricCommand {
         PrintUtils.printCommandResponse(response);
     }
 
+    /**
+     * upgrade chaincode
+     *
+     * @params fabricUpgrade [path] [account] [orgNames] [sourcePath] [version] [language]
+     *     [policyFile] [initArgs]
+     */
+    public void upgrade(String[] params) throws Exception {
+        // The command is:
+        // upgrade payment.fabric.sacc fabric_admin ["Org1","Org2"]
+        // contracts/chaincode/sacc 2.0 GO_LANG policy.yaml ["a","10"]
+
+        if (params.length == 1) {
+            HelpInfo.promptHelp("fabricUpgrade");
+            return;
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.fabricUpgradeHelp();
+            return;
+        }
+        if (params.length != 9) {
+            HelpInfo.promptHelp("fabricUpgrade");
+            return;
+        }
+
+        String path = params[1];
+        RPCUtils.checkPath(path);
+        String name = path.split("\\.")[2];
+        String account = params[2];
+        String orgNames = params[3];
+        String sourcePath = uniformPath(params[4]);
+        String version = params[5];
+        String language = params[6];
+        String policyFile = params[7];
+        String initArgs = params[8];
+
+        String policy;
+        if (policyFile.equals("default")) {
+            policy = "";
+        } else {
+            policy = FileUtils.readFileToBytesString(sourcePath + File.separator + policyFile);
+        }
+
+        Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
+
+        CommandResponse response = weCrossRPC.customCommand("upgrade", path, account, args).send();
+        PrintUtils.printCommandResponse(response);
+    }
+
     private String uniformPath(String path) {
         if (path.startsWith("/") || path.startsWith("\\") || path.startsWith(File.pathSeparator)) {
             return "file:" + path;

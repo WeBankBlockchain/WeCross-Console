@@ -46,6 +46,7 @@ public class WelcomeInfo {
         sb.append("bcosRegister                       Register contract abi in BCOS chain.\n");
         sb.append("fabricInstall                      Install chaincode in fabric chain.\n");
         sb.append("fabricInstantiate                  Instantiate chaincode in fabric chain.\n");
+        sb.append("fabricUpgrade                      Upgrade chaincode in fabric chain.\n");
         sb.append("genTimelock                        Generate two valid timelocks.\n");
         sb.append("genSecretAndHash                   Generate a secret and its hash.\n");
         sb.append("newHTLCProposal                    Create a htlc transfer proposal .\n");

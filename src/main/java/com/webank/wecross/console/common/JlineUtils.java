@@ -37,6 +37,7 @@ public class JlineUtils {
                     "bcosRegister",
                     "fabricInstall",
                     "fabricInstantiate",
+                    "fabricUpgrade",
                     "getTransactionIDs");
 
     private static List<String> allCommands =
@@ -65,7 +66,8 @@ public class JlineUtils {
                     "bcosDeploy",
                     "bcosRegister",
                     "fabricInstall",
-                    "fabricInstantiate");
+                    "fabricInstantiate",
+                    "fabricUpgrade");
 
     public static void addCommandCompleters(List<Completer> completers) {
         // commands

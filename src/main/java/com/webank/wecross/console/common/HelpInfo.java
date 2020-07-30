@@ -324,6 +324,29 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void fabricUpgradeHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Upgrade chaincode in fabric chain");
+        System.out.println(
+                "Usage: fabricUpgrade [path] [account] [version] [orgName] [language] [policy] [initArgs]");
+        System.out.println(
+                "path -- [zone.chain.contractName], specify which contract to be instantiated by name");
+        System.out.println("account -- choose an account to sign");
+        System.out.println("orgNames -- every organization which has installed the chaincode");
+        System.out.println("sourcePath -- chaincode project dir from conf/");
+        System.out.println("version -- contract version");
+        System.out.println("language -- contract language");
+        System.out.println(
+                "policy -- endorsement policy file name (default means OR(every endorser))");
+        System.out.println("initArgs -- args of int function");
+        System.out.println("Example:");
+        System.out.println(
+                "    fabricUpgrade payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG default [\"a\",\"10\"]");
+        System.out.println(
+                "    fabricUpgrade payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG policy.yaml [\"a\",\"10\"]");
+        ConsoleUtils.singleLine();
+    }
+
     public static void checkTransferStatusHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Check htlc transfer status by hash");
