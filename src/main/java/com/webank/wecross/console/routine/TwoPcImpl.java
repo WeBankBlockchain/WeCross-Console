@@ -286,15 +286,16 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.getTransactionIDsHelp();
             return;
         }
-        if (params.length != 3) {
+        if (params.length != 4) {
             HelpInfo.promptHelp("getTransactionIDs");
             return;
         }
 
         String path = params[1];
         String account = params[2];
+        int option = Integer.parseInt(params[3]);
 
-        RoutineIDResponse response = weCrossRPC.getTransactionIDs(path, account).send();
+        RoutineIDResponse response = weCrossRPC.getTransactionIDs(path, account, option).send();
         PrintUtils.printRoutineIDResponse(response);
     }
 
@@ -303,20 +304,31 @@ public class TwoPcImpl implements TwoPcFace {
         Set<String> allAccounts = rpcFace.getAccounts();
         Set<String> allPaths = rpcFace.getPaths();
 
+        if (allAccounts.contains(params[2])) {
+            accounts.add(params[2]);
+        } else {
+            throw new Exception("account " + params[2] + " not found");
+        }
+
         boolean isAccount = true;
-        for (int i = 2; i < params.length; i++) {
-            if (isAccount && allAccounts.contains(params[i])) {
-                if (accounts.contains(params[i])) {
-                    throw new Exception("duplicated account " + params[i]);
+        boolean isPath = false;
+        for (int i = 3; i < params.length; i++) {
+            if (isAccount) {
+                if (allAccounts.contains(params[i])) {
+                    if (accounts.contains(params[i])) {
+                        throw new Exception("duplicated account " + params[i]);
+                    }
+                    accounts.add(params[i]);
+                } else {
+                    if (!params[i].contains(".")) {
+                        throw new Exception("account " + params[i] + " not found");
+                    } else {
+                        isAccount = false;
+                        isPath = true;
+                    }
                 }
-
-                accounts.add(params[i]);
-            } else {
-                isAccount = false;
-                if (!params[i].contains(".")) {
-                    throw new Exception("account " + params[i] + " not found");
-                }
-
+            }
+            if (isPath) {
                 if (!allPaths.contains(params[i])) {
                     throw new Exception("resource " + params[i] + " not found");
                 }
