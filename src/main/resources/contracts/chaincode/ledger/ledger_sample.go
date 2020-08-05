@@ -66,8 +66,8 @@ type approvalEvent struct {
 
 func (l *LedgerChaincode) Init(stub shim.ChaincodeStubInterface) (res peer.Response) {
 	defer func() {
-		if r, ok := recover().(error); ok {
-			res = shim.Error(r.Error())
+		if r:= recover(); r != nil {
+			res = shim.Error(fmt.Sprintf("%v",r))
 		}
 	}()
 
@@ -86,8 +86,8 @@ func (l *LedgerChaincode) Init(stub shim.ChaincodeStubInterface) (res peer.Respo
 // Invoke function
 func (l *LedgerChaincode) Invoke(stub shim.ChaincodeStubInterface) (res peer.Response) {
 	defer func() {
-		if r, ok := recover().(error); ok {
-			res = shim.Error(r.Error())
+		if r:= recover(); r != nil {
+			res = shim.Error(fmt.Sprintf("%v",r))
 		}
 	}()
 
