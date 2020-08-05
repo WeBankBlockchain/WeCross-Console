@@ -575,6 +575,10 @@ contract HTLC {
     returns (address)
     {
         bytes memory temp = bytes(_address);
+        if(temp.length != 42) {
+            revert(string(abi.encodePacked(_address, " is not a valid BCOS address")));
+        }
+
         uint160 result = 0;
         uint160 b1;
         uint160 b2;

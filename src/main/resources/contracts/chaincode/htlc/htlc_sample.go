@@ -20,8 +20,8 @@ type HtlcChaincode struct {
 
 func (a *HtlcChaincode) Init(stub shim.ChaincodeStubInterface) (res peer.Response) {
 	defer func() {
-		if r, ok := recover().(error); ok {
-			res = shim.Error(r.Error())
+		if r:= recover(); r != nil {
+			res = shim.Error(fmt.Sprintf("%v",r))
 		}
 	}()
 
@@ -57,9 +57,8 @@ func (a *HtlcChaincode) Init(stub shim.ChaincodeStubInterface) (res peer.Respons
 
 func (a *HtlcChaincode) Invoke(stub shim.ChaincodeStubInterface) (res peer.Response) {
 	defer func() {
-		if r, ok := recover().(error); ok {
-			// return error message
-			res = shim.Error(r.Error())
+		if r:= recover(); r != nil {
+			res = shim.Error(fmt.Sprintf("%v",r))
 		}
 	}()
 
