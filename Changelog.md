@@ -2,7 +2,7 @@
 
 (2020-08-18)
 
-新增
+**新增**
 
 * 资源部署命令
   * FISCO BCOS：bcosDeploy、bcosRegister
