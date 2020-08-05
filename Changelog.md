@@ -1,3 +1,16 @@
+### v1.0.0-rc4
+
+(2020-08-18)
+
+新增
+
+* 资源部署命令
+  * FISCO BCOS：bcosDeploy、bcosRegister
+  * Fabric：fabricInstall、fabricInstantiate、fabricUpgrade
+* 2PC事务操作命令
+  * 操作：startTransaction、execTransaction、commitTransaction、rollbackTransaction
+  * 查询：getTransactionInfo、getTransactionIDs
+
 ### v1.0.0-rc3
 
 (2020-06-15)
