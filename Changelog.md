@@ -8,7 +8,7 @@
   * FISCO BCOS：bcosDeploy、bcosRegister
   * Fabric：fabricInstall、fabricInstantiate、fabricUpgrade
 * 2PC事务操作命令
-  * 操作：startTransaction、execTransaction、commitTransaction、rollbackTransaction
+  * 操作：startTransaction、execTransaction、callTransaction、commitTransaction、rollbackTransaction
   * 查询：getTransactionInfo、getTransactionIDs
 * 跨链资源集
   * 一般示例代码：HelloWorld.sol、sacc.go、fabcar.java
