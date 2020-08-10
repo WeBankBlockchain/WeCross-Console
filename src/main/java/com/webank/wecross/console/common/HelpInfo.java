@@ -239,7 +239,7 @@ public class HelpInfo {
 
     public static void getTransactionIDsHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Get all transaction ids");
+        System.out.println("Get transaction ids of 2pc");
         System.out.println("Usage: getTransactionIDs [path] [account] [option]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println("account -- choose an account to sign");
