@@ -5,8 +5,13 @@ import java.nio.file.Paths;
 import java.util.*;
 import org.jline.builtins.Completers.DirectoriesCompleter;
 import org.jline.builtins.Completers.FilesCompleter;
-import org.jline.reader.*;
-import org.jline.reader.impl.completer.*;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.AggregateCompleter;
+import org.jline.reader.impl.completer.ArgumentCompleter;
+import org.jline.reader.impl.completer.NullCompleter;
+import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Attributes;
 import org.jline.terminal.Attributes.ControlChar;
 import org.jline.terminal.Terminal;
@@ -37,11 +42,11 @@ public class JlineUtils {
 
     private static List<String> pathVarNotSupportedCommands =
             Arrays.asList(
-                    //                    "bcosDeploy",
-                    //                    "bcosRegister",
-                    //                    "fabricInstall",
-                    //                    "fabricInstantiate",
-                    //                    "fabricUpgrade",
+                    "bcosDeploy",
+                    "bcosRegister",
+                    "fabricInstall",
+                    "fabricInstantiate",
+                    "fabricUpgrade",
                     "getTransactionIDs");
 
     private static List<String> fabricCommands =
