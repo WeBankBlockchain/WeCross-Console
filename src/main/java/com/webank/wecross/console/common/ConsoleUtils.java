@@ -1,22 +1,16 @@
 package com.webank.wecross.console.common;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
-import com.webank.wecrosssdk.common.StatusCode;
-import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
-import java.io.Reader;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ConsoleUtils {
-
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
@@ -37,11 +31,26 @@ public class ConsoleUtils {
     public static boolean isValidPathVar(String path, Map<String, String> pathMaps) {
         return pathMaps.containsKey(path);
     }
+
+    public static boolean isNaturalInteger(String seq) {
+        try {
+            int s = Integer.parseInt(seq);
+            return s >= 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isNumeric(String str) {
+        Pattern p = Pattern.compile("[0-9]*");
+        return p.matcher(str).matches();
+    }
+
     // parse variables and save path variables
     public static Boolean parseVars(
             String[] params,
-            Set<String> resourceVars,
-            Set<String> pathVars,
+            List<String> resourceVars,
+            List<String> pathVars,
             Map<String, String> pathMaps) {
         int length = params.length;
         if (length < 3 || params[0].contains("\"") || params[0].contains("'")) {
@@ -103,7 +112,9 @@ public class ConsoleUtils {
     }
 
     public static String formatJson(String jsonStr) {
-        if (null == jsonStr || "".equals(jsonStr)) return "";
+        if (null == jsonStr || "".equals(jsonStr)) {
+            return "";
+        }
         jsonStr = jsonStr.replace("\\n", "");
         StringBuilder sb = new StringBuilder();
         char last = '\0';
@@ -178,66 +189,67 @@ public class ConsoleUtils {
         return path;
     }
 
-    private static class CommandTokenizer extends StreamTokenizer {
-        public CommandTokenizer(Reader r) {
-            super(r);
-            resetSyntax();
-            // Invisible ASCII characters.
-            whitespaceChars(0x00, 0x20);
-            // All visible ASCII characters.
-            wordChars(0x21, 0x7E);
-            // Other UTF8 characters.
-            wordChars(0xA0, 0xFF);
-            // Uncomment this to allow comments in the command.
-            // commentChar('/');
-            // Allow both types of quoted strings, e.g. 'abc' and "abc".
-            quoteChar('\'');
-            quoteChar('"');
-        }
-
-        public void parseNumbers() {}
-    }
-
-    public static String[] tokenizeCommand(String command) throws Exception {
+    public static String[] tokenizeCommand(String line) throws Exception {
         // example: callByCNS HelloWorld.sol set"Hello" parse [callByCNS, HelloWorld.sol,
         // set"Hello"]
-        List<String> tokens1 = new ArrayList<>();
-        StringTokenizer stringTokenizer = new StringTokenizer(command, " ");
-        while (stringTokenizer.hasMoreTokens()) {
-            tokens1.add(stringTokenizer.nextToken());
-        }
-        // example: callByCNS HelloWorld.sol set"Hello" parse [callByCNS, HelloWorld.sol, set,
-        // "Hello"]
-        List<String> tokens2 = new ArrayList<>();
-        StreamTokenizer tokenizer = new CommandTokenizer(new StringReader(command));
-        int token = tokenizer.nextToken();
-        while (token != StreamTokenizer.TT_EOF) {
-            switch (token) {
-                case StreamTokenizer.TT_EOL:
-                    // Ignore \n character.
-                    break;
-                case StreamTokenizer.TT_WORD:
-                    tokens2.add(tokenizer.sval);
-                    break;
-                case '\'':
-                    // If the tailing ' is missing, it will add a tailing ' to it.
-                    // E.g. 'abc -> 'abc'
-                    tokens2.add(String.format("'%s'", tokenizer.sval));
-                    break;
-                case '"':
-                    // If the tailing " is missing, it will add a tailing ' to it.
-                    // E.g. "abc -> "abc"
-                    tokens2.add(String.format("\"%s\"", tokenizer.sval));
-                    break;
-                default:
-                    // Ignore all other unknown characters.
-                    throw new RuntimeException("unexpected input tokens " + token);
+
+        BiMap<Character, Character> tokens = HashBiMap.create();
+
+        tokens.put('"', '"');
+        tokens.put('\'', '\'');
+        tokens.put('{', '}');
+        tokens.put('[', ']');
+        tokens.put('(', ')');
+
+        String trimLine = line.trim();
+
+        LinkedList<StringBuffer> items = new LinkedList<StringBuffer>();
+        items.add(new StringBuffer());
+
+        boolean isEscape = false;
+        Stack<Character> tokenStack = new Stack<Character>();
+
+        for (int i = 0; i < trimLine.length(); ++i) {
+            Character c = trimLine.charAt(i);
+
+            if (!isEscape) {
+                if (c == '\\') {
+                    isEscape = true;
+                    continue;
+                }
+
+                if ((c == ' ' || c == '\t') && tokenStack.isEmpty()) {
+                    if (items.getLast().length() > 0) {
+                        items.add(new StringBuffer());
+                    }
+
+                    continue;
+                }
+
+                Character token = tokens.get(c);
+                if (token == null) {
+                    token = tokens.inverse().get(c);
+                }
+
+                if (token != null) {
+                    if (!tokenStack.isEmpty() && tokenStack.peek().equals(token)) {
+                        tokenStack.pop();
+                    } else {
+                        tokenStack.add(c);
+                    }
+                }
             }
-            token = tokenizer.nextToken();
+
+            items.getLast().append(c);
         }
-        return tokens1.size() <= tokens2.size()
-                ? tokens1.toArray(new String[tokens1.size()])
-                : tokens2.toArray(new String[tokens2.size()]);
+
+        return items.stream()
+                .map(
+                        (s) -> {
+                            return s.toString();
+                        })
+                .collect(Collectors.toList())
+                .toArray(new String[] {});
     }
 
     public static String parseCommand(String[] params) throws WeCrossConsoleException {
@@ -288,25 +300,6 @@ public class ConsoleUtils {
         }
         // System.out.println(result);
         return result.toString();
-    }
-
-    public static void printTransactionResponse(TransactionResponse response, boolean isCall) {
-        if (response == null) {
-            System.out.println("Response: null");
-        } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            printJson(response.toString());
-        } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
-            printJson(response.getReceipt().toString());
-        } else {
-            if (!isCall) {
-                System.out.println("Txhash  : " + response.getReceipt().getHash());
-                System.out.println("BlockNum: " + response.getReceipt().getBlockNumber());
-                System.out.println(
-                        "Result  : " + Arrays.toString(response.getReceipt().getResult()));
-            } else {
-                System.out.println("Result: " + Arrays.toString(response.getReceipt().getResult()));
-            }
-        }
     }
 
     public static void singleLine() {

@@ -1,3 +1,20 @@
+### v1.0.0-rc4
+
+(2020-08-18)
+
+**新增**
+
+* 资源部署命令
+  * FISCO BCOS：bcosDeploy、bcosRegister
+  * Fabric：fabricInstall、fabricInstantiate、fabricUpgrade
+* 2PC事务操作命令
+  * 操作：startTransaction、execTransaction、callTransaction、commitTransaction、rollbackTransaction
+  * 查询：getTransactionInfo、getTransactionIDs
+* 跨链资源集
+  * 一般示例代码：HelloWorld.sol、sacc.go、fabcar.java
+  * HTLC合约代码：HTLC.sol、htlc.go等
+  * 两阶段示例：EvidenceSample.sol、EvidenceSample.go等
+
 ### v1.0.0-rc3
 
 (2020-06-15)

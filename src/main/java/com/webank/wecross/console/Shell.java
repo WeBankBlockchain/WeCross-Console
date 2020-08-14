@@ -6,18 +6,17 @@ import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.JlineUtils;
 import com.webank.wecross.console.common.WelcomeInfo;
+import com.webank.wecross.console.custom.BCOSCommand;
+import com.webank.wecross.console.custom.FabricCommand;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
 import com.webank.wecross.console.routine.HTLCFace;
+import com.webank.wecross.console.routine.TwoPcFace;
 import com.webank.wecross.console.rpc.RPCFace;
+import com.webank.wecrosssdk.utils.RPCUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -29,8 +28,10 @@ public class Shell {
     private static Logger logger = LoggerFactory.getLogger(Shell.class);
 
     private static RPCFace rpcFace;
-
     private static HTLCFace htlcFace;
+    private static TwoPcFace twoPcFace;
+    private static BCOSCommand bcosCommand;
+    private static FabricCommand fabricCommand;
 
     public static void main(String[] args) {
 
@@ -48,6 +49,9 @@ public class Shell {
             initializer.init();
             rpcFace = initializer.getRpcFace();
             htlcFace = initializer.getHtlcFace();
+            twoPcFace = initializer.getTwoPcFace();
+            bcosCommand = initializer.getBcosCommand();
+            fabricCommand = initializer.getFabricCommand();
         } catch (WeCrossConsoleException e) {
             System.out.println(e.getMessage());
             return;
@@ -61,7 +65,9 @@ public class Shell {
             mockWeCross = new MockWeCross(initializer.getWeCrossRPC());
             groovyShell.setProperty("WeCross", mockWeCross);
 
-            completers = JlineUtils.getCompleters(rpcFace.getPaths(), resourceVars, pathVars);
+            completers =
+                    JlineUtils.getCompleters(
+                            rpcFace.getPaths(), rpcFace.getAccounts(), resourceVars, pathVars);
             lineReader = JlineUtils.getLineReader(completers);
 
             KeyMap<org.jline.reader.Binding> keymap = lineReader.getKeyMaps().get(LineReader.MAIN);
@@ -119,6 +125,7 @@ public class Shell {
                     case "listAccounts":
                         {
                             rpcFace.listAccounts(params);
+                            JlineUtils.updateAccountsCompleters(completers, rpcFace.getAccounts());
                             break;
                         }
                     case "listLocalResources":
@@ -128,6 +135,7 @@ public class Shell {
                             }
                             String[] listParams = {"listResources", "1"};
                             rpcFace.listResources(listParams);
+                            JlineUtils.updatePathsCompleters(completers, rpcFace.getPaths());
                             break;
                         }
                     case "listResources":
@@ -137,6 +145,7 @@ public class Shell {
                             }
                             String[] listParams = {"listResources", "0"};
                             rpcFace.listResources(listParams);
+                            JlineUtils.updatePathsCompleters(completers, rpcFace.getPaths());
                             break;
                         }
                     case "status":
@@ -170,9 +179,9 @@ public class Shell {
                             htlcFace.genSecretAndHash(params);
                             break;
                         }
-                    case "newHTLCTransferProposal":
+                    case "newHTLCProposal":
                         {
-                            htlcFace.newContract(params, pathMaps);
+                            htlcFace.newProposal(params, pathMaps);
                             break;
                         }
                     case "checkTransferStatus":
@@ -180,15 +189,90 @@ public class Shell {
                             htlcFace.checkTransferStatus(params, pathMaps);
                             break;
                         }
+                    case "callTransaction":
+                        {
+                            twoPcFace.callTransaction(params, pathMaps);
+                            break;
+                        }
+                    case "execTransaction":
+                        {
+                            twoPcFace.execTransaction(params, pathMaps);
+                            break;
+                        }
+                    case "startTransaction":
+                        {
+                            twoPcFace.startTransaction(params);
+                            break;
+                        }
+                    case "commitTransaction":
+                        {
+                            twoPcFace.commitTransaction(params);
+                            break;
+                        }
+                    case "rollbackTransaction":
+                        {
+                            twoPcFace.rollbackTransaction(params);
+                            break;
+                        }
+                    case "getTransactionInfo":
+                        {
+                            twoPcFace.getTransactionInfo(params);
+                            break;
+                        }
+                    case "getTransactionIDs":
+                        {
+                            twoPcFace.getTransactionIDs(params);
+                            break;
+                        }
+                    case "bcosDeploy":
+                        {
+                            bcosCommand.deploy(params);
+                            if (params.length > 2 && isPath(params[1])) {
+                                JlineUtils.addPathCompleters(completers, params[1]);
+                            }
+                            break;
+                        }
+                    case "bcosRegister":
+                        {
+                            bcosCommand.register(params);
+                            if (params.length > 2 && isPath(params[1])) {
+                                JlineUtils.addPathCompleters(completers, params[1]);
+                            }
+                            break;
+                        }
+                    case "fabricInstall":
+                        {
+                            fabricCommand.install(params);
+                            if (params.length > 2 && isPath(params[1])) {
+                                JlineUtils.addPathCompleters(completers, params[1]);
+                            }
+                            break;
+                        }
+                    case "fabricInstantiate":
+                        {
+                            fabricCommand.instantiate(params);
+                            break;
+                        }
+                    case "fabricUpgrade":
+                        {
+                            fabricCommand.upgrade(params);
+                            break;
+                        }
                     default:
                         {
                             try {
-                                Set<String> thisResourceVars = new HashSet<>();
-                                Set<String> thisPathVars = new HashSet<>();
+                                List<String> newResourceVars = new ArrayList<>();
+                                List<String> newPathVars = new ArrayList<>();
                                 if (ConsoleUtils.parseVars(
-                                        params, thisResourceVars, thisPathVars, pathMaps)) {
-                                    JlineUtils.addVarCompleters(
-                                            completers, thisResourceVars, thisPathVars);
+                                        params, newResourceVars, newPathVars, pathMaps)) {
+                                    if (!newResourceVars.isEmpty()) {
+                                        JlineUtils.addResourceVarCompleters(
+                                                completers, newResourceVars.get(0));
+                                    }
+                                    if (!newPathVars.isEmpty()) {
+                                        JlineUtils.addPathVarCompleters(
+                                                completers, newPathVars.get(0));
+                                    }
                                 }
                                 logger.info("Origin command: {}", Arrays.toString(params));
                                 String newCommand = ConsoleUtils.parseCommand(params);
@@ -197,17 +281,27 @@ public class Shell {
                             } catch (WeCrossConsoleException e) {
                                 System.out.println(e.getMessage());
                             } catch (Exception e) {
-                                System.out.println("Error: unsupported command.");
+                                System.out.println("Error: unsupported command");
                             }
                             break;
                         }
                 }
                 System.out.println();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                logger.info("Exception: ", e);
+                System.out.println("Error: " + e.getMessage());
                 System.out.println();
             }
         }
         System.exit(0);
+    }
+
+    private static boolean isPath(String path) {
+        try {
+            RPCUtils.checkPath(path);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }
