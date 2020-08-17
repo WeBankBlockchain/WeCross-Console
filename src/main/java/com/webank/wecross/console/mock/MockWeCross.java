@@ -8,15 +8,15 @@ public class MockWeCross implements Serializable {
     private static WeCrossRPC weCrossRPC;
 
     public MockWeCross(WeCrossRPC weCrossRPC) {
-        this.weCrossRPC = weCrossRPC;
+        MockWeCross.weCrossRPC = weCrossRPC;
     }
 
-    public static MockResource getResource(String path, String accountName) {
+    public static MockResource getResource(String path, String account) {
         if (!ConsoleUtils.isValidPath(path)) {
             System.out.println("Please provide a valid path");
             return null;
         }
-        return new MockResource(weCrossRPC, path, accountName);
+        return new MockResource(weCrossRPC, path, account);
     }
 
     public WeCrossRPC getWeCrossRPC() {
@@ -24,6 +24,6 @@ public class MockWeCross implements Serializable {
     }
 
     public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
-        this.weCrossRPC = weCrossRPC;
+        MockWeCross.weCrossRPC = weCrossRPC;
     }
 }

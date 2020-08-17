@@ -1,9 +1,13 @@
 package com.webank.wecross.console;
 
+import com.webank.wecross.console.custom.BCOSCommand;
+import com.webank.wecross.console.custom.FabricCommand;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.routine.HTLCFace;
 import com.webank.wecross.console.routine.HTLCImpl;
+import com.webank.wecross.console.routine.TwoPcFace;
+import com.webank.wecross.console.routine.TwoPcImpl;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.exception.WeCrossSDKException;
@@ -19,7 +23,10 @@ public class Initializer {
 
     private WeCrossRPC weCrossRPC;
     private RPCFace rpcFace;
+    private TwoPcFace twoPcFace;
     private HTLCFace htlcFace;
+    private BCOSCommand bcosCommand;
+    private FabricCommand fabricCommand;
 
     public void init() throws WeCrossConsoleException {
         WeCrossRPCService weCrossRPCService = new WeCrossRPCService();
@@ -33,6 +40,10 @@ public class Initializer {
         rpcFace.setWeCrossRPC(weCrossRPC);
         htlcFace = new HTLCImpl();
         htlcFace.setWeCrossRPC(weCrossRPC);
+        twoPcFace = new TwoPcImpl();
+        twoPcFace.setWeCrossRPC(weCrossRPC);
+        bcosCommand = new BCOSCommand(weCrossRPC);
+        fabricCommand = new FabricCommand(weCrossRPC);
     }
 
     public WeCrossRPC getWeCrossRPC() {
@@ -57,5 +68,29 @@ public class Initializer {
 
     public void setHtlcFace(HTLCFace htlcFace) {
         this.htlcFace = htlcFace;
+    }
+
+    public TwoPcFace getTwoPcFace() {
+        return twoPcFace;
+    }
+
+    public void setTwoPcFace(TwoPcFace twoPcFace) {
+        this.twoPcFace = twoPcFace;
+    }
+
+    public BCOSCommand getBcosCommand() {
+        return bcosCommand;
+    }
+
+    public void setBcosCommand(BCOSCommand bcosCommand) {
+        this.bcosCommand = bcosCommand;
+    }
+
+    public FabricCommand getFabricCommand() {
+        return fabricCommand;
+    }
+
+    public void setFabricCommand(FabricCommand fabricCommand) {
+        this.fabricCommand = fabricCommand;
     }
 }

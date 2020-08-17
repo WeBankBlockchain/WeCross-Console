@@ -1,10 +1,8 @@
 package com.webank.wecross.console.routine;
 
 import com.webank.wecross.console.common.ConsoleUtils;
-import com.webank.wecross.console.common.Default;
 import com.webank.wecross.console.common.Hash;
 import com.webank.wecross.console.common.HelpInfo;
-import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.common.StatusCode;
 import com.webank.wecrosssdk.resource.Resource;
 import com.webank.wecrosssdk.resource.ResourceFactory;
@@ -19,7 +17,11 @@ import org.slf4j.LoggerFactory;
 
 public class HTLCImpl implements HTLCFace {
     private WeCrossRPC weCrossRPC;
-    private Logger logger = LoggerFactory.getLogger(RPCImpl.class);
+    private Logger logger = LoggerFactory.getLogger(HTLCImpl.class);
+    private static final String TRUE_FLAG = "true";
+    private static final String NULL_FLAG = "null";
+    private static final String SPLIT_REGEX = "##";
+    private static final String SUCCESS_FLAG = "success";
 
     @Override
     public void genTimelock(String[] params) {
@@ -54,8 +56,8 @@ public class HTLCImpl implements HTLCFace {
 
         Hash hash = new Hash();
         String secret = hash.getRandom(32);
-        System.out.println("secret: " + secret);
         System.out.println("hash  : " + hash.sha256(secret));
+        System.out.println("secret: " + secret);
     }
 
     @Override
@@ -71,72 +73,65 @@ public class HTLCImpl implements HTLCFace {
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) return;
-
-        String accountName = params[2];
-        String hash = params[3];
-
-        Resource resource = ResourceFactory.build(weCrossRPC, path, accountName);
-        BigInteger timelock;
-        try {
-            String timelockStr = resource.call("getSelfTimelock", hash)[0].trim();
-            if (timelockStr.equalsIgnoreCase("")) {
-                System.out.println("status: hash not found!");
-                return;
-            }
-            timelock = new BigInteger(timelockStr);
-        } catch (Exception e) {
-            System.out.println("error: please check path, account name or hash!");
+        if (path == null) {
             return;
         }
 
-        if (resource.call("getSelfUnlockStatus", hash)[0].trim().equalsIgnoreCase(Default.TRUE_FLAG)
-                && resource.call("getCounterpartyUnlockStatus", hash)[0]
-                        .trim()
-                        .equalsIgnoreCase(Default.TRUE_FLAG)) {
+        String account = params[2];
+        String hash = params[3];
+
+        Resource resource = ResourceFactory.build(weCrossRPC, path, account);
+        String proposalInfo = resource.call("getProposalInfo", hash)[0].trim();
+        if (NULL_FLAG.equals(proposalInfo)) {
+            System.out.println("status: proposal not found!");
+            return;
+        }
+        String[] proposalItems = proposalInfo.split(SPLIT_REGEX);
+        BigInteger timelock = new BigInteger(proposalItems[2]);
+
+        boolean selfUnlocked = TRUE_FLAG.equals(proposalItems[4]);
+        boolean selfRolledback = TRUE_FLAG.equals(proposalItems[5]);
+        boolean counterpartyUnlocked = TRUE_FLAG.equals(proposalItems[8]);
+
+        if (selfUnlocked && counterpartyUnlocked) {
             System.out.println("status: succeeded!");
             return;
         }
 
-        if (resource.call("getSelfRollbackStatus", hash)[0]
-                .trim()
-                .equalsIgnoreCase(Default.TRUE_FLAG)) {
+        if (selfRolledback) {
             System.out.println("status: rolled back!");
             return;
         }
 
-        if (resource.call("getSelfLockStatus", hash)[0]
-                .trim()
-                .equalsIgnoreCase(Default.FALSE_FLAG)) {
-
-            BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
-            if (timelock.compareTo(now) <= 0) {
-                System.out.println("status: failed!");
-                return;
-            }
+        BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
+        if (timelock.compareTo(now) <= 0) {
+            System.out.println("status: failed!");
+            return;
         }
 
         System.out.println("status: ongoing!");
     }
 
     @Override
-    public void newContract(String[] params, Map<String, String> pathMaps) throws Exception {
+    public void newProposal(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("newHTLCTransferProposal");
+            HelpInfo.promptHelp("newHTLCProposal");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.newContractHelp();
+            HelpInfo.newProposaltHelp();
             return;
         }
 
-        if (!checkContract(params)) {
+        if (!checkProposal(params)) {
             return;
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) return;
-        String accountName = params[2];
+        if (path == null) {
+            return;
+        }
+        String account = params[2];
         String[] args = new String[10];
         args[0] = ConsoleUtils.parseString(params[3]);
         for (int i = 1; i < 10; i++) {
@@ -144,49 +139,54 @@ public class HTLCImpl implements HTLCFace {
         }
 
         TransactionResponse response =
-                weCrossRPC.sendTransaction(path, accountName, "newContract", args).send();
+                weCrossRPC.sendTransaction(path, account, "newProposal", args).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS) {
             ConsoleUtils.printJson(response.toString());
             return;
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
+            logger.warn("TxError: " + response.getReceipt().toString());
             ConsoleUtils.printJson(receipt.toString());
             return;
         } else {
             System.out.println("Txhash: " + receipt.getHash());
             System.out.println("BlockNum: " + receipt.getBlockNumber());
             String result = receipt.getResult()[0].trim();
-            if (result.equalsIgnoreCase("success")) {
+            if (SUCCESS_FLAG.equalsIgnoreCase(result)) {
                 String txHash = response.getReceipt().getHash();
                 long blockNum = response.getReceipt().getBlockNumber();
                 setNewContractTxInfo(
-                        path, accountName, ConsoleUtils.parseString(params[3]), txHash, blockNum);
-                if (params[5].equalsIgnoreCase("true")) {
+                        path, account, ConsoleUtils.parseString(params[3]), txHash, blockNum);
+                if (TRUE_FLAG.equalsIgnoreCase(params[5])) {
                     setSecret(
                             path,
-                            accountName,
+                            account,
                             ConsoleUtils.parseString(params[3]),
                             ConsoleUtils.parseString(params[4]));
                 }
-                System.out.println("Result: create a htlc transfer proposal successfully");
+                System.out.println("Result: create a htlc proposal successfully");
             } else {
                 System.out.println("Result: " + result);
             }
         }
     }
 
-    private boolean checkContract(String[] params) throws NoSuchAlgorithmException {
+    private boolean checkProposal(String[] params) throws NoSuchAlgorithmException {
         if (params.length != 14) {
             System.out.println("invalid number of parameters, 14 params needed");
             return false;
         }
 
         Hash hash = new Hash();
-        if (params[5].equalsIgnoreCase("true")) {
+        if (TRUE_FLAG.equalsIgnoreCase(params[5])) {
             if (!params[3].equals(hash.sha256(params[4]))) {
                 System.out.println("hash not matched");
                 return false;
             }
+        }
+
+        if (params[6].equals(params[7]) || params[10].equals(params[11])) {
+            System.out.println("the sender and receiver must be different");
         }
 
         BigInteger amount0 = new BigInteger(params[8]);
@@ -202,14 +202,14 @@ public class HTLCImpl implements HTLCFace {
     }
 
     private void setNewContractTxInfo(
-            String path, String accountName, String hash, String txHash, long blockNum)
+            String path, String account, String hash, String txHash, long blockNum)
             throws Exception {
         TransactionResponse response =
                 weCrossRPC
                         .sendTransaction(
                                 path,
-                                accountName,
-                                "setNewContractTxInfo",
+                                account,
+                                "setNewProposalTxInfo",
                                 hash,
                                 txHash,
                                 String.valueOf(blockNum))
@@ -218,23 +218,23 @@ public class HTLCImpl implements HTLCFace {
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {
             if (receipt != null) {
-                System.out.println("failed to setNewContractTxInfo: " + receipt.getErrorMessage());
+                System.out.println("failed to setNewProposalTxInfo: " + receipt.getErrorMessage());
             } else {
-                System.out.println("failed to setNewContractTxInfo: " + response.getMessage());
+                System.out.println("failed to setNewProposalTxInfo: " + response.getMessage());
             }
         } else {
             logger.info(
-                    "newContract succeeded, path: {}, txHash: {}, blockNum: {}",
+                    "newProposal succeeded, path: {}, txHash: {}, blockNum: {}",
                     path,
                     txHash,
                     blockNum);
         }
     }
 
-    private void setSecret(String path, String accountName, String hash, String secret)
+    private void setSecret(String path, String account, String hash, String secret)
             throws Exception {
         TransactionResponse response =
-                weCrossRPC.sendTransaction(path, accountName, "setSecret", hash, secret).send();
+                weCrossRPC.sendTransaction(path, account, "setSecret", hash, secret).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {
@@ -252,6 +252,7 @@ public class HTLCImpl implements HTLCFace {
         return weCrossRPC;
     }
 
+    @Override
     public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
         this.weCrossRPC = weCrossRPC;
     }
