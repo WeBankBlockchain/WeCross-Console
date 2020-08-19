@@ -1,8 +1,8 @@
 package com.webank.wecross.console.rpc;
 
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface RPCFace {
 
@@ -22,7 +22,7 @@ public interface RPCFace {
 
     void sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception;
 
-    List<String> getPaths();
+    Set<String> getPaths();
 
-    List<String> getAccounts();
+    Set<String> getAccounts();
 }

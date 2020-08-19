@@ -7,6 +7,7 @@ import com.webank.wecross.console.exception.WeCrossConsoleException;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ConsoleUtils {
@@ -30,11 +31,26 @@ public class ConsoleUtils {
     public static boolean isValidPathVar(String path, Map<String, String> pathMaps) {
         return pathMaps.containsKey(path);
     }
+
+    public static boolean isNaturalInteger(String seq) {
+        try {
+            int s = Integer.parseInt(seq);
+            return s >= 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isNumeric(String str) {
+        Pattern p = Pattern.compile("[0-9]*");
+        return p.matcher(str).matches();
+    }
+
     // parse variables and save path variables
     public static Boolean parseVars(
             String[] params,
-            Set<String> resourceVars,
-            Set<String> pathVars,
+            List<String> resourceVars,
+            List<String> pathVars,
             Map<String, String> pathMaps) {
         int length = params.length;
         if (length < 3 || params[0].contains("\"") || params[0].contains("'")) {
@@ -172,70 +188,6 @@ public class ConsoleUtils {
         }
         return path;
     }
-
-    /*
-    private static class CommandTokenizer extends StreamTokenizer {
-        public CommandTokenizer(Reader r) {
-            super(r);
-            resetSyntax();
-            // Invisible ASCII characters.
-            whitespaceChars(0x00, 0x20);
-            // All visible ASCII characters.
-            wordChars(0x21, 0x7E);
-            // Other UTF8 characters.
-            wordChars(0xA0, 0xFF);
-            // Uncomment this to allow comments in the command.
-            // commentChar('/');
-            // Allow both types of quoted strings, e.g. 'abc' and "abc".
-            quoteChar('\'');
-            quoteChar('"');
-        }
-
-        public void parseNumbers() {}
-    }
-
-    public static String[] tokenizeCommand(String command) throws Exception {
-        // example: callByCNS HelloWorld.sol set"Hello" parse [callByCNS, HelloWorld.sol,
-        // set"Hello"]
-        List<String> tokens1 = new ArrayList<>();
-        StringTokenizer stringTokenizer = new StringTokenizer(command, " ");
-        while (stringTokenizer.hasMoreTokens()) {
-            tokens1.add(stringTokenizer.nextToken());
-        }
-        // example: callByCNS HelloWorld.sol set"Hello" parse [callByCNS, HelloWorld.sol, set,
-        // "Hello"]
-        List<String> tokens2 = new ArrayList<>();
-        StreamTokenizer tokenizer = new CommandTokenizer(new StringReader(command));
-        int token = tokenizer.nextToken();
-        while (token != StreamTokenizer.TT_EOF) {
-            switch (token) {
-                case StreamTokenizer.TT_EOL:
-                    // Ignore \n character.
-                    break;
-                case StreamTokenizer.TT_WORD:
-                    tokens2.add(tokenizer.sval);
-                    break;
-                case '\'':
-                    // If the tailing ' is missing, it will add a tailing ' to it.
-                    // E.g. 'abc -> 'abc'
-                    tokens2.add(String.format("'%s'", tokenizer.sval));
-                    break;
-                case '"':
-                    // If the tailing " is missing, it will add a tailing ' to it.
-                    // E.g. "abc -> "abc"
-                    tokens2.add(String.format("\"%s\"", tokenizer.sval));
-                    break;
-                default:
-                    // Ignore all other unknown characters.
-                    throw new RuntimeException("unexpected input tokens " + token);
-            }
-            token = tokenizer.nextToken();
-        }
-        return tokens1.size() <= tokens2.size()
-                ? tokens1.toArray(new String[tokens1.size()])
-                : tokens2.toArray(new String[tokens2.size()]);
-    }
-    */
 
     public static String[] tokenizeCommand(String line) throws Exception {
         // example: callByCNS HelloWorld.sol set"Hello" parse [callByCNS, HelloWorld.sol,

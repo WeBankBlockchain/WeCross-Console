@@ -17,4 +17,6 @@ public interface TwoPcFace {
     void rollbackTransaction(String[] params) throws Exception;
 
     void getTransactionInfo(String[] params) throws Exception;
+
+    void getTransactionIDs(String[] params) throws Exception;
 }

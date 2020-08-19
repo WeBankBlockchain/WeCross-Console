@@ -237,29 +237,49 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void getTransactionIDsHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Get transaction ids of 2pc");
+        System.out.println("Usage: getTransactionIDs [path] [account] [option]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("account -- choose an account to sign");
+        System.out.println("option -- 0 all, 1 finished, 2 unfinished");
+        ConsoleUtils.singleLine();
+    }
+
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Deploy contract in BCOS chain");
+        System.out.println("Deploy contract and register contract info to CNS in BCOS chain ");
         System.out.println(
-                "Usage: BCOSDeploy [Path] [Account] [Source file path] [Class name] [Version]");
+                "Usage: bcosDeploy [Path] [Account] [Source file path] [Class name] [Version]");
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be deployed");
         System.out.println("Account -- Choose an account to send transaction");
         System.out.println(
-                "Source file path -- The solidity source code file path, e.g: HelloWorld.sol");
+                "Source file path from conf/ -- The solidity source code file path, e.g: HelloWorld.sol");
         System.out.println("Class name -- The contract to be deploy");
         System.out.println("Version -- The contract version");
+        System.out.println("Example:");
+        System.out.println(
+                "    bcosDeploy payment.bcos.HelloWorld bcos_user1 contracts/solidity/HelloWorld.sol HelloWorld 1.0");
         ConsoleUtils.singleLine();
     }
 
     public static void BCOSRegisterHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Register contract abi in BCOS chain");
-        System.out.println("Usage: bcosRegister [path] [account] [version] [address]");
+        System.out.println("Register contract info to CNS in BCOS chain");
         System.out.println(
-                "path -- [zone.chain.abiName], specify which abi to be registered by name");
-        System.out.println("account -- choose an account to sign");
-        System.out.println("version -- contract version");
-        System.out.println("address -- contract address");
+                "Usage: bcosRegister [Path] [Account] [Source file path] [Contract address] [Version]");
+        System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be register");
+        System.out.println("Account -- Choose an account to send transaction");
+        System.out.println(
+                "Source file path from conf/ -- The solidity source code/solidity abi file path, e.g: HelloWorld.sol or HelloWorld.abi");
+        System.out.println("Contract address -- contract address");
+        System.out.println("Version -- The contract version");
+        System.out.println("Example:");
+        System.out.println(
+                "    bcosRegister payment.bcos.HelloWorld bcos_user1 contracts/solidity/HelloWorld.sol 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
+        System.out.println(
+                "    bcosRegister payment.bcos.HelloWorld bcos_user1 /data/app/HelloWorld.abi 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
         ConsoleUtils.singleLine();
     }
 
@@ -270,14 +290,15 @@ public class HelpInfo {
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be installed by name");
         System.out.println("account -- choose an account to sign");
-        System.out.println("version -- contract version");
         System.out.println("orgName -- organization");
+        System.out.println("sourcePath -- chaincode project dir from conf/");
+        System.out.println("version -- contract version");
         System.out.println("language -- contract language GO_LANG/JAVA");
         System.out.println("Example:");
         System.out.println(
-                "    fabricInstall payment.fabric.sacc fabric_admin_org1 1.0 Org1 GO_LANG");
+                "    fabricInstall payment.fabric.sacc fabric_admin_org1 Org1 contracts/chaincode/sacc 1.0 GO_LANG");
         System.out.println(
-                "    fabricInstall payment.fabric.sacc fabric_admin_org2 1.0 Org2 GO_LANG");
+                "    fabricInstall payment.fabric.sacc fabric_admin_org2 Org2 contracts/chaincode/sacc 1.0 GO_LANG");
         ConsoleUtils.singleLine();
     }
 
@@ -289,14 +310,41 @@ public class HelpInfo {
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be instantiated by name");
         System.out.println("account -- choose an account to sign");
+        System.out.println("orgNames -- every organization which has installed the chaincode");
+        System.out.println("sourcePath -- chaincode project dir from conf/");
         System.out.println("version -- contract version");
-        System.out.println("orgName -- organization");
         System.out.println("language -- contract language");
-        System.out.println("policy -- endorsement policy");
+        System.out.println(
+                "policy -- endorsement policy file name (default means OR(every endorser))");
         System.out.println("initArgs -- args of int function");
         System.out.println("Example:");
         System.out.println(
-                "    fabricInstantiate payment.fabric.sacc fabric_admin 1.0 [\"Org1\",\"Org2\"] GO_LANG OR(\"Org1MSP.peer\",\"Org2MSP.peer\") [\"a\",\"10\"]");
+                "    fabricInstantiate payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG default [\"a\",\"10\"]");
+        System.out.println(
+                "    fabricInstantiate payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG policy.yaml [\"a\",\"10\"]");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void fabricUpgradeHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Upgrade chaincode in fabric chain");
+        System.out.println(
+                "Usage: fabricUpgrade [path] [account] [version] [orgName] [language] [policy] [initArgs]");
+        System.out.println(
+                "path -- [zone.chain.contractName], specify which contract to be instantiated by name");
+        System.out.println("account -- choose an account to sign");
+        System.out.println("orgNames -- every organization which has installed the chaincode");
+        System.out.println("sourcePath -- chaincode project dir from conf/");
+        System.out.println("version -- contract version");
+        System.out.println("language -- contract language");
+        System.out.println(
+                "policy -- endorsement policy file name (default means OR(every endorser))");
+        System.out.println("initArgs -- args of int function");
+        System.out.println("Example:");
+        System.out.println(
+                "    fabricUpgrade payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG default [\"a\",\"10\"]");
+        System.out.println(
+                "    fabricUpgrade payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG policy.yaml [\"a\",\"10\"]");
         ConsoleUtils.singleLine();
     }
 

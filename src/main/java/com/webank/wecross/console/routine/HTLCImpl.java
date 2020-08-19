@@ -40,8 +40,8 @@ public class HTLCImpl implements HTLCFace {
         } else {
             BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
             int doubleInterval = interval * 2;
-            BigInteger t0 = now.add(BigInteger.valueOf(interval));
-            BigInteger t1 = now.add(BigInteger.valueOf(doubleInterval));
+            BigInteger t0 = now.add(BigInteger.valueOf(doubleInterval));
+            BigInteger t1 = now.add(BigInteger.valueOf(interval));
             System.out.println("timelock0: " + t0);
             System.out.println("timelock1: " + t1);
         }
@@ -56,8 +56,8 @@ public class HTLCImpl implements HTLCFace {
 
         Hash hash = new Hash();
         String secret = hash.getRandom(32);
-        System.out.println("secret: " + secret);
         System.out.println("hash  : " + hash.sha256(secret));
+        System.out.println("secret: " + secret);
     }
 
     @Override
@@ -145,6 +145,7 @@ public class HTLCImpl implements HTLCFace {
             ConsoleUtils.printJson(response.toString());
             return;
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
+            logger.warn("TxError: " + response.getReceipt().toString());
             ConsoleUtils.printJson(receipt.toString());
             return;
         } else {
@@ -182,6 +183,10 @@ public class HTLCImpl implements HTLCFace {
                 System.out.println("hash not matched");
                 return false;
             }
+        }
+
+        if (params[6].equals(params[7]) || params[10].equals(params[11])) {
+            System.out.println("the sender and receiver must be different");
         }
 
         BigInteger amount0 = new BigInteger(params[8]);
