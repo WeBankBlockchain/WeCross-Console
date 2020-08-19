@@ -161,12 +161,18 @@ public class Shell {
                     case "call":
                         {
                             rpcFace.call(params, pathMaps);
+                            if (params.length >= 4) {
+                                JlineUtils.addContractMethodCompleters(completers, params[3]);
+                            }
                             break;
                         }
                     case "send":
                     case "sendTransaction":
                         {
                             rpcFace.sendTransaction(params, pathMaps);
+                            if (params.length >= 4) {
+                                JlineUtils.addContractMethodCompleters(completers, params[3]);
+                            }
                             break;
                         }
                     case "genTimelock":
@@ -246,16 +252,25 @@ public class Shell {
                             if (params.length > 2 && isPath(params[1])) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
+                            if (params.length >= 4) {
+                                JlineUtils.addOrgCompleters(completers, params[3]);
+                            }
                             break;
                         }
                     case "fabricInstantiate":
                         {
                             fabricCommand.instantiate(params);
+                            if (params.length >= 4) {
+                                JlineUtils.addOrgCompleters(completers, params[3]);
+                            }
                             break;
                         }
                     case "fabricUpgrade":
                         {
                             fabricCommand.upgrade(params);
+                            if (params.length >= 4) {
+                                JlineUtils.addOrgCompleters(completers, params[3]);
+                            }
                             break;
                         }
                     default:
