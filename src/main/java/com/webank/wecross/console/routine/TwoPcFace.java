@@ -10,11 +10,11 @@ public interface TwoPcFace {
 
     void execTransaction(String[] params, Map<String, String> pathMaps) throws Exception;
 
-    void startTransaction(String[] params) throws Exception;
+    int startTransaction(String[] params) throws Exception;
 
-    void commitTransaction(String[] params) throws Exception;
+    int commitTransaction(String[] params) throws Exception;
 
-    void rollbackTransaction(String[] params) throws Exception;
+    int rollbackTransaction(String[] params) throws Exception;
 
     void getTransactionInfo(String[] params) throws Exception;
 

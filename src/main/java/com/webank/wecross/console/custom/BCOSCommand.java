@@ -3,6 +3,8 @@ package com.webank.wecross.console.custom;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
+import com.webank.wecross.console.common.StatusCode;
+import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
@@ -67,18 +69,18 @@ public class BCOSCommand {
      *
      * @params BCOSDeploy [path] [account] [filePath] [className] [version]
      */
-    public void deploy(String[] params) throws Exception {
+    public int deploy(String[] params) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("bcosDeploy");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.BCOSDeployHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length < 6) {
             HelpInfo.promptHelp("bcosDeploy");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String path = params[1];
@@ -114,7 +116,7 @@ public class BCOSCommand {
 
         CommandResponse response =
                 weCrossRPC.customCommand("deploy", path, account, args.toArray()).send();
-        PrintUtils.printCommandResponse(response);
+        return PrintUtils.printCommandResponse(response);
     }
 
     /**
@@ -122,19 +124,19 @@ public class BCOSCommand {
      *
      * @params bcosRegister [path] [account] [filePath] [address] [version]
      */
-    public void register(String[] params) throws Exception {
+    public int register(String[] params) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("bcosRegister");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.BCOSRegisterHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
 
         if (params.length < 6) {
             HelpInfo.promptHelp("bcosRegister");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String path = params[1];
@@ -172,6 +174,6 @@ public class BCOSCommand {
 
         CommandResponse response =
                 weCrossRPC.customCommand("register", path, account, args.toArray()).send();
-        PrintUtils.printCommandResponse(response);
+        return PrintUtils.printCommandResponse(response);
     }
 }

@@ -18,9 +18,9 @@ public interface RPCFace {
 
     void getResourceInfo(String[] params, Map<String, String> pathMaps) throws Exception;
 
-    void call(String[] params, Map<String, String> pathMaps) throws Exception;
+    int call(String[] params, Map<String, String> pathMaps) throws Exception;
 
-    void sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception;
+    int sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception;
 
     Set<String> getPaths();
 

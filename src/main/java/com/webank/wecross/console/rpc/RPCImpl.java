@@ -3,6 +3,8 @@ package com.webank.wecross.console.rpc;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
+import com.webank.wecross.console.common.StatusCode;
+import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
@@ -175,23 +177,23 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public void call(String[] params, Map<String, String> pathMaps) throws Exception {
+    public int call(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("call");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.callHelp();
-            return;
+            return StatusCode.SUCCESS;
         }
         if (params.length < 4) {
             HelpInfo.promptHelp("call");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) {
-            return;
+            return ErrorCode.INVALID_PATH;
         }
 
         String account = params[2];
@@ -212,27 +214,27 @@ public class RPCImpl implements RPCFace {
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        PrintUtils.printTransactionResponse(response, true);
+        return PrintUtils.printTransactionResponse(response, true);
     }
 
     @Override
-    public void sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception {
+    public int sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("sendTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.sendTransactionHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length < 4) {
             HelpInfo.promptHelp("sendTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) {
-            return;
+            return ErrorCode.INVALID_PATH;
         }
 
         String account = params[2];
@@ -253,6 +255,6 @@ public class RPCImpl implements RPCFace {
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        PrintUtils.printTransactionResponse(response, false);
+        return PrintUtils.printTransactionResponse(response, false);
     }
 }

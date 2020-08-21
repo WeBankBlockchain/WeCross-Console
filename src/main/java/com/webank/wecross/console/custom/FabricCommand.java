@@ -1,9 +1,7 @@
 package com.webank.wecross.console.custom;
 
-import com.webank.wecross.console.common.FileUtils;
-import com.webank.wecross.console.common.HelpInfo;
-import com.webank.wecross.console.common.PrintUtils;
-import com.webank.wecross.console.common.TarUtils;
+import com.webank.wecross.console.common.*;
+import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
@@ -21,7 +19,7 @@ public class FabricCommand {
      *
      * @params fabricInstall [path] [account] [orgName] [sourcePath] [version] [language]
      */
-    public void install(String[] params) throws Exception {
+    public int install(String[] params) throws Exception {
         // The command is
         // fabricInstall payment.fabric.sacc fabric_admin_org1 Org1 contracts/chaincode/sacc 1.0
         // GO_LANG
@@ -29,15 +27,15 @@ public class FabricCommand {
         // GO_LANG
         if (params.length == 1) {
             HelpInfo.promptHelp("fabricInstall");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricInstallHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length != 7) {
             HelpInfo.promptHelp("fabricInstall");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String path = params[1];
@@ -59,7 +57,7 @@ public class FabricCommand {
         Object[] args = new Object[] {name, version, orgName, language, codes};
 
         CommandResponse response = weCrossRPC.customCommand("install", path, account, args).send();
-        PrintUtils.printCommandResponse(response);
+        return PrintUtils.printCommandResponse(response);
     }
 
     /**
@@ -68,22 +66,22 @@ public class FabricCommand {
      * @params fabricInstantiate [path] [account] [orgNames] [sourcePath] [version] [language]
      *     [policyFile] [initArgs]
      */
-    public void instantiate(String[] params) throws Exception {
+    public int instantiate(String[] params) throws Exception {
         // The command is:
         // fabricInstantiate payment.fabric.sacc fabric_admin ["Org1","Org2"]
         // contracts/chaincode/sacc 1.0 GO_LANG policy.yaml ["a","10"]
 
         if (params.length == 1) {
             HelpInfo.promptHelp("fabricInstantiate");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricInstantiateHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length != 9) {
             HelpInfo.promptHelp("fabricInstantiate");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String path = params[1];
@@ -108,7 +106,7 @@ public class FabricCommand {
 
         CommandResponse response =
                 weCrossRPC.customCommand("instantiate", path, account, args).send();
-        PrintUtils.printCommandResponse(response);
+        return PrintUtils.printCommandResponse(response);
     }
 
     /**
@@ -117,22 +115,22 @@ public class FabricCommand {
      * @params fabricUpgrade [path] [account] [orgNames] [sourcePath] [version] [language]
      *     [policyFile] [initArgs]
      */
-    public void upgrade(String[] params) throws Exception {
+    public int upgrade(String[] params) throws Exception {
         // The command is:
         // upgrade payment.fabric.sacc fabric_admin ["Org1","Org2"]
         // contracts/chaincode/sacc 2.0 GO_LANG policy.yaml ["a","10"]
 
         if (params.length == 1) {
             HelpInfo.promptHelp("fabricUpgrade");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricUpgradeHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length != 9) {
             HelpInfo.promptHelp("fabricUpgrade");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String path = params[1];
@@ -156,7 +154,7 @@ public class FabricCommand {
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
 
         CommandResponse response = weCrossRPC.customCommand("upgrade", path, account, args).send();
-        PrintUtils.printCommandResponse(response);
+        return PrintUtils.printCommandResponse(response);
     }
 
     private String uniformPath(String path) {

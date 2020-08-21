@@ -3,6 +3,8 @@ package com.webank.wecross.console.routine;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
+import com.webank.wecross.console.common.StatusCode;
+import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
@@ -133,25 +135,25 @@ public class TwoPcImpl implements TwoPcFace {
     }
 
     @Override
-    public void startTransaction(String[] params) throws Exception {
+    public int startTransaction(String[] params) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("startTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.startTransactionHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length < 4) {
             HelpInfo.promptHelp("startTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return;
+            return ErrorCode.INVALID_TXID;
         }
 
         List<String> accounts = new ArrayList<>();
@@ -165,29 +167,29 @@ public class TwoPcImpl implements TwoPcFace {
                                 accounts.toArray(new String[0]),
                                 paths.toArray(new String[0]))
                         .send();
-        PrintUtils.printRoutineResponse(response);
+        return PrintUtils.printRoutineResponse(response);
     }
 
     @Override
-    public void commitTransaction(String[] params) throws Exception {
+    public int commitTransaction(String[] params) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("commitTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.commitTransactionHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length < 4) {
             HelpInfo.promptHelp("commitTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return;
+            return ErrorCode.INVALID_TXID;
         }
 
         List<String> accounts = new ArrayList<>();
@@ -201,29 +203,29 @@ public class TwoPcImpl implements TwoPcFace {
                                 accounts.toArray(new String[0]),
                                 paths.toArray(new String[0]))
                         .send();
-        PrintUtils.printRoutineResponse(response);
+        return PrintUtils.printRoutineResponse(response);
     }
 
     @Override
-    public void rollbackTransaction(String[] params) throws Exception {
+    public int rollbackTransaction(String[] params) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("rollbackTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.rollbackTransactionHelp();
-            return;
+            return StatusCode.ASK_FOR_HELP;
         }
         if (params.length < 4) {
             HelpInfo.promptHelp("rollbackTransaction");
-            return;
+            return ErrorCode.PARAM_MISSING;
         }
 
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return;
+            return ErrorCode.INVALID_TXID;
         }
 
         List<String> accounts = new ArrayList<>();
@@ -237,7 +239,7 @@ public class TwoPcImpl implements TwoPcFace {
                                 accounts.toArray(new String[0]),
                                 paths.toArray(new String[0]))
                         .send();
-        PrintUtils.printRoutineResponse(response);
+        return PrintUtils.printRoutineResponse(response);
     }
 
     @Override

@@ -2,10 +2,7 @@ package com.webank.wecross.console;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.webank.wecross.console.common.ConsoleUtils;
-import com.webank.wecross.console.common.HelpInfo;
-import com.webank.wecross.console.common.JlineUtils;
-import com.webank.wecross.console.common.WelcomeInfo;
+import com.webank.wecross.console.common.*;
 import com.webank.wecross.console.custom.BCOSCommand;
 import com.webank.wecross.console.custom.FabricCommand;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
@@ -160,8 +157,7 @@ public class Shell {
                         }
                     case "call":
                         {
-                            rpcFace.call(params, pathMaps);
-                            if (params.length >= 4) {
+                            if (rpcFace.call(params, pathMaps) == StatusCode.SUCCESS) {
                                 JlineUtils.addContractMethodCompleters(completers, params[3]);
                             }
                             break;
@@ -169,8 +165,7 @@ public class Shell {
                     case "send":
                     case "sendTransaction":
                         {
-                            rpcFace.sendTransaction(params, pathMaps);
-                            if (params.length >= 4) {
+                            if (rpcFace.sendTransaction(params, pathMaps) == StatusCode.SUCCESS) {
                                 JlineUtils.addContractMethodCompleters(completers, params[3]);
                             }
                             break;
@@ -207,8 +202,8 @@ public class Shell {
                         }
                     case "startTransaction":
                         {
-                            twoPcFace.startTransaction(params);
-                            if (params.length >= 4) {
+                            if (twoPcFace.startTransaction(params) == StatusCode.SUCCESS
+                                    && params.length >= 4) {
                                 String[] paramsArgs = new String[params.length - 1];
                                 System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
                                 JlineUtils.addTransactionInfoCompleters(
@@ -219,8 +214,8 @@ public class Shell {
                         }
                     case "commitTransaction":
                         {
-                            twoPcFace.commitTransaction(params);
-                            if (params.length >= 4) {
+                            if (twoPcFace.commitTransaction(params) == StatusCode.SUCCESS
+                                    && params.length >= 4) {
                                 String[] paramsArgs = new String[params.length - 1];
                                 System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
                                 JlineUtils.removeTransactionInfoCompleters(
@@ -231,8 +226,8 @@ public class Shell {
                         }
                     case "rollbackTransaction":
                         {
-                            twoPcFace.rollbackTransaction(params);
-                            if (params.length >= 4) {
+                            if (twoPcFace.rollbackTransaction(params) == StatusCode.SUCCESS
+                                    && params.length >= 4) {
                                 String[] paramsArgs = new String[params.length - 1];
                                 System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
                                 JlineUtils.removeTransactionInfoCompleters(
@@ -253,43 +248,41 @@ public class Shell {
                         }
                     case "bcosDeploy":
                         {
-                            bcosCommand.deploy(params);
-                            if (params.length > 2 && isPath(params[1])) {
+                            if (bcosCommand.deploy(params) == StatusCode.SUCCESS
+                                    && params.length > 2) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
                         }
                     case "bcosRegister":
                         {
-                            bcosCommand.register(params);
-                            if (params.length > 2 && isPath(params[1])) {
+                            if (bcosCommand.register(params) == StatusCode.SUCCESS
+                                    && params.length > 2) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
                         }
                     case "fabricInstall":
                         {
-                            fabricCommand.install(params);
-                            if (params.length > 2 && isPath(params[1])) {
+                            if (fabricCommand.install(params) == StatusCode.SUCCESS
+                                    && params.length >= 4) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
-                            }
-                            if (params.length >= 4) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
                         }
                     case "fabricInstantiate":
                         {
-                            fabricCommand.instantiate(params);
-                            if (params.length >= 4) {
+                            if (fabricCommand.instantiate(params) == StatusCode.SUCCESS
+                                    && params.length >= 4) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
                         }
                     case "fabricUpgrade":
                         {
-                            fabricCommand.upgrade(params);
-                            if (params.length >= 4) {
+                            if (fabricCommand.upgrade(params) == StatusCode.SUCCESS
+                                    && params.length >= 4) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
