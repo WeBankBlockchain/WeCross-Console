@@ -99,12 +99,22 @@ public class ConsoleUtils {
         return input;
     }
 
-    public static String[] parseAgrs(String[] args) {
+    public static String[] parseArgs(String[] args) {
         String[] result = new String[args.length];
         for (int i = 0; i < args.length; i++) {
             result[i] = parseString(args[i]);
         }
         return result;
+    }
+
+    public static String jointArgsToStringWithSpace(String[] args) {
+        String[] parsedArgs = parseArgs(args);
+        StringBuffer result = new StringBuffer();
+        for (String s : parsedArgs) {
+            result.append(s + " ");
+        }
+        result.deleteCharAt(result.length() - 1);
+        return result.toString();
     }
 
     public static void printJson(String jsonStr) {

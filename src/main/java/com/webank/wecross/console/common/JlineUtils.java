@@ -23,9 +23,9 @@ public class JlineUtils {
     private static Set<String> accounts = new HashSet<>();
     private static Set<String> pathVars = new HashSet<>();
     private static Set<String> resourceVars = new HashSet<>();
-
     private static Set<String> contractMethods = new HashSet<>();
     private static Set<String> orgs = new HashSet<>();
+    private static Map<Integer, String> transactionInfoMap = new HashMap<>();
 
     private static List<String> pathVarSupportedCommands =
             Arrays.asList(
@@ -187,6 +187,37 @@ public class JlineUtils {
         addCommandCompleters(completers);
         addPathsCompleters(completers, paths);
         addVarsCompleters(completers, resourceVars, pathVars);
+    }
+
+    public static void addTransactionInfoCompleters(
+            List<Completer> completers, String transactionInfo) {
+        if (!transactionInfoMap.containsValue(transactionInfo)) {
+            transactionInfoMap.put(completers.size() - 1, transactionInfo);
+            completers.add(
+                    completers.size() - 1,
+                    new ArgumentCompleter(
+                            new StringsCompleter("commitTransaction"),
+                            new StringsCompleter(transactionInfo)));
+            completers.add(
+                    completers.size() - 1,
+                    new ArgumentCompleter(
+                            new StringsCompleter("rollbackTransaction"),
+                            new StringsCompleter(transactionInfo)));
+        }
+    }
+
+    public static void removeTransactionInfoCompleters(
+            List<Completer> completers, String transactionInfo) {
+        if (transactionInfoMap.containsValue(transactionInfo)) {
+            for (Integer key : transactionInfoMap.keySet()) {
+                if (transactionInfoMap.get(key).equals(transactionInfo)) {
+                    // remove commitTransactionCompleter and rollbackTransactionCompleter
+                    completers.remove(key.intValue());
+                    completers.remove(key.intValue());
+                    transactionInfoMap.remove(key);
+                }
+            }
+        }
     }
 
     public static void addPathCompleters(List<Completer> completers, String path) {

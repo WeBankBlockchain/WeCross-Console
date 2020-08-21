@@ -208,7 +208,7 @@ public class RPCImpl implements RPCFace {
                                     path,
                                     account,
                                     method,
-                                    ConsoleUtils.parseAgrs(
+                                    ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
@@ -249,7 +249,7 @@ public class RPCImpl implements RPCFace {
                                     path,
                                     account,
                                     method,
-                                    ConsoleUtils.parseAgrs(
+                                    ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }

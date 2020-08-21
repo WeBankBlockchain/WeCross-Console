@@ -208,16 +208,37 @@ public class Shell {
                     case "startTransaction":
                         {
                             twoPcFace.startTransaction(params);
+                            if (params.length >= 4) {
+                                String[] paramsArgs = new String[params.length - 1];
+                                System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
+                                JlineUtils.addTransactionInfoCompleters(
+                                        completers,
+                                        ConsoleUtils.jointArgsToStringWithSpace(paramsArgs));
+                            }
                             break;
                         }
                     case "commitTransaction":
                         {
                             twoPcFace.commitTransaction(params);
+                            if (params.length >= 4) {
+                                String[] paramsArgs = new String[params.length - 1];
+                                System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
+                                JlineUtils.removeTransactionInfoCompleters(
+                                        completers,
+                                        ConsoleUtils.jointArgsToStringWithSpace(paramsArgs));
+                            }
                             break;
                         }
                     case "rollbackTransaction":
                         {
                             twoPcFace.rollbackTransaction(params);
+                            if (params.length >= 4) {
+                                String[] paramsArgs = new String[params.length - 1];
+                                System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
+                                JlineUtils.removeTransactionInfoCompleters(
+                                        completers,
+                                        ConsoleUtils.jointArgsToStringWithSpace(paramsArgs));
+                            }
                             break;
                         }
                     case "getTransactionInfo":

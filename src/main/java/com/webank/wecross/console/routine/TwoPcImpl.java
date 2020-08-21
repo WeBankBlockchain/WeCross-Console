@@ -65,7 +65,7 @@ public class TwoPcImpl implements TwoPcFace {
                                     path,
                                     account,
                                     method,
-                                    ConsoleUtils.parseAgrs(
+                                    ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 5, params.length)))
                             .send();
         }
@@ -125,7 +125,7 @@ public class TwoPcImpl implements TwoPcFace {
                                     path,
                                     account,
                                     method,
-                                    ConsoleUtils.parseAgrs(
+                                    ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 6, params.length)))
                             .send();
         }
