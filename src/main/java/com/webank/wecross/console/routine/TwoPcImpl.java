@@ -167,14 +167,42 @@ public class TwoPcImpl implements TwoPcFace {
                                 accounts.toArray(new String[0]),
                                 paths.toArray(new String[0]))
                         .send();
-        return PrintUtils.printRoutineResponse(response);
+        int execStatus = PrintUtils.printRoutineResponse(response);
+        if (execStatus == StatusCode.SUCCESS) {
+            Map<String, List<String>> txMap = new HashMap<>();
+            txMap.put("accounts", accounts);
+            txMap.put("paths", paths);
+            ConsoleUtils.runtimeTransactionInfo.put(transactionID, txMap);
+            ConsoleUtils.runtimeTransactionIDs.add(transactionID);
+        }
+        return execStatus;
     }
 
     @Override
     public int commitTransaction(String[] params) throws Exception {
+        // only support one console do one transaction
         if (params.length == 1) {
-            HelpInfo.promptHelp("commitTransaction");
-            return ErrorCode.PARAM_MISSING;
+            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                    && !ConsoleUtils.runtimeTransactionInfo.isEmpty()) {
+                String runtimeTXID = ConsoleUtils.runtimeTransactionIDs.get(0);
+                RoutineResponse response =
+                        weCrossRPC
+                                .commitTransaction(
+                                        runtimeTXID,
+                                        ConsoleUtils.runtimeTransactionInfo
+                                                .get(runtimeTXID)
+                                                .get("accounts")
+                                                .toArray(new String[0]),
+                                        ConsoleUtils.runtimeTransactionInfo
+                                                .get(runtimeTXID)
+                                                .get("paths")
+                                                .toArray(new String[0]))
+                                .send();
+                return PrintUtils.printRoutineResponse(response);
+            } else {
+                HelpInfo.promptHelp("commitTransaction");
+                return ErrorCode.PARAM_MISSING;
+            }
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.commitTransactionHelp();
@@ -209,8 +237,27 @@ public class TwoPcImpl implements TwoPcFace {
     @Override
     public int rollbackTransaction(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("rollbackTransaction");
-            return ErrorCode.PARAM_MISSING;
+            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                    && !ConsoleUtils.runtimeTransactionInfo.isEmpty()) {
+                String runtimeTXID = ConsoleUtils.runtimeTransactionIDs.get(0);
+                RoutineResponse response =
+                        weCrossRPC
+                                .rollbackTransaction(
+                                        runtimeTXID,
+                                        ConsoleUtils.runtimeTransactionInfo
+                                                .get(runtimeTXID)
+                                                .get("accounts")
+                                                .toArray(new String[0]),
+                                        ConsoleUtils.runtimeTransactionInfo
+                                                .get(runtimeTXID)
+                                                .get("paths")
+                                                .toArray(new String[0]))
+                                .send();
+                return PrintUtils.printRoutineResponse(response);
+            } else {
+                HelpInfo.promptHelp("rollbackTransaction");
+                return ErrorCode.PARAM_MISSING;
+            }
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.rollbackTransactionHelp();

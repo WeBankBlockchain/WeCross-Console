@@ -25,8 +25,7 @@ public class JlineUtils {
     private static Set<String> resourceVars = new HashSet<>();
     private static Set<String> contractMethods = new HashSet<>();
     private static Set<String> orgs = new HashSet<>();
-    private static Map<Integer, String> transactionInfoMap = new HashMap<>();
-
+    private static Map<Integer, String> indexTransactionIDMap = new HashMap<>();
     private static List<String> pathVarSupportedCommands =
             Arrays.asList(
                     "status",
@@ -190,31 +189,32 @@ public class JlineUtils {
     }
 
     public static void addTransactionInfoCompleters(
-            List<Completer> completers, String transactionInfo) {
-        if (!transactionInfoMap.containsValue(transactionInfo)) {
-            transactionInfoMap.put(completers.size() - 1, transactionInfo);
+            List<Completer> completers, String transactionID) {
+        if (ConsoleUtils.runtimeTransactionIDs.contains(transactionID)) {
+            indexTransactionIDMap.put(completers.size() - 1, transactionID);
+            String runtimeTransaction = ConsoleUtils.runtimeTransactionInfoToString(transactionID);
             completers.add(
                     completers.size() - 1,
                     new ArgumentCompleter(
                             new StringsCompleter("commitTransaction"),
-                            new StringsCompleter(transactionInfo)));
+                            new StringsCompleter(runtimeTransaction)));
             completers.add(
                     completers.size() - 1,
                     new ArgumentCompleter(
                             new StringsCompleter("rollbackTransaction"),
-                            new StringsCompleter(transactionInfo)));
+                            new StringsCompleter(runtimeTransaction)));
         }
     }
 
     public static void removeTransactionInfoCompleters(
-            List<Completer> completers, String transactionInfo) {
-        if (transactionInfoMap.containsValue(transactionInfo)) {
-            for (Integer key : transactionInfoMap.keySet()) {
-                if (transactionInfoMap.get(key).equals(transactionInfo)) {
+            List<Completer> completers, String transactionID) {
+        if (indexTransactionIDMap.containsValue(transactionID)) {
+            for (Integer key : indexTransactionIDMap.keySet()) {
+                if (indexTransactionIDMap.get(key).equals(transactionID)) {
                     // remove commitTransactionCompleter and rollbackTransactionCompleter
                     completers.remove(key.intValue());
                     completers.remove(key.intValue());
-                    transactionInfoMap.remove(key);
+                    indexTransactionIDMap.remove(key);
                 }
             }
         }

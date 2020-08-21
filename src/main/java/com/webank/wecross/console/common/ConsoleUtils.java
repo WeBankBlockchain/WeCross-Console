@@ -11,6 +11,23 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ConsoleUtils {
+    public static List<String> runtimeTransactionIDs = new ArrayList<>();
+    public static Map<String, Map<String, List<String>>> runtimeTransactionInfo = new HashMap<>();
+
+    public static String runtimeTransactionInfoToString(String transactionID) {
+        if (!runtimeTransactionIDs.contains(transactionID)) {
+            return null;
+        }
+        String result = transactionID + " ";
+        for (String accountString : runtimeTransactionInfo.get(transactionID).get("accounts")) {
+            result = result.concat(accountString + " ");
+        }
+        for (String pathString : runtimeTransactionInfo.get(transactionID).get("paths")) {
+            result = result.concat(pathString + " ");
+        }
+        return result.substring(0, result.length() - 1);
+    }
+
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
@@ -109,12 +126,11 @@ public class ConsoleUtils {
 
     public static String jointArgsToStringWithSpace(String[] args) {
         String[] parsedArgs = parseArgs(args);
-        StringBuffer result = new StringBuffer();
+        String result = "";
         for (String s : parsedArgs) {
-            result.append(s + " ");
+            result = result.concat(s + " ");
         }
-        result.deleteCharAt(result.length() - 1);
-        return result.toString();
+        return result.substring(0, result.length() - 1);
     }
 
     public static void printJson(String jsonStr) {

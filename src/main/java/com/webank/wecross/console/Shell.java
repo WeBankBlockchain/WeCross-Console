@@ -202,37 +202,30 @@ public class Shell {
                         }
                     case "startTransaction":
                         {
-                            if (twoPcFace.startTransaction(params) == StatusCode.SUCCESS
-                                    && params.length >= 4) {
-                                String[] paramsArgs = new String[params.length - 1];
-                                System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
-                                JlineUtils.addTransactionInfoCompleters(
-                                        completers,
-                                        ConsoleUtils.jointArgsToStringWithSpace(paramsArgs));
+                            if (twoPcFace.startTransaction(params) == StatusCode.SUCCESS) {
+                                JlineUtils.addTransactionInfoCompleters(completers, params[1]);
                             }
                             break;
                         }
                     case "commitTransaction":
                         {
-                            if (twoPcFace.commitTransaction(params) == StatusCode.SUCCESS
-                                    && params.length >= 4) {
-                                String[] paramsArgs = new String[params.length - 1];
-                                System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
+                            // only support one console do one transaction
+                            if (twoPcFace.commitTransaction(params) == StatusCode.SUCCESS) {
                                 JlineUtils.removeTransactionInfoCompleters(
-                                        completers,
-                                        ConsoleUtils.jointArgsToStringWithSpace(paramsArgs));
+                                        completers, ConsoleUtils.runtimeTransactionIDs.get(0));
+                                ConsoleUtils.runtimeTransactionIDs.clear();
+                                ConsoleUtils.runtimeTransactionInfo.clear();
                             }
                             break;
                         }
                     case "rollbackTransaction":
                         {
-                            if (twoPcFace.rollbackTransaction(params) == StatusCode.SUCCESS
-                                    && params.length >= 4) {
-                                String[] paramsArgs = new String[params.length - 1];
-                                System.arraycopy(params, 1, paramsArgs, 0, params.length - 1);
+                            // only support one console do one transaction
+                            if (twoPcFace.rollbackTransaction(params) == StatusCode.SUCCESS) {
                                 JlineUtils.removeTransactionInfoCompleters(
-                                        completers,
-                                        ConsoleUtils.jointArgsToStringWithSpace(paramsArgs));
+                                        completers, ConsoleUtils.runtimeTransactionIDs.get(0));
+                                ConsoleUtils.runtimeTransactionIDs.clear();
+                                ConsoleUtils.runtimeTransactionInfo.clear();
                             }
                             break;
                         }
@@ -248,24 +241,21 @@ public class Shell {
                         }
                     case "bcosDeploy":
                         {
-                            if (bcosCommand.deploy(params) == StatusCode.SUCCESS
-                                    && params.length > 2) {
+                            if (bcosCommand.deploy(params) == StatusCode.SUCCESS) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
                         }
                     case "bcosRegister":
                         {
-                            if (bcosCommand.register(params) == StatusCode.SUCCESS
-                                    && params.length > 2) {
+                            if (bcosCommand.register(params) == StatusCode.SUCCESS) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
                         }
                     case "fabricInstall":
                         {
-                            if (fabricCommand.install(params) == StatusCode.SUCCESS
-                                    && params.length >= 4) {
+                            if (fabricCommand.install(params) == StatusCode.SUCCESS) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
@@ -273,16 +263,14 @@ public class Shell {
                         }
                     case "fabricInstantiate":
                         {
-                            if (fabricCommand.instantiate(params) == StatusCode.SUCCESS
-                                    && params.length >= 4) {
+                            if (fabricCommand.instantiate(params) == StatusCode.SUCCESS) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
                         }
                     case "fabricUpgrade":
                         {
-                            if (fabricCommand.upgrade(params) == StatusCode.SUCCESS
-                                    && params.length >= 4) {
+                            if (fabricCommand.upgrade(params) == StatusCode.SUCCESS) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
