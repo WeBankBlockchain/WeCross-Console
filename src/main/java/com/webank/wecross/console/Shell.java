@@ -2,9 +2,13 @@ package com.webank.wecross.console;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.webank.wecross.console.common.*;
+import com.webank.wecross.console.common.ConsoleUtils;
+import com.webank.wecross.console.common.HelpInfo;
+import com.webank.wecross.console.common.JlineUtils;
+import com.webank.wecross.console.common.WelcomeInfo;
 import com.webank.wecross.console.custom.BCOSCommand;
 import com.webank.wecross.console.custom.FabricCommand;
+import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
 import com.webank.wecross.console.routine.HTLCFace;
@@ -157,7 +161,8 @@ public class Shell {
                         }
                     case "call":
                         {
-                            if (rpcFace.call(params, pathMaps) == StatusCode.SUCCESS) {
+                            rpcFace.call(params, pathMaps);
+                            if (params.length >= 4) {
                                 JlineUtils.addContractMethodCompleters(completers, params[3]);
                             }
                             break;
@@ -165,7 +170,8 @@ public class Shell {
                     case "send":
                     case "sendTransaction":
                         {
-                            if (rpcFace.sendTransaction(params, pathMaps) == StatusCode.SUCCESS) {
+                            rpcFace.sendTransaction(params, pathMaps);
+                            if (params.length >= 4) {
                                 JlineUtils.addContractMethodCompleters(completers, params[3]);
                             }
                             break;
@@ -202,7 +208,8 @@ public class Shell {
                         }
                     case "startTransaction":
                         {
-                            if (twoPcFace.startTransaction(params) == StatusCode.SUCCESS) {
+                            twoPcFace.startTransaction(params);
+                            if (params.length >= 4) {
                                 JlineUtils.addTransactionInfoCompleters(completers, params[1]);
                             }
                             break;
@@ -210,7 +217,9 @@ public class Shell {
                     case "commitTransaction":
                         {
                             // only support one console do one transaction
-                            if (twoPcFace.commitTransaction(params) == StatusCode.SUCCESS) {
+                            twoPcFace.commitTransaction(params);
+                            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                                    && params.length != 2) {
                                 JlineUtils.removeTransactionInfoCompleters(
                                         completers, ConsoleUtils.runtimeTransactionIDs.get(0));
                                 ConsoleUtils.runtimeTransactionIDs.clear();
@@ -221,7 +230,9 @@ public class Shell {
                     case "rollbackTransaction":
                         {
                             // only support one console do one transaction
-                            if (twoPcFace.rollbackTransaction(params) == StatusCode.SUCCESS) {
+                            twoPcFace.rollbackTransaction(params);
+                            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                                    && params.length != 2) {
                                 JlineUtils.removeTransactionInfoCompleters(
                                         completers, ConsoleUtils.runtimeTransactionIDs.get(0));
                                 ConsoleUtils.runtimeTransactionIDs.clear();
@@ -241,21 +252,24 @@ public class Shell {
                         }
                     case "bcosDeploy":
                         {
-                            if (bcosCommand.deploy(params) == StatusCode.SUCCESS) {
+                            bcosCommand.deploy(params);
+                            if (params.length >= 6) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
                         }
                     case "bcosRegister":
                         {
-                            if (bcosCommand.register(params) == StatusCode.SUCCESS) {
+                            bcosCommand.register(params);
+                            if (params.length >= 6) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
                         }
                     case "fabricInstall":
                         {
-                            if (fabricCommand.install(params) == StatusCode.SUCCESS) {
+                            fabricCommand.install(params);
+                            if (params.length == 7) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
@@ -263,14 +277,17 @@ public class Shell {
                         }
                     case "fabricInstantiate":
                         {
-                            if (fabricCommand.instantiate(params) == StatusCode.SUCCESS) {
+                            fabricCommand.instantiate(params);
+                            if (params.length == 9) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
+
                             break;
                         }
                     case "fabricUpgrade":
                         {
-                            if (fabricCommand.upgrade(params) == StatusCode.SUCCESS) {
+                            fabricCommand.upgrade(params);
+                            if (params.length == 9) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
@@ -304,6 +321,13 @@ public class Shell {
                         }
                 }
                 System.out.println();
+            } catch (WeCrossConsoleException e) {
+                if (e.getErrorCode() == ErrorCode.PARAM_MISSING) {
+                    HelpInfo.promptHelp(e.getMessage());
+                } else {
+                    logger.info("Exception: ", e);
+                    System.out.println("Error: " + e.getMessage());
+                }
             } catch (Exception e) {
                 logger.info("Exception: ", e);
                 System.out.println("Error: " + e.getMessage());

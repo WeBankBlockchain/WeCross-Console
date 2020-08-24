@@ -1,6 +1,8 @@
 package com.webank.wecross.console.common;
 
 import com.webank.wecross.console.exception.ErrorCode;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
+import com.webank.wecrosssdk.common.StatusCode;
 import com.webank.wecrosssdk.rpc.methods.response.*;
 import java.util.Arrays;
 import org.slf4j.Logger;
@@ -9,27 +11,27 @@ import org.slf4j.LoggerFactory;
 public class PrintUtils {
     private static Logger logger = LoggerFactory.getLogger(PrintUtils.class);
 
-    public static int printTransactionResponse(TransactionResponse response, boolean isCall) {
+    public static void printTransactionResponse(TransactionResponse response, boolean isCall)
+            throws WeCrossConsoleException {
         if (response == null) {
-            System.out.println("Error: no response");
-            return ErrorCode.NO_RESPONSE;
+            throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
                     "Error: code("
                             + response.getErrorCode()
                             + "), message("
                             + response.getMessage()
                             + ")");
-            return ErrorCode.INTERNAL_ERROR;
         } else if (response.getReceipt().getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println(
+            logger.warn("TxError: " + response.getReceipt().toString());
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
                     "Error: code("
                             + response.getReceipt().getErrorCode()
                             + "), message("
                             + response.getReceipt().getErrorMessage()
                             + ")");
-            logger.warn("TxError: " + response.getReceipt().toString());
-            return ErrorCode.INTERNAL_ERROR;
         } else {
             if (!isCall) {
                 System.out.println("Txhash  : " + response.getReceipt().getHash());
@@ -39,50 +41,46 @@ public class PrintUtils {
             } else {
                 System.out.println("Result: " + Arrays.toString(response.getReceipt().getResult()));
             }
-            return StatusCode.SUCCESS;
         }
     }
 
-    public static int printRoutineResponse(RoutineResponse response) {
+    public static void printRoutineResponse(RoutineResponse response)
+            throws WeCrossConsoleException {
         if (response == null) {
-            System.out.println("Error: no response");
-            return ErrorCode.NO_RESPONSE;
+            throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
                     "Error: code("
                             + response.getErrorCode()
                             + "), message("
                             + response.getMessage()
                             + ")");
-            return ErrorCode.INTERNAL_ERROR;
         } else {
             System.out.println("Result: success!");
-            return StatusCode.SUCCESS;
         }
     }
 
-    public static int printRoutineInfoResponse(RoutineInfoResponse response) {
+    public static void printRoutineInfoResponse(RoutineInfoResponse response) throws Exception {
         if (response == null) {
-            System.out.println("Error: no response");
-            return ErrorCode.NO_RESPONSE;
+            throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
                     "Error: code("
                             + response.getErrorCode()
                             + "), message("
                             + response.getMessage()
                             + ")");
-            return ErrorCode.INTERNAL_ERROR;
         } else {
             ConsoleUtils.printJson(response.getInfo());
-            return StatusCode.SUCCESS;
         }
     }
 
-    public static int printRoutineIDResponse(RoutineIDResponse response) {
+    public static void printRoutineIDResponse(RoutineIDResponse response) {
         if (response == null) {
             System.out.println("Error: no response");
-            return ErrorCode.NO_RESPONSE;
+            return;
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
             System.out.println(
                     "Error: code("
@@ -90,28 +88,26 @@ public class PrintUtils {
                             + "), message("
                             + response.getMessage()
                             + ")");
-            return ErrorCode.INTERNAL_ERROR;
+            return;
         } else {
             System.out.println("Result: " + Arrays.toString(response.getIDs()));
-            return StatusCode.SUCCESS;
         }
     }
 
-    public static int printCommandResponse(CommandResponse response) {
+    public static void printCommandResponse(CommandResponse response)
+            throws WeCrossConsoleException {
         if (response == null) {
-            System.out.println("Error: no response");
-            return ErrorCode.NO_RESPONSE;
+            throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
                     "Error: code("
                             + response.getErrorCode()
                             + "), message("
                             + response.getMessage()
                             + ")");
-            return ErrorCode.INTERNAL_ERROR;
         } else {
             System.out.println("Result: " + response.getResult());
-            return StatusCode.SUCCESS;
         }
     }
 }

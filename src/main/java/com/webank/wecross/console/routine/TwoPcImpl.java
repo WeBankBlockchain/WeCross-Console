@@ -3,8 +3,8 @@ package com.webank.wecross.console.routine;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
-import com.webank.wecross.console.common.StatusCode;
 import com.webank.wecross.console.exception.ErrorCode;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
@@ -135,25 +135,23 @@ public class TwoPcImpl implements TwoPcFace {
     }
 
     @Override
-    public int startTransaction(String[] params) throws Exception {
+    public void startTransaction(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("startTransaction");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "startTransaction");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.startTransactionHelp();
-            return StatusCode.ASK_FOR_HELP;
+            return;
         }
         if (params.length < 4) {
-            HelpInfo.promptHelp("startTransaction");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "startTransaction");
         }
 
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_TXID,
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return ErrorCode.INVALID_TXID;
         }
 
         List<String> accounts = new ArrayList<>();
@@ -167,19 +165,17 @@ public class TwoPcImpl implements TwoPcFace {
                                 accounts.toArray(new String[0]),
                                 paths.toArray(new String[0]))
                         .send();
-        int execStatus = PrintUtils.printRoutineResponse(response);
-        if (execStatus == StatusCode.SUCCESS) {
-            Map<String, List<String>> txMap = new HashMap<>();
-            txMap.put("accounts", accounts);
-            txMap.put("paths", paths);
-            ConsoleUtils.runtimeTransactionInfo.put(transactionID, txMap);
-            ConsoleUtils.runtimeTransactionIDs.add(transactionID);
-        }
-        return execStatus;
+
+        PrintUtils.printRoutineResponse(response);
+        Map<String, List<String>> txMap = new HashMap<>();
+        txMap.put("accounts", accounts);
+        txMap.put("paths", paths);
+        ConsoleUtils.runtimeTransactionInfo.put(transactionID, txMap);
+        ConsoleUtils.runtimeTransactionIDs.add(transactionID);
     }
 
     @Override
-    public int commitTransaction(String[] params) throws Exception {
+    public void commitTransaction(String[] params) throws Exception {
         // only support one console do one transaction
         if (params.length == 1) {
             if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
@@ -198,26 +194,25 @@ public class TwoPcImpl implements TwoPcFace {
                                                 .get("paths")
                                                 .toArray(new String[0]))
                                 .send();
-                return PrintUtils.printRoutineResponse(response);
+                PrintUtils.printRoutineResponse(response);
+                return;
             } else {
-                HelpInfo.promptHelp("commitTransaction");
-                return ErrorCode.PARAM_MISSING;
+                throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
             }
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.commitTransactionHelp();
-            return StatusCode.ASK_FOR_HELP;
+            return;
         }
         if (params.length < 4) {
-            HelpInfo.promptHelp("commitTransaction");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
         }
 
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_TXID,
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return ErrorCode.INVALID_TXID;
         }
 
         List<String> accounts = new ArrayList<>();
@@ -231,11 +226,11 @@ public class TwoPcImpl implements TwoPcFace {
                                 accounts.toArray(new String[0]),
                                 paths.toArray(new String[0]))
                         .send();
-        return PrintUtils.printRoutineResponse(response);
+        PrintUtils.printRoutineResponse(response);
     }
 
     @Override
-    public int rollbackTransaction(String[] params) throws Exception {
+    public void rollbackTransaction(String[] params) throws Exception {
         if (params.length == 1) {
             if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
                     && !ConsoleUtils.runtimeTransactionInfo.isEmpty()) {
@@ -253,26 +248,25 @@ public class TwoPcImpl implements TwoPcFace {
                                                 .get("paths")
                                                 .toArray(new String[0]))
                                 .send();
-                return PrintUtils.printRoutineResponse(response);
+                PrintUtils.printRoutineResponse(response);
+                return;
             } else {
-                HelpInfo.promptHelp("rollbackTransaction");
-                return ErrorCode.PARAM_MISSING;
+                throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
             }
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.rollbackTransactionHelp();
-            return StatusCode.ASK_FOR_HELP;
+            return;
         }
         if (params.length < 4) {
-            HelpInfo.promptHelp("rollbackTransaction");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
         }
 
         String transactionID = params[1];
         if (!ConsoleUtils.isNumeric(transactionID)) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_TXID,
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return ErrorCode.INVALID_TXID;
         }
 
         List<String> accounts = new ArrayList<>();
@@ -286,7 +280,7 @@ public class TwoPcImpl implements TwoPcFace {
                                 accounts.toArray(new String[0]),
                                 paths.toArray(new String[0]))
                         .send();
-        return PrintUtils.printRoutineResponse(response);
+        PrintUtils.printRoutineResponse(response);
     }
 
     @Override

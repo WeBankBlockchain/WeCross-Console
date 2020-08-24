@@ -3,8 +3,8 @@ package com.webank.wecross.console.rpc;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
-import com.webank.wecross.console.common.StatusCode;
 import com.webank.wecross.console.exception.ErrorCode;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
@@ -177,23 +177,22 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public int call(String[] params, Map<String, String> pathMaps) throws Exception {
+    public void call(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("call");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "call");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.callHelp();
-            return StatusCode.SUCCESS;
+            return;
         }
         if (params.length < 4) {
-            HelpInfo.promptHelp("call");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "call");
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) {
-            return ErrorCode.INVALID_PATH;
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
         String account = params[2];
@@ -214,27 +213,26 @@ public class RPCImpl implements RPCFace {
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        return PrintUtils.printTransactionResponse(response, true);
+        PrintUtils.printTransactionResponse(response, true);
     }
 
     @Override
-    public int sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception {
+    public void sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("sendTransaction");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "sendTransaction");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.sendTransactionHelp();
-            return StatusCode.ASK_FOR_HELP;
+            return;
         }
         if (params.length < 4) {
-            HelpInfo.promptHelp("sendTransaction");
-            return ErrorCode.PARAM_MISSING;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "sendTransaction");
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
         if (path == null) {
-            return ErrorCode.INVALID_PATH;
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
         String account = params[2];
@@ -255,6 +253,6 @@ public class RPCImpl implements RPCFace {
                                             Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
-        return PrintUtils.printTransactionResponse(response, false);
+        PrintUtils.printTransactionResponse(response, false);
     }
 }

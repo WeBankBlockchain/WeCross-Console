@@ -124,15 +124,6 @@ public class ConsoleUtils {
         return result;
     }
 
-    public static String jointArgsToStringWithSpace(String[] args) {
-        String[] parsedArgs = parseArgs(args);
-        String result = "";
-        for (String s : parsedArgs) {
-            result = result.concat(s + " ");
-        }
-        return result.substring(0, result.length() - 1);
-    }
-
     public static void printJson(String jsonStr) {
         System.out.println(formatJson(jsonStr));
     }
