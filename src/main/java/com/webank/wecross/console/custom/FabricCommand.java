@@ -4,6 +4,8 @@ import com.webank.wecross.console.common.FileUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.common.TarUtils;
+import com.webank.wecross.console.exception.ErrorCode;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
@@ -28,16 +30,14 @@ public class FabricCommand {
         // fabricInstall payment.fabric.sacc fabric_admin_org2 Org2 contracts/chaincode/sacc 1.0
         // GO_LANG
         if (params.length == 1) {
-            HelpInfo.promptHelp("fabricInstall");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstall");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricInstallHelp();
             return;
         }
         if (params.length != 7) {
-            HelpInfo.promptHelp("fabricInstall");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstall");
         }
 
         String path = params[1];
@@ -74,16 +74,14 @@ public class FabricCommand {
         // contracts/chaincode/sacc 1.0 GO_LANG policy.yaml ["a","10"]
 
         if (params.length == 1) {
-            HelpInfo.promptHelp("fabricInstantiate");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstantiate");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricInstantiateHelp();
             return;
         }
         if (params.length != 9) {
-            HelpInfo.promptHelp("fabricInstantiate");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstantiate");
         }
 
         String path = params[1];
@@ -123,16 +121,14 @@ public class FabricCommand {
         // contracts/chaincode/sacc 2.0 GO_LANG policy.yaml ["a","10"]
 
         if (params.length == 1) {
-            HelpInfo.promptHelp("fabricUpgrade");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricUpgrade");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricUpgradeHelp();
             return;
         }
         if (params.length != 9) {
-            HelpInfo.promptHelp("fabricUpgrade");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricUpgrade");
         }
 
         String path = params[1];

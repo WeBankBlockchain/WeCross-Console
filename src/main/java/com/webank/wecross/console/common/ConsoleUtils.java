@@ -11,6 +11,23 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ConsoleUtils {
+    public static List<String> runtimeTransactionIDs = new ArrayList<>();
+    public static Map<String, Map<String, List<String>>> runtimeTransactionInfo = new HashMap<>();
+
+    public static String runtimeTransactionInfoToString(String transactionID) {
+        if (!runtimeTransactionIDs.contains(transactionID)) {
+            return null;
+        }
+        String result = transactionID + " ";
+        for (String accountString : runtimeTransactionInfo.get(transactionID).get("accounts")) {
+            result = result.concat(accountString + " ");
+        }
+        for (String pathString : runtimeTransactionInfo.get(transactionID).get("paths")) {
+            result = result.concat(pathString + " ");
+        }
+        return result.substring(0, result.length() - 1);
+    }
+
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
@@ -99,7 +116,7 @@ public class ConsoleUtils {
         return input;
     }
 
-    public static String[] parseAgrs(String[] args) {
+    public static String[] parseArgs(String[] args) {
         String[] result = new String[args.length];
         for (int i = 0; i < args.length; i++) {
             result[i] = parseString(args[i]);

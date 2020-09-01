@@ -8,6 +8,7 @@ import com.webank.wecross.console.common.JlineUtils;
 import com.webank.wecross.console.common.WelcomeInfo;
 import com.webank.wecross.console.custom.BCOSCommand;
 import com.webank.wecross.console.custom.FabricCommand;
+import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
 import com.webank.wecross.console.routine.HTLCFace;
@@ -208,16 +209,35 @@ public class Shell {
                     case "startTransaction":
                         {
                             twoPcFace.startTransaction(params);
+                            if (params.length >= 4) {
+                                JlineUtils.addTransactionInfoCompleters(completers, params[1]);
+                            }
                             break;
                         }
                     case "commitTransaction":
                         {
+                            // only support one console do one transaction
                             twoPcFace.commitTransaction(params);
+                            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                                    && params.length != 2) {
+                                JlineUtils.removeTransactionInfoCompleters(
+                                        completers, ConsoleUtils.runtimeTransactionIDs.get(0));
+                                ConsoleUtils.runtimeTransactionIDs.clear();
+                                ConsoleUtils.runtimeTransactionInfo.clear();
+                            }
                             break;
                         }
                     case "rollbackTransaction":
                         {
+                            // only support one console do one transaction
                             twoPcFace.rollbackTransaction(params);
+                            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                                    && params.length != 2) {
+                                JlineUtils.removeTransactionInfoCompleters(
+                                        completers, ConsoleUtils.runtimeTransactionIDs.get(0));
+                                ConsoleUtils.runtimeTransactionIDs.clear();
+                                ConsoleUtils.runtimeTransactionInfo.clear();
+                            }
                             break;
                         }
                     case "getTransactionInfo":
@@ -233,7 +253,7 @@ public class Shell {
                     case "bcosDeploy":
                         {
                             bcosCommand.deploy(params);
-                            if (params.length > 2 && isPath(params[1])) {
+                            if (params.length >= 6) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
@@ -241,7 +261,7 @@ public class Shell {
                     case "bcosRegister":
                         {
                             bcosCommand.register(params);
-                            if (params.length > 2 && isPath(params[1])) {
+                            if (params.length >= 6) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
@@ -249,10 +269,8 @@ public class Shell {
                     case "fabricInstall":
                         {
                             fabricCommand.install(params);
-                            if (params.length > 2 && isPath(params[1])) {
+                            if (params.length == 7) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
-                            }
-                            if (params.length >= 4) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
@@ -260,15 +278,16 @@ public class Shell {
                     case "fabricInstantiate":
                         {
                             fabricCommand.instantiate(params);
-                            if (params.length >= 4) {
+                            if (params.length == 9) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
+
                             break;
                         }
                     case "fabricUpgrade":
                         {
                             fabricCommand.upgrade(params);
-                            if (params.length >= 4) {
+                            if (params.length == 9) {
                                 JlineUtils.addOrgCompleters(completers, params[3]);
                             }
                             break;
@@ -302,6 +321,13 @@ public class Shell {
                         }
                 }
                 System.out.println();
+            } catch (WeCrossConsoleException e) {
+                if (e.getErrorCode() == ErrorCode.PARAM_MISSING) {
+                    HelpInfo.promptHelp(e.getMessage());
+                } else {
+                    logger.info("Exception: ", e);
+                    System.out.println("Error: " + e.getMessage());
+                }
             } catch (Exception e) {
                 logger.info("Exception: ", e);
                 System.out.println("Error: " + e.getMessage());

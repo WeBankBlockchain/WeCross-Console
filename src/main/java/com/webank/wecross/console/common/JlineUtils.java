@@ -23,10 +23,9 @@ public class JlineUtils {
     private static Set<String> accounts = new HashSet<>();
     private static Set<String> pathVars = new HashSet<>();
     private static Set<String> resourceVars = new HashSet<>();
-
     private static Set<String> contractMethods = new HashSet<>();
     private static Set<String> orgs = new HashSet<>();
-
+    private static Map<Integer, String> indexTransactionIDMap = new HashMap<>();
     private static List<String> pathVarSupportedCommands =
             Arrays.asList(
                     "status",
@@ -187,6 +186,38 @@ public class JlineUtils {
         addCommandCompleters(completers);
         addPathsCompleters(completers, paths);
         addVarsCompleters(completers, resourceVars, pathVars);
+    }
+
+    public static void addTransactionInfoCompleters(
+            List<Completer> completers, String transactionID) {
+        if (ConsoleUtils.runtimeTransactionIDs.contains(transactionID)) {
+            indexTransactionIDMap.put(completers.size() - 1, transactionID);
+            String runtimeTransaction = ConsoleUtils.runtimeTransactionInfoToString(transactionID);
+            completers.add(
+                    completers.size() - 1,
+                    new ArgumentCompleter(
+                            new StringsCompleter("commitTransaction"),
+                            new StringsCompleter(runtimeTransaction)));
+            completers.add(
+                    completers.size() - 1,
+                    new ArgumentCompleter(
+                            new StringsCompleter("rollbackTransaction"),
+                            new StringsCompleter(runtimeTransaction)));
+        }
+    }
+
+    public static void removeTransactionInfoCompleters(
+            List<Completer> completers, String transactionID) {
+        if (indexTransactionIDMap.containsValue(transactionID)) {
+            for (Integer key : indexTransactionIDMap.keySet()) {
+                if (indexTransactionIDMap.get(key).equals(transactionID)) {
+                    // remove commitTransactionCompleter and rollbackTransactionCompleter
+                    completers.remove(key.intValue());
+                    completers.remove(key.intValue());
+                    indexTransactionIDMap.remove(key);
+                }
+            }
+        }
     }
 
     public static void addPathCompleters(List<Completer> completers, String path) {
