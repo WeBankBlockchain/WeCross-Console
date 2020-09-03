@@ -32,6 +32,7 @@ public class JlineUtils {
                     "detail",
                     "call",
                     "sendTransaction",
+                    "invoke",
                     "newHTLCProposal",
                     "checkTransferStatus",
                     "callTransaction",

@@ -176,6 +176,14 @@ public class Shell {
                             }
                             break;
                         }
+                    case "invoke":
+                        {
+                            rpcFace.invoke(params, pathMaps);
+                            if (params.length >= 4) {
+                                JlineUtils.addContractMethodCompleters(completers, params[3]);
+                            }
+                            break;
+                        }
                     case "genTimelock":
                         {
                             htlcFace.genTimelock(params);

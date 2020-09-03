@@ -137,6 +137,17 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void invokeHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Call non-constant method of smart contract");
+        System.out.println("Usage: sendTransaction [path] [account] [method] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("account -- choose an account to sign");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
+        ConsoleUtils.singleLine();
+    }
+
     public static void newProposaltHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Create a htlc transfer proposal");

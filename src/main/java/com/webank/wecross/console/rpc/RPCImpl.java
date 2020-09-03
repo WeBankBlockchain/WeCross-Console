@@ -255,4 +255,44 @@ public class RPCImpl implements RPCFace {
         }
         PrintUtils.printTransactionResponse(response, false);
     }
+
+    @Override
+    public void invoke(String[] params, Map<String, String> pathMaps) throws Exception {
+        if (params.length == 1) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "invoke");
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.invokeHelp();
+            return;
+        }
+        if (params.length < 4) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "invoke");
+        }
+
+        String path = ConsoleUtils.parsePath(params, pathMaps);
+        if (path == null) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
+        }
+
+        String account = params[2];
+        String method = params[3];
+
+        TransactionResponse response;
+        if (params.length == 4) {
+            // no param given means: null (not String[0])
+            response = weCrossRPC.invoke(path, account, method, null).send();
+        } else {
+            response =
+                    weCrossRPC
+                            .invoke(
+                                    path,
+                                    account,
+                                    method,
+                                    ConsoleUtils.parseArgs(
+                                            Arrays.copyOfRange(params, 4, params.length)))
+                            .send();
+        }
+        PrintUtils.printTransactionResponse(response, false);
+    }
 }

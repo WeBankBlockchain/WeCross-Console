@@ -22,6 +22,8 @@ public interface RPCFace {
 
     void sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception;
 
+    void invoke(String[] params, Map<String, String> pathMaps) throws Exception;
+
     Set<String> getPaths();
 
     Set<String> getAccounts();
