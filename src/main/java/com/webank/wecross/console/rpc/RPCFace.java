@@ -10,7 +10,7 @@ public interface RPCFace {
 
     void supportedStubs(String[] params) throws Exception;
 
-    void listAccounts(String[] params) throws Exception;
+    void listAccount(String[] params) throws Exception;
 
     void listResources(String[] params) throws Exception;
 
@@ -23,6 +23,16 @@ public interface RPCFace {
     void sendTransaction(String[] params, Map<String, String> pathMaps) throws Exception;
 
     void invoke(String[] params, Map<String, String> pathMaps) throws Exception;
+
+    String login(String[] params) throws Exception;
+
+    void registerAccount(String[] params) throws Exception;
+
+    void addChainAccount(String[] params) throws  Exception;
+
+    void setDefaultAccount(String[] params) throws Exception;
+
+    void logout(String[] params) throws Exception;
 
     Set<String> getPaths();
 

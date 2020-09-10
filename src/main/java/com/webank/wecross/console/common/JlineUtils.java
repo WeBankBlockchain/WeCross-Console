@@ -47,7 +47,12 @@ public class JlineUtils {
                     "fabricInstall",
                     "fabricInstantiate",
                     "fabricUpgrade",
-                    "getTransactionIDs");
+                    "getTransactionIDs",
+                    "login",
+                    "registerAccount",
+                    "logout",
+                    "addChainAccount",
+                    "setDefaultAccount");
 
     private static List<String> fabricCommands =
             Arrays.asList("fabricInstall", "fabricInstantiate", "fabricUpgrade");
@@ -59,7 +64,7 @@ public class JlineUtils {
                     "help",
                     "quit",
                     "supportedStubs",
-                    "listAccounts",
+                    "listAccount",
                     "listLocalResources",
                     "listResources",
                     "status",
@@ -81,7 +86,12 @@ public class JlineUtils {
                     "bcosRegister",
                     "fabricInstall",
                     "fabricInstantiate",
-                    "fabricUpgrade");
+                    "fabricUpgrade",
+                    "login",
+                    "registerAccount",
+                    "logout",
+                    "addChainAccount",
+                    "setDefaultAccount");
 
     public static void addCommandCompleters(List<Completer> completers) {
         // commands

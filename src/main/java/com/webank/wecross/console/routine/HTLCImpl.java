@@ -30,7 +30,7 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.genTimelockHelp();
+            HelpInfo.genTimeLockHelp();
             return;
         }
 
@@ -119,7 +119,7 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.newProposaltHelp();
+            HelpInfo.newProposalHelp();
             return;
         }
 

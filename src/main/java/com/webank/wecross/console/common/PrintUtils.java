@@ -77,18 +77,18 @@ public class PrintUtils {
         }
     }
 
-    public static void printRoutineIDResponse(RoutineIDResponse response) {
+    public static void printRoutineIDResponse(RoutineIDResponse response)
+            throws WeCrossConsoleException {
         if (response == null) {
-            System.out.println("Error: no response");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
                     "Error: code("
                             + response.getErrorCode()
                             + "), message("
                             + response.getMessage()
                             + ")");
-            return;
         } else {
             System.out.println("Result: " + Arrays.toString(response.getIDs()));
         }
@@ -108,6 +108,34 @@ public class PrintUtils {
                             + ")");
         } else {
             System.out.println("Result: " + response.getResult());
+        }
+    }
+
+    public static void printUAResponse(UAResponse response) throws WeCrossConsoleException {
+        if (response == null) {
+            throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
+        } else if (response.getErrorCode() != StatusCode.SUCCESS) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
+                    "Error: code("
+                            + response.getErrorCode()
+                            + "), message("
+                            + response.getMessage()
+                            + ")");
+        } else if (response.getUAReceipt().getErrorCode() != StatusCode.SUCCESS) {
+            logger.warn("UAResponse: " + response.getUAReceipt().toString());
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
+                    "Error: code("
+                            + response.getUAReceipt().getErrorCode()
+                            + "), message("
+                            + response.getUAReceipt().getMessage()
+                            + ")");
+        } else {
+            System.out.println("Result: " + response.getUAReceipt().getMessage());
+            if(response.getUAReceipt().getUniversalAccount()!=null){
+                System.out.println(response.getUAReceipt().getUniversalAccount().toFormatString());
+            }
         }
     }
 }

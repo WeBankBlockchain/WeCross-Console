@@ -148,7 +148,7 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void newProposaltHelp() {
+    public static void newProposalHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Create a htlc transfer proposal");
         System.out.println("Usage: newHTLCProposal [path] [account] [...args]");
@@ -163,7 +163,17 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void genTimelockHelp() {
+    public static void loginHelp() {}
+
+    public static void registerHelp() {}
+
+    public static void logoutHelp() {}
+
+    public static void addChainAccountHelp() {}
+
+    public static void setDefaultAccountHelp() {}
+
+    public static void genTimeLockHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Generate two valid timelocks");
         System.out.println("Usage: genTimelock [interval]");

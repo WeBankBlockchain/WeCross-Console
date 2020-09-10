@@ -33,6 +33,7 @@ public class Shell {
     private static TwoPcFace twoPcFace;
     private static BCOSCommand bcosCommand;
     private static FabricCommand fabricCommand;
+    private static String loginUser;
 
     public static void main(String[] args) {
 
@@ -85,8 +86,7 @@ public class Shell {
         while (true) {
             logger.info(Arrays.toString(args));
             try {
-
-                String prompt = "[WeCross]> ";
+                String prompt = loginUser==null? "[WeCross]> ":"[WeCross."+loginUser+"]>";
                 String request = lineReader.readLine(prompt);
 
                 String[] params;
@@ -123,9 +123,9 @@ public class Shell {
                             rpcFace.supportedStubs(params);
                             break;
                         }
-                    case "listAccounts":
+                    case "listAccount":
                         {
-                            rpcFace.listAccounts(params);
+                            rpcFace.listAccount(params);
                             JlineUtils.updateAccountsCompleters(completers, rpcFace.getAccounts());
                             break;
                         }
@@ -300,6 +300,32 @@ public class Shell {
                             }
                             break;
                         }
+                    case "login":
+                    {
+                        loginUser = rpcFace.login(params);
+                        break;
+                    }
+                    case "registerAccount":
+                    {
+                        rpcFace.registerAccount(params);
+                        break;
+                    }
+                    case "addChainAccount":
+                    {
+                        rpcFace.addChainAccount(params);
+                        break;
+                    }
+                    case "setDefaultAccount":
+                    {
+                        rpcFace.setDefaultAccount(params);
+                        break;
+                    }
+                    case "logout":
+                    {
+                        rpcFace.logout(params);
+                        loginUser = null;
+                        break;
+                    }
                     default:
                         {
                             try {
@@ -323,6 +349,7 @@ public class Shell {
                             } catch (WeCrossConsoleException e) {
                                 System.out.println(e.getMessage());
                             } catch (Exception e) {
+                                System.out.println(e.getMessage());
                                 System.out.println("Error: unsupported command");
                             }
                             break;
@@ -334,11 +361,11 @@ public class Shell {
                     HelpInfo.promptHelp(e.getMessage());
                 } else {
                     logger.info("Exception: ", e);
-                    System.out.println("Error: " + e.getMessage());
+                    System.out.println(e.getMessage());
                 }
             } catch (Exception e) {
                 logger.info("Exception: ", e);
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e.getMessage());
                 System.out.println();
             }
         }
