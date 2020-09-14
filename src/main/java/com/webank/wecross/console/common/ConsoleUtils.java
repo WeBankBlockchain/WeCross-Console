@@ -10,27 +10,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ConsoleUtils {
-    public static List<String> runtimeTransactionIDs = new ArrayList<>();
-    public static Map<String, Map<String, List<String>>> runtimeTransactionInfo = new HashMap<>();
+    public static ThreadLocal<String> runtimeTransactionIDThreadLocal = new ThreadLocal<>();
+    public static ThreadLocal<Map<String, List<String>>> runtimeTransactionInfoThreadLocal = new ThreadLocal<>();
+    public static ThreadLocal<TransactionInfo> runtimeTransactionThreadLocal = new ThreadLocal<>();
 
     public static final String fabricType = "Fabric1.4";
     public static final String BCOSType = "BCOS2.0";
     public static final String BCOSGMType = "GM_BCOS2.0";
     public static final List<String> supportChainList = Arrays.asList(fabricType, BCOSType, BCOSGMType);
-
-    public static String runtimeTransactionInfoToString(String transactionID) {
-        if (!runtimeTransactionIDs.contains(transactionID)) {
-            return null;
-        }
-        String result = transactionID + " ";
-        for (String accountString : runtimeTransactionInfo.get(transactionID).get("accounts")) {
-            result = result.concat(accountString + " ");
-        }
-        for (String pathString : runtimeTransactionInfo.get(transactionID).get("paths")) {
-            result = result.concat(pathString + " ");
-        }
-        return result.substring(0, result.length() - 1);
-    }
 
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {

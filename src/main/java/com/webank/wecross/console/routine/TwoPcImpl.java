@@ -1,8 +1,6 @@
 package com.webank.wecross.console.routine;
 
-import com.webank.wecross.console.common.ConsoleUtils;
-import com.webank.wecross.console.common.HelpInfo;
-import com.webank.wecross.console.common.PrintUtils;
+import com.webank.wecross.console.common.*;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.rpc.RPCFace;
@@ -58,7 +56,7 @@ public class TwoPcImpl implements TwoPcFace {
         if (params.length == 5) {
             // no param given means: null (not String[0])
             response =
-                    weCrossRPC.callTransaction(transactionID, path, account, method, null).send();
+                    weCrossRPC.callTransaction(transactionID, path, account, method, (String) null).send();
         } else {
             response =
                     weCrossRPC
@@ -116,7 +114,7 @@ public class TwoPcImpl implements TwoPcFace {
             // no param given means: null (not String[0])
             response =
                     weCrossRPC
-                            .execTransaction(transactionID, seq, path, account, method, null)
+                            .execTransaction(transactionID, seq, path, account, method, (String) null)
                             .send();
         } else {
             response =
@@ -167,34 +165,44 @@ public class TwoPcImpl implements TwoPcFace {
                         .send();
 
         PrintUtils.printRoutineResponse(response);
-        Map<String, List<String>> txMap = new HashMap<>();
-        txMap.put("accounts", accounts);
-        txMap.put("paths", paths);
-        ConsoleUtils.runtimeTransactionInfo.put(transactionID, txMap);
-        ConsoleUtils.runtimeTransactionIDs.add(transactionID);
+        TransactionInfo transactionInfo = new TransactionInfo(transactionID,accounts,paths);
+        ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
+        FileUtils.writeTransactionLog();
     }
 
     @Override
     public void commitTransaction(String[] params) throws Exception {
         // only support one console do one transaction
+        TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (params.length == 1) {
-            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
-                    && !ConsoleUtils.runtimeTransactionInfo.isEmpty()) {
-                String runtimeTXID = ConsoleUtils.runtimeTransactionIDs.get(0);
+            if (transactionInfo!=null) {
+                System.out.println("Transaction running now, transactionID is: "+transactionInfo.getTransactionID());
+                System.out.print("Are you sure commit it now?(y/n)  ");
+                char readIn;
+                do {
+                    readIn = (char) System.in.read();
+                } while (readIn == '\t');
+                if(readIn != 'y'){
+                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE,"Cancel commit.");
+                }
+                else {
+                    System.out.println("Committing transaction: "+transactionInfo.getTransactionID()+"...");
+                }
                 RoutineResponse response =
                         weCrossRPC
                                 .commitTransaction(
-                                        runtimeTXID,
-                                        ConsoleUtils.runtimeTransactionInfo
-                                                .get(runtimeTXID)
-                                                .get("accounts")
+                                        transactionInfo.getTransactionID(),
+                                        ConsoleUtils.runtimeTransactionThreadLocal
+                                                .get()
+                                                .getAccounts()
                                                 .toArray(new String[0]),
-                                        ConsoleUtils.runtimeTransactionInfo
-                                                .get(runtimeTXID)
-                                                .get("paths")
+                                        ConsoleUtils.runtimeTransactionThreadLocal
+                                                .get()
+                                                .getPaths()
                                                 .toArray(new String[0]))
                                 .send();
                 PrintUtils.printRoutineResponse(response);
+                FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
@@ -227,28 +235,41 @@ public class TwoPcImpl implements TwoPcFace {
                                 paths.toArray(new String[0]))
                         .send();
         PrintUtils.printRoutineResponse(response);
+        FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
     }
 
     @Override
     public void rollbackTransaction(String[] params) throws Exception {
+        TransactionInfo transactionInfo =ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (params.length == 1) {
-            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
-                    && !ConsoleUtils.runtimeTransactionInfo.isEmpty()) {
-                String runtimeTXID = ConsoleUtils.runtimeTransactionIDs.get(0);
+            if (transactionInfo!=null) {
+                System.out.println("Transaction running now, transactionID is: "+transactionInfo.getTransactionID());
+                System.out.print("Are you sure rollback transaction now?(y/n)  ");
+                char readIn;
+                do {
+                    readIn = (char) System.in.read();
+                } while (readIn == '\t');
+                if(readIn != 'y'){
+                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE,"Cancel rollback.");
+                }
+                else {
+                    System.out.println("Rollback transaction: "+transactionInfo.getTransactionID()+"...");
+                }
                 RoutineResponse response =
                         weCrossRPC
                                 .rollbackTransaction(
-                                        runtimeTXID,
-                                        ConsoleUtils.runtimeTransactionInfo
-                                                .get(runtimeTXID)
-                                                .get("accounts")
+                                        transactionInfo.getTransactionID(),
+                                        ConsoleUtils.runtimeTransactionThreadLocal
+                                                .get()
+                                                .getAccounts()
                                                 .toArray(new String[0]),
-                                        ConsoleUtils.runtimeTransactionInfo
-                                                .get(runtimeTXID)
-                                                .get("paths")
+                                        ConsoleUtils.runtimeTransactionThreadLocal
+                                                .get()
+                                                .getPaths()
                                                 .toArray(new String[0]))
                                 .send();
                 PrintUtils.printRoutineResponse(response);
+                FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
@@ -281,6 +302,7 @@ public class TwoPcImpl implements TwoPcFace {
                                 paths.toArray(new String[0]))
                         .send();
         PrintUtils.printRoutineResponse(response);
+        FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
     }
 
     @Override

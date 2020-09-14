@@ -2,10 +2,7 @@ package com.webank.wecross.console;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.webank.wecross.console.common.ConsoleUtils;
-import com.webank.wecross.console.common.HelpInfo;
-import com.webank.wecross.console.common.JlineUtils;
-import com.webank.wecross.console.common.WelcomeInfo;
+import com.webank.wecross.console.common.*;
 import com.webank.wecross.console.custom.BCOSCommand;
 import com.webank.wecross.console.custom.FabricCommand;
 import com.webank.wecross.console.exception.ErrorCode;
@@ -18,6 +15,7 @@ import com.webank.wecrosssdk.utils.RPCUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import java.util.*;
+
 import org.jline.keymap.KeyMap;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -70,6 +68,7 @@ public class Shell {
             completers =
                     JlineUtils.getCompleters(
                             rpcFace.getPaths(), rpcFace.getAccounts(), resourceVars, pathVars);
+            FileUtils.loadTransactionLog(completers);
             lineReader = JlineUtils.getLineReader(completers);
 
             KeyMap<org.jline.reader.Binding> keymap = lineReader.getKeyMaps().get(LineReader.MAIN);
@@ -86,7 +85,7 @@ public class Shell {
         while (true) {
             logger.info(Arrays.toString(args));
             try {
-                String prompt = loginUser==null? "[WeCross]> ":"[WeCross."+loginUser+"]>";
+                String prompt = (loginUser==null)? "[WeCross]> ":"[WeCross."+loginUser+"]>";
                 String request = lineReader.readLine(prompt);
 
                 String[] params;
@@ -226,12 +225,11 @@ public class Shell {
                         {
                             // only support one console do one transaction
                             twoPcFace.commitTransaction(params);
-                            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                            if (ConsoleUtils.runtimeTransactionThreadLocal.get()!=null
                                     && params.length != 2) {
                                 JlineUtils.removeTransactionInfoCompleters(
-                                        completers, ConsoleUtils.runtimeTransactionIDs.get(0));
-                                ConsoleUtils.runtimeTransactionIDs.clear();
-                                ConsoleUtils.runtimeTransactionInfo.clear();
+                                        completers, ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID());
+                                ConsoleUtils.runtimeTransactionThreadLocal.remove();
                             }
                             break;
                         }
@@ -239,12 +237,11 @@ public class Shell {
                         {
                             // only support one console do one transaction
                             twoPcFace.rollbackTransaction(params);
-                            if (!ConsoleUtils.runtimeTransactionIDs.isEmpty()
+                            if (ConsoleUtils.runtimeTransactionThreadLocal!=null
                                     && params.length != 2) {
                                 JlineUtils.removeTransactionInfoCompleters(
-                                        completers, ConsoleUtils.runtimeTransactionIDs.get(0));
-                                ConsoleUtils.runtimeTransactionIDs.clear();
-                                ConsoleUtils.runtimeTransactionInfo.clear();
+                                        completers, ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID());
+                                ConsoleUtils.runtimeTransactionThreadLocal.remove();
                             }
                             break;
                         }
@@ -302,12 +299,12 @@ public class Shell {
                         }
                     case "login":
                     {
-                        loginUser = rpcFace.login(params);
+                        loginUser = rpcFace.login(params,lineReader);
                         break;
                     }
                     case "registerAccount":
                     {
-                        rpcFace.registerAccount(params);
+                        rpcFace.registerAccount(params,lineReader);
                         break;
                     }
                     case "addChainAccount":

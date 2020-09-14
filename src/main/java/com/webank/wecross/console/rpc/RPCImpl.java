@@ -5,6 +5,7 @@ import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
+import com.webank.wecrosssdk.exception.WeCrossSDKException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
@@ -14,7 +15,12 @@ import com.webank.wecrosssdk.rpc.common.account.FabricAccount;
 import com.webank.wecrosssdk.rpc.common.account.UniversalAccount;
 import com.webank.wecrosssdk.rpc.methods.Response;
 import com.webank.wecrosssdk.rpc.methods.response.*;
+
+import java.io.Console;
 import java.util.*;
+
+import org.jline.reader.LineReader;
+import org.jline.utils.InfoCmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,10 +56,12 @@ public class RPCImpl implements RPCFace {
         try {
             AccountResponse response = weCrossRPC.listAccount().send();
             UniversalAccount account = response.getAccount();
-            accountList.add(account.getName());
+            accountList.add(account.getUsername());
         } catch (Exception e) {
             logger.warn("error,", e);
         }
+        // TODO: for debug
+        accountList.add("bcos_user1");
         return accountList;
     }
 
@@ -198,7 +206,7 @@ public class RPCImpl implements RPCFace {
         TransactionResponse response;
         if (params.length == 4) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.call(path, account, method, null).send();
+            response = weCrossRPC.call(path, account, method, (String) null).send();
         } else {
             response =
                     weCrossRPC
@@ -238,7 +246,7 @@ public class RPCImpl implements RPCFace {
         TransactionResponse response;
         if (params.length == 4) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.sendTransaction(path, account, method, null).send();
+            response = weCrossRPC.sendTransaction(path, account, method, (String) null).send();
         } else {
             response =
                     weCrossRPC
@@ -278,7 +286,7 @@ public class RPCImpl implements RPCFace {
         TransactionResponse response;
         if (params.length == 4) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.invoke(path, account, method, null).send();
+            response = weCrossRPC.invoke(path, account, method, (String) null).send();
         } else {
             response =
                     weCrossRPC
@@ -294,21 +302,30 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public String login(String[] params) throws Exception {
+    public String login(String[] params, LineReader lineReader) throws Exception {
         if (params.length == 1) {
             UAResponse uaResponse = weCrossRPC.login();
+            // connect success but do not config TOML file
             if (uaResponse == null) {
-                throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "login");
+                lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
+                lineReader.getTerminal().flush();
+                Console consoleSys = System.console();
+                String username = consoleSys.readLine("username: ");
+                String password = new String(consoleSys.readPassword("password: "));
+                UAResponse response = weCrossRPC.login(username, password).send();
+                PrintUtils.printUAResponse(response);
+
+                return username;
             } else {
                 PrintUtils.printUAResponse(uaResponse);
-                return uaResponse.getUAReceipt().getUniversalAccount().getName();
+                return uaResponse.getUAReceipt().getUniversalAccount().getUsername();
             }
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.loginHelp();
             return null;
         }
-        if (params.length < 3) {
+        if (params.length != 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "login");
         }
 
@@ -320,15 +337,22 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public void registerAccount(String[] params) throws Exception {
+    public void registerAccount(String[] params,LineReader lineReader) throws Exception {
         if(params.length==1){
-            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "registerAccount");
+            lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
+            lineReader.getTerminal().flush();
+            Console consoleSys = System.console();
+            String username = consoleSys.readLine("username: ");
+            String password = new String(consoleSys.readPassword("password: "));
+            UAResponse response = weCrossRPC.register(username, password).send();
+            PrintUtils.printUAResponse(response);
+            return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.registerHelp();
             return;
         }
-        if (params.length < 3) {
+        if (params.length != 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "registerAccount");
         }
         String username = params[1];
@@ -374,7 +398,27 @@ public class RPCImpl implements RPCFace {
 
     @Override
     public void setDefaultAccount(String[] params) throws Exception {
-
+        if(params.length==1){
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultAccount");
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.setDefaultAccountHelp();
+            return;
+        }
+        if (params.length != 3
+                || !ConsoleUtils.supportChainList.contains(params[1])) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultAccount");
+        }
+        String type = params[1];
+        String keyID = params[2];
+        if(keyID.startsWith("keyID:")){
+            keyID = keyID.substring(5);
+        }
+        if(!ConsoleUtils.isNumeric(keyID)){
+            throw new WeCrossConsoleException(ErrorCode.ILLEGAL_PARAM, "Invalid keyID");
+        }
+        UAResponse uaResponse = weCrossRPC.setDefaultAccount(type,Integer.valueOf(keyID)).send();
+        PrintUtils.printUAResponse(uaResponse);
     }
 
     @Override

@@ -201,9 +201,10 @@ public class JlineUtils {
 
     public static void addTransactionInfoCompleters(
             List<Completer> completers, String transactionID) {
-        if (ConsoleUtils.runtimeTransactionIDs.contains(transactionID)) {
+        if (ConsoleUtils.runtimeTransactionThreadLocal.get()!=null
+                && ConsoleUtils.runtimeTransactionThreadLocal.get().transactionID.equals(transactionID)) {
             indexTransactionIDMap.put(completers.size() - 1, transactionID);
-            String runtimeTransaction = ConsoleUtils.runtimeTransactionInfoToString(transactionID);
+            String runtimeTransaction = ConsoleUtils.runtimeTransactionThreadLocal.get().toString();
             completers.add(
                     completers.size() - 1,
                     new ArgumentCompleter(
@@ -374,7 +375,6 @@ public class JlineUtils {
         termAttribs.setControlChar(ControlChar.VINTR, 0);
 
         terminal.setAttributes(termAttribs);
-
         return LineReaderBuilder.builder()
                 .terminal(terminal)
                 .completer(new AggregateCompleter(completers))
