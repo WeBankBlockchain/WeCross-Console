@@ -268,18 +268,19 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Register contract info to CNS in BCOS chain");
         System.out.println(
-                "Usage: bcosRegister [Path] [Account] [Source file path] [Contract address] [Version]");
+                "Usage: bcosRegister [Path] [Account] [Source file path] [Contract address] [Contract name] [Version]");
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be register");
         System.out.println("Account -- Choose an account to send transaction");
         System.out.println(
                 "Source file path from conf/ -- The solidity source code/solidity abi file path, e.g: HelloWorld.sol or HelloWorld.abi");
         System.out.println("Contract address -- contract address");
+        System.out.println("Contract name -- contract name to be register");
         System.out.println("Version -- The contract version");
         System.out.println("Example:");
         System.out.println(
-                "    bcosRegister payment.bcos.HelloWorld bcos_user1 contracts/solidity/HelloWorld.sol 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
+                "    bcosRegister payment.bcos.HelloWorld bcos_user1 contracts/solidity/HelloWorld.sol 0x2c8595f82dc930208314030abc6f5c4ddbc8864f HelloWorld 1.0");
         System.out.println(
-                "    bcosRegister payment.bcos.HelloWorld bcos_user1 /data/app/HelloWorld.abi 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
+                "    bcosRegister payment.bcos.HelloWorld bcos_user1 /data/app/HelloWorld.abi 0x2c8595f82dc930208314030abc6f5c4ddbc8864f HelloWorld 1.0");
         ConsoleUtils.singleLine();
     }
 

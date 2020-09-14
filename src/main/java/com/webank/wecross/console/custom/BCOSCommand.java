@@ -120,7 +120,7 @@ public class BCOSCommand {
     /**
      * register abi in cns
      *
-     * @params bcosRegister [path] [account] [filePath] [address] [version]
+     * @params bcosRegister [path] [account] [filePath] [address] [contractName] [version]
      */
     public void register(String[] params) throws Exception {
         if (params.length == 1) {
@@ -131,17 +131,17 @@ public class BCOSCommand {
             return;
         }
 
-        if (params.length < 6) {
+        if (params.length < 7) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "bcosRegister");
         }
 
         String path = params[1];
         RPCUtils.checkPath(path);
-        String cnsName = path.split("\\.")[2];
         String account = params[2];
         String sourcePath = params[3];
         String address = params[4];
-        String version = params[5];
+        String cnsName = params[5];
+        String version = params[6];
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         org.springframework.core.io.Resource resource = resolver.getResource("file:" + sourcePath);
