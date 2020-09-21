@@ -1,10 +1,9 @@
 package com.webank.wecross.console.rpc;
 
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
-import org.jline.reader.LineReader;
-
 import java.util.Map;
 import java.util.Set;
+import org.jline.reader.LineReader;
 
 public interface RPCFace {
 
@@ -26,17 +25,15 @@ public interface RPCFace {
 
     void invoke(String[] params, Map<String, String> pathMaps) throws Exception;
 
-    String login(String[] params, LineReader lineReader) throws Exception;
+    void login(String[] params, LineReader lineReader) throws Exception;
 
-    void registerAccount(String[] params,LineReader lineReader) throws Exception;
+    void registerAccount(String[] params, LineReader lineReader) throws Exception;
 
-    void addChainAccount(String[] params) throws  Exception;
+    void addChainAccount(String[] params) throws Exception;
 
     void setDefaultAccount(String[] params) throws Exception;
 
     void logout(String[] params) throws Exception;
 
     Set<String> getPaths();
-
-    Set<String> getAccounts();
 }

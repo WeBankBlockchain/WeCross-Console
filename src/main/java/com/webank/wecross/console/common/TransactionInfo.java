@@ -4,22 +4,21 @@ import java.util.List;
 
 public class TransactionInfo {
     String transactionID;
-    List<String> accounts;
+    String account;
     List<String> paths;
 
-    public TransactionInfo(String transactionID, List<String> accounts, List<String> paths) {
+    public TransactionInfo(String transactionID, String account, List<String> paths) {
         this.transactionID = transactionID;
         this.paths = paths;
-        this.accounts = accounts;
+        this.account = account;
     }
 
-    public TransactionInfo(List<String> accounts, List<String> paths) {
+    public TransactionInfo(String account, List<String> paths) {
         this.paths = paths;
-        this.accounts = accounts;
+        this.account = account;
     }
 
-    public TransactionInfo() {
-    }
+    public TransactionInfo() {}
 
     public String getTransactionID() {
         return transactionID;
@@ -37,21 +36,20 @@ public class TransactionInfo {
         this.paths = paths;
     }
 
-    public List<String> getAccounts() {
-        return accounts;
+    public String getAccount() {
+        return account;
     }
 
-    public void setAccounts(List<String> accounts) {
-        this.accounts = accounts;
+    public void setAccounts(String account) {
+        this.account = account;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb =new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(transactionID).append(" ");
-        for (String account : accounts) {
-            sb.append(account).append(" ");
-        }
+        sb.append(account).append(" ");
+
         for (String path : paths) {
             sb.append(path).append(" ");
         }

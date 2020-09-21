@@ -133,7 +133,7 @@ public class PrintUtils {
                             + ")");
         } else {
             System.out.println("Result: " + response.getUAReceipt().getMessage());
-            if(response.getUAReceipt().getUniversalAccount()!=null){
+            if (response.getUAReceipt().getUniversalAccount() != null) {
                 ConsoleUtils.doubleLine();
                 System.out.println(response.getUAReceipt().getUniversalAccount().toFormatString());
             }

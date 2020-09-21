@@ -1,11 +1,11 @@
 package com.webank.wecross.console.rpc;
 
 import com.webank.wecross.console.common.ConsoleUtils;
+import com.webank.wecross.console.common.FileUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
-import com.webank.wecrosssdk.exception.WeCrossSDKException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
@@ -15,10 +15,9 @@ import com.webank.wecrosssdk.rpc.common.account.FabricAccount;
 import com.webank.wecrosssdk.rpc.common.account.UniversalAccount;
 import com.webank.wecrosssdk.rpc.methods.Response;
 import com.webank.wecrosssdk.rpc.methods.response.*;
-
 import java.io.Console;
+import java.io.File;
 import java.util.*;
-
 import org.jline.reader.LineReader;
 import org.jline.utils.InfoCmp;
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ public class RPCImpl implements RPCFace {
 
     private WeCrossRPC weCrossRPC;
 
-    private Logger logger = LoggerFactory.getLogger(RPCImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(RPCImpl.class);
 
     @Override
     public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
@@ -48,21 +47,6 @@ public class RPCImpl implements RPCFace {
             logger.warn("Get paths failed when starting console,", e);
         }
         return paths;
-    }
-
-    @Override
-    public Set<String> getAccounts() {
-        Set<String> accountList = new HashSet<>();
-        try {
-            AccountResponse response = weCrossRPC.listAccount().send();
-            UniversalAccount account = response.getAccount();
-            accountList.add(account.getUsername());
-        } catch (Exception e) {
-            logger.warn("error,", e);
-        }
-        // TODO: for debug
-        accountList.add("bcos_user1");
-        return accountList;
     }
 
     @Override
@@ -190,7 +174,7 @@ public class RPCImpl implements RPCFace {
             HelpInfo.callHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "call");
         }
 
@@ -200,13 +184,13 @@ public class RPCImpl implements RPCFace {
                     ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
-        String account = params[2];
-        String method = params[3];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String method = params[2];
 
         TransactionResponse response;
-        if (params.length == 4) {
+        if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.call(path, account, method, (String) null).send();
+            response = weCrossRPC.call(path, account, method, null).send();
         } else {
             response =
                     weCrossRPC
@@ -215,7 +199,7 @@ public class RPCImpl implements RPCFace {
                                     account,
                                     method,
                                     ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 4, params.length)))
+                                            Arrays.copyOfRange(params, 3, params.length)))
                             .send();
         }
         PrintUtils.printTransactionResponse(response, true);
@@ -230,7 +214,7 @@ public class RPCImpl implements RPCFace {
             HelpInfo.sendTransactionHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "sendTransaction");
         }
 
@@ -240,13 +224,13 @@ public class RPCImpl implements RPCFace {
                     ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
-        String account = params[2];
-        String method = params[3];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String method = params[2];
 
         TransactionResponse response;
-        if (params.length == 4) {
+        if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.sendTransaction(path, account, method, (String) null).send();
+            response = weCrossRPC.sendTransaction(path, account, method, null).send();
         } else {
             response =
                     weCrossRPC
@@ -255,7 +239,7 @@ public class RPCImpl implements RPCFace {
                                     account,
                                     method,
                                     ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 4, params.length)))
+                                            Arrays.copyOfRange(params, 3, params.length)))
                             .send();
         }
         PrintUtils.printTransactionResponse(response, false);
@@ -270,7 +254,7 @@ public class RPCImpl implements RPCFace {
             HelpInfo.invokeHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "invoke");
         }
 
@@ -280,13 +264,13 @@ public class RPCImpl implements RPCFace {
                     ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
-        String account = params[2];
-        String method = params[3];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String method = params[2];
 
         TransactionResponse response;
-        if (params.length == 4) {
+        if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.invoke(path, account, method, (String) null).send();
+            response = weCrossRPC.invoke(path, account, method, null).send();
         } else {
             response =
                     weCrossRPC
@@ -295,14 +279,14 @@ public class RPCImpl implements RPCFace {
                                     account,
                                     method,
                                     ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 4, params.length)))
+                                            Arrays.copyOfRange(params, 3, params.length)))
                             .send();
         }
         PrintUtils.printTransactionResponse(response, false);
     }
 
     @Override
-    public String login(String[] params, LineReader lineReader) throws Exception {
+    public void login(String[] params, LineReader lineReader) throws Exception {
         if (params.length == 1) {
             UAResponse uaResponse = weCrossRPC.login();
             // connect success but do not config TOML file
@@ -314,16 +298,17 @@ public class RPCImpl implements RPCFace {
                 String password = new String(consoleSys.readPassword("password: "));
                 UAResponse response = weCrossRPC.login(username, password).send();
                 PrintUtils.printUAResponse(response);
-
-                return username;
+                ConsoleUtils.runtimeUsernameThreadLocal.set(username);
             } else {
                 PrintUtils.printUAResponse(uaResponse);
-                return uaResponse.getUAReceipt().getUniversalAccount().getUsername();
+                ConsoleUtils.runtimeUsernameThreadLocal.set(
+                        uaResponse.getUAReceipt().getUniversalAccount().getUsername());
             }
+            return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.loginHelp();
-            return null;
+            return;
         }
         if (params.length != 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "login");
@@ -333,12 +318,12 @@ public class RPCImpl implements RPCFace {
         String password = params[2];
         UAResponse uaResponse = weCrossRPC.login(username, password).send();
         PrintUtils.printUAResponse(uaResponse);
-        return username;
+        ConsoleUtils.runtimeUsernameThreadLocal.set(username);
     }
 
     @Override
-    public void registerAccount(String[] params,LineReader lineReader) throws Exception {
-        if(params.length==1){
+    public void registerAccount(String[] params, LineReader lineReader) throws Exception {
+        if (params.length == 1) {
             lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
             lineReader.getTerminal().flush();
             Console consoleSys = System.console();
@@ -357,83 +342,101 @@ public class RPCImpl implements RPCFace {
         }
         String username = params[1];
         String password = params[2];
-        UAResponse uaResponse = weCrossRPC.register(username,password).send();
+        UAResponse uaResponse = weCrossRPC.register(username, password).send();
         PrintUtils.printUAResponse(uaResponse);
     }
 
+    /**
+     * add Chain Account
+     *
+     * @param params addChainAccount [type][pubKey][secKey][ext][default]
+     * @throws Exception
+     */
     @Override
     public void addChainAccount(String[] params) throws Exception {
-        if(params.length==1){
+        if (params.length == 1) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "addChainAccount");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.addChainAccountHelp();
             return;
         }
-        if (params.length < 5
-                || !ConsoleUtils.supportChainList.contains(params[1])) {
+        if (params.length < 6 || !ConsoleUtils.supportChainList.contains(params[1])) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "addChainAccount");
         }
-        if (params[1].equals(ConsoleUtils.BCOSGMType)||params[1].equals(ConsoleUtils.BCOSType)){
+        if (params[1].equals(ConsoleUtils.BCOSGMType) || params[1].equals(ConsoleUtils.BCOSType)) {
             String type = params[1];
-            String pubKey = params[2];
-            String secKey = params[3];
-            boolean isDefault = Boolean.parseBoolean(params[4]);
-            ChainAccount chainAccount = new BCOSAccount(type,pubKey,secKey,isDefault);
-            UAResponse uaResponse = weCrossRPC.addChainAccount(type,chainAccount).send();
+            String pubKeyPath = params[2];
+            String secKeyPath = params[3];
+            String ext = params[4];
+            boolean isDefault = Boolean.parseBoolean(params[5]);
+            String pubKey = FileUtils.readSourceFile(pubKeyPath);
+            String secKey = FileUtils.readSourceFile(secKeyPath);
+
+            ChainAccount chainAccount = new BCOSAccount(type, pubKey, secKey, ext, isDefault);
+            UAResponse uaResponse = weCrossRPC.addChainAccount(type, chainAccount).send();
             PrintUtils.printUAResponse(uaResponse);
-            // TODO: listAccount
         }
-        if(params[1].equals(ConsoleUtils.fabricType)){
+        if (params[1].equals(ConsoleUtils.fabricType)) {
             String type = params[1];
-            String cert = params[2];
-            String key = params[3];
-            boolean isDefault = Boolean.parseBoolean(params[4]);
-            ChainAccount chainAccount = new FabricAccount(type,cert,key,isDefault);
-            UAResponse uaResponse = weCrossRPC.addChainAccount(type,chainAccount).send();
+            String certPath = params[2];
+            String keyPath = params[3];
+            String ext = params[4];
+            boolean isDefault = Boolean.parseBoolean(params[5]);
+
+            String cert = FileUtils.readSourceFile(certPath);
+            String key = FileUtils.readSourceFile(keyPath);
+            ChainAccount chainAccount = new FabricAccount(type, cert, key, ext, isDefault);
+            UAResponse uaResponse = weCrossRPC.addChainAccount(type, chainAccount).send();
             PrintUtils.printUAResponse(uaResponse);
-            // TODO: listAccount
         }
     }
 
     @Override
     public void setDefaultAccount(String[] params) throws Exception {
-        if(params.length==1){
+        if (params.length == 1) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultAccount");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.setDefaultAccountHelp();
             return;
         }
-        if (params.length != 3
-                || !ConsoleUtils.supportChainList.contains(params[1])) {
+        if (params.length != 3 || !ConsoleUtils.supportChainList.contains(params[1])) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultAccount");
         }
         String type = params[1];
         String keyID = params[2];
-        if(keyID.startsWith("keyID:")){
+        if (keyID.startsWith("keyID:")) {
             keyID = keyID.substring(5);
         }
-        if(!ConsoleUtils.isNumeric(keyID)){
+        if (!ConsoleUtils.isNumeric(keyID)) {
             throw new WeCrossConsoleException(ErrorCode.ILLEGAL_PARAM, "Invalid keyID");
         }
-        UAResponse uaResponse = weCrossRPC.setDefaultAccount(type,Integer.valueOf(keyID)).send();
+        UAResponse uaResponse = weCrossRPC.setDefaultAccount(type, Integer.valueOf(keyID)).send();
         PrintUtils.printUAResponse(uaResponse);
     }
 
     @Override
     public void logout(String[] params) throws Exception {
-        if (params.length == 1){
+        if (params.length == 1) {
             UAResponse uaResponse = weCrossRPC.logout().send();
             PrintUtils.printUAResponse(uaResponse);
+            ConsoleUtils.runtimeUsernameThreadLocal.remove();
         }
-        if (params.length==2 && ("-h".equals(params[1]) || "--help".equals(params[1]))) {
+        if (params.length == 2 && ("-h".equals(params[1]) || "--help".equals(params[1]))) {
             HelpInfo.logoutHelp();
             return;
         }
-        if(params.length > 2){
+        if (params.length > 2) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "logout");
         }
     }
-}
 
+    private String uniformPath(String path) {
+        if (path.startsWith("/") || path.startsWith("\\") || path.startsWith(File.pathSeparator)) {
+            return "file:" + path;
+        } else {
+            return "classpath:" + path;
+        }
+    }
+}

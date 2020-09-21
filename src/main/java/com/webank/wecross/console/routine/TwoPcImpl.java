@@ -32,7 +32,7 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.callTransactionHelp();
             return;
         }
-        if (params.length < 5) {
+        if (params.length < 4) {
             HelpInfo.promptHelp("callTransaction");
             return;
         }
@@ -42,21 +42,21 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
 
-        String account = params[2];
-        String transactionID = params[3];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String transactionID = params[2];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
-        String method = params[4];
+        String method = params[3];
 
         TransactionResponse response;
-        if (params.length == 5) {
+        if (params.length == 4) {
             // no param given means: null (not String[0])
             response =
-                    weCrossRPC.callTransaction(transactionID, path, account, method, (String) null).send();
+                    weCrossRPC.callTransaction(transactionID, path, account, method, null).send();
         } else {
             response =
                     weCrossRPC
@@ -66,7 +66,7 @@ public class TwoPcImpl implements TwoPcFace {
                                     account,
                                     method,
                                     ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 5, params.length)))
+                                            Arrays.copyOfRange(params, 4, params.length)))
                             .send();
         }
         PrintUtils.printTransactionResponse(response, true);
@@ -82,7 +82,7 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.execTransactionHelp();
             return;
         }
-        if (params.length < 6) {
+        if (params.length < 5) {
             HelpInfo.promptHelp("execTransaction");
             return;
         }
@@ -92,29 +92,29 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
 
-        String account = params[2];
-        String transactionID = params[3];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String transactionID = params[2];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
             return;
         }
 
-        String seq = params[4];
+        String seq = params[3];
         if (!ConsoleUtils.isNaturalInteger(seq)) {
             System.out.println(
                     "Error: " + seq + " is not a valid seq, only natural integer allowed!");
             return;
         }
 
-        String method = params[5];
+        String method = params[4];
 
         TransactionResponse response;
-        if (params.length == 6) {
+        if (params.length == 5) {
             // no param given means: null (not String[0])
             response =
                     weCrossRPC
-                            .execTransaction(transactionID, seq, path, account, method, (String) null)
+                            .execTransaction(transactionID, seq, path, account, method, null)
                             .send();
         } else {
             response =
@@ -126,7 +126,7 @@ public class TwoPcImpl implements TwoPcFace {
                                     account,
                                     method,
                                     ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 6, params.length)))
+                                            Arrays.copyOfRange(params, 5, params.length)))
                             .send();
         }
         PrintUtils.printTransactionResponse(response, true);
@@ -141,7 +141,7 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.startTransactionHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "startTransaction");
         }
 
@@ -152,20 +152,17 @@ public class TwoPcImpl implements TwoPcFace {
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
         }
 
-        List<String> accounts = new ArrayList<>();
+        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, accounts, paths);
+        parseTransactionParam(params, paths);
 
         RoutineResponse response =
                 weCrossRPC
-                        .startTransaction(
-                                transactionID,
-                                accounts.toArray(new String[0]),
-                                paths.toArray(new String[0]))
+                        .startTransaction(transactionID, account, paths.toArray(new String[0]))
                         .send();
 
         PrintUtils.printRoutineResponse(response);
-        TransactionInfo transactionInfo = new TransactionInfo(transactionID,accounts,paths);
+        TransactionInfo transactionInfo = new TransactionInfo(transactionID, account, paths);
         ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
         FileUtils.writeTransactionLog();
     }
@@ -175,18 +172,22 @@ public class TwoPcImpl implements TwoPcFace {
         // only support one console do one transaction
         TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (params.length == 1) {
-            if (transactionInfo!=null) {
-                System.out.println("Transaction running now, transactionID is: "+transactionInfo.getTransactionID());
+            if (transactionInfo != null) {
+                System.out.println(
+                        "Transaction running now, transactionID is: "
+                                + transactionInfo.getTransactionID());
                 System.out.print("Are you sure commit it now?(y/n)  ");
                 char readIn;
                 do {
                     readIn = (char) System.in.read();
                 } while (readIn == '\t');
-                if(readIn != 'y'){
-                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE,"Cancel commit.");
-                }
-                else {
-                    System.out.println("Committing transaction: "+transactionInfo.getTransactionID()+"...");
+                if (readIn != 'y') {
+                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Cancel commit.");
+                } else {
+                    System.out.println(
+                            "Committing transaction: "
+                                    + transactionInfo.getTransactionID()
+                                    + "...");
                 }
                 RoutineResponse response =
                         weCrossRPC
@@ -194,8 +195,7 @@ public class TwoPcImpl implements TwoPcFace {
                                         transactionInfo.getTransactionID(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
-                                                .getAccounts()
-                                                .toArray(new String[0]),
+                                                .getAccount(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
                                                 .getPaths()
@@ -212,7 +212,7 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.commitTransactionHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
         }
 
@@ -223,16 +223,13 @@ public class TwoPcImpl implements TwoPcFace {
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
         }
 
-        List<String> accounts = new ArrayList<>();
+        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, accounts, paths);
+        parseTransactionParam(params, paths);
 
         RoutineResponse response =
                 weCrossRPC
-                        .commitTransaction(
-                                transactionID,
-                                accounts.toArray(new String[0]),
-                                paths.toArray(new String[0]))
+                        .commitTransaction(transactionID, account, paths.toArray(new String[0]))
                         .send();
         PrintUtils.printRoutineResponse(response);
         FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
@@ -240,20 +237,22 @@ public class TwoPcImpl implements TwoPcFace {
 
     @Override
     public void rollbackTransaction(String[] params) throws Exception {
-        TransactionInfo transactionInfo =ConsoleUtils.runtimeTransactionThreadLocal.get();
+        TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (params.length == 1) {
-            if (transactionInfo!=null) {
-                System.out.println("Transaction running now, transactionID is: "+transactionInfo.getTransactionID());
+            if (transactionInfo != null) {
+                System.out.println(
+                        "Transaction running now, transactionID is: "
+                                + transactionInfo.getTransactionID());
                 System.out.print("Are you sure rollback transaction now?(y/n)  ");
                 char readIn;
                 do {
                     readIn = (char) System.in.read();
                 } while (readIn == '\t');
-                if(readIn != 'y'){
-                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE,"Cancel rollback.");
-                }
-                else {
-                    System.out.println("Rollback transaction: "+transactionInfo.getTransactionID()+"...");
+                if (readIn != 'y') {
+                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Cancel rollback.");
+                } else {
+                    System.out.println(
+                            "Rollback transaction: " + transactionInfo.getTransactionID() + "...");
                 }
                 RoutineResponse response =
                         weCrossRPC
@@ -261,8 +260,7 @@ public class TwoPcImpl implements TwoPcFace {
                                         transactionInfo.getTransactionID(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
-                                                .getAccounts()
-                                                .toArray(new String[0]),
+                                                .getAccount(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
                                                 .getPaths()
@@ -279,7 +277,7 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.rollbackTransactionHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
         }
 
@@ -290,16 +288,13 @@ public class TwoPcImpl implements TwoPcFace {
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
         }
 
-        List<String> accounts = new ArrayList<>();
+        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, accounts, paths);
+        parseTransactionParam(params, paths);
 
         RoutineResponse response =
                 weCrossRPC
-                        .rollbackTransaction(
-                                transactionID,
-                                accounts.toArray(new String[0]),
-                                paths.toArray(new String[0]))
+                        .rollbackTransaction(transactionID, account, paths.toArray(new String[0]))
                         .send();
         PrintUtils.printRoutineResponse(response);
         FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
@@ -315,7 +310,7 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.getTransactionInfoHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             HelpInfo.promptHelp("getTransactionInfo");
             return;
         }
@@ -327,16 +322,13 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
 
-        List<String> accounts = new ArrayList<>();
+        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, accounts, paths);
+        parseTransactionParam(params, paths);
 
         RoutineInfoResponse response =
                 weCrossRPC
-                        .getTransactionInfo(
-                                transactionID,
-                                accounts.toArray(new String[0]),
-                                paths.toArray(new String[0]))
+                        .getTransactionInfo(transactionID, account, paths.toArray(new String[0]))
                         .send();
         PrintUtils.printRoutineInfoResponse(response);
     }
@@ -357,52 +349,25 @@ public class TwoPcImpl implements TwoPcFace {
         }
 
         String path = params[1];
-        String account = params[2];
-        int option = Integer.parseInt(params[3]);
+        String account = ConsoleUtils.getRuntimeUsername();
+        int option = Integer.parseInt(params[2]);
 
         RoutineIDResponse response = weCrossRPC.getTransactionIDs(path, account, option).send();
         PrintUtils.printRoutineIDResponse(response);
     }
 
-    private void parseTransactionParam(String[] params, List<String> accounts, List<String> paths)
-            throws Exception {
-        Set<String> allAccounts = rpcFace.getAccounts();
+    private void parseTransactionParam(String[] params, List<String> paths) throws Exception {
         Set<String> allPaths = rpcFace.getPaths();
 
-        if (allAccounts.contains(params[2])) {
-            accounts.add(params[2]);
-        } else {
-            throw new Exception("account " + params[2] + " not found");
-        }
-
-        boolean isAccount = true;
-        boolean isPath = false;
-        for (int i = 3; i < params.length; i++) {
-            if (isAccount) {
-                if (allAccounts.contains(params[i])) {
-                    if (accounts.contains(params[i])) {
-                        throw new Exception("duplicated account " + params[i]);
-                    }
-                    accounts.add(params[i]);
-                } else {
-                    if (!params[i].contains(".")) {
-                        throw new Exception("account " + params[i] + " not found");
-                    } else {
-                        isAccount = false;
-                        isPath = true;
-                    }
-                }
+        for (int i = 2; i < params.length; i++) {
+            if (!allPaths.contains(params[i])) {
+                throw new Exception("resource " + params[i] + " not found");
             }
-            if (isPath) {
-                if (!allPaths.contains(params[i])) {
-                    throw new Exception("resource " + params[i] + " not found");
-                }
 
-                if (paths.contains(params[i])) {
-                    throw new Exception("duplicated resource " + params[i]);
-                }
-                paths.add(params[i]);
+            if (paths.contains(params[i])) {
+                throw new Exception("duplicated resource " + params[i]);
             }
+            paths.add(params[i]);
         }
     }
 }
