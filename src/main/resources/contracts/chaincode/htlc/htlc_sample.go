@@ -20,21 +20,21 @@ type HtlcChaincode struct {
 
 func (a *HtlcChaincode) Init(stub shim.ChaincodeStubInterface) (res peer.Response) {
 	defer func() {
-		if r:= recover(); r != nil {
-			res = shim.Error(fmt.Sprintf("%v",r))
+		if r := recover(); r != nil {
+			res = shim.Error(fmt.Sprintf("%v", r))
 		}
 	}()
 
-	var freeIndexStack [Size] int
-	var proposalList [Size] string
+	var freeIndexStack [Size]int
+	var proposalList [Size]string
 	for i := 0; i < Size; i++ {
 		proposalList[i] = NullFlag
 		freeIndexStack[i] = Size - i - 1
 	}
 	var proposals = Proposals{
 		FreeIndexStack: freeIndexStack,
-		ProposalList: proposalList,
-		Depth: Size,
+		ProposalList:   proposalList,
+		Depth:          Size,
 	}
 
 	p, err := json.Marshal(&proposals)
@@ -57,8 +57,8 @@ func (a *HtlcChaincode) Init(stub shim.ChaincodeStubInterface) (res peer.Respons
 
 func (a *HtlcChaincode) Invoke(stub shim.ChaincodeStubInterface) (res peer.Response) {
 	defer func() {
-		if r:= recover(); r != nil {
-			res = shim.Error(fmt.Sprintf("%v",r))
+		if r := recover(); r != nil {
+			res = shim.Error(fmt.Sprintf("%v", r))
 		}
 	}()
 
@@ -73,8 +73,6 @@ func (a *HtlcChaincode) Invoke(stub shim.ChaincodeStubInterface) (res peer.Respo
 		res = a.unlock(stub, args)
 	case "rollback":
 		res = a.rollback(stub, args)
-	case "getCounterpartyHtlcAddress":
-		res = a.getCounterpartyHtlcAddress(stub, args)
 	case "newProposal":
 		res = a.newProposal(stub, args)
 	case "setNewProposalTxInfo":
@@ -88,7 +86,7 @@ func (a *HtlcChaincode) Invoke(stub shim.ChaincodeStubInterface) (res peer.Respo
 	case "setSecret":
 		res = a.setSecret(stub, args)
 	case "getProposalIDs":
-		res = a.getProposalIDs(stub, args)
+		res = a.getProposalIDs(stub)
 	case "deleteProposalID":
 		res = a.deleteProposalID(stub, args)
 	case "setCounterpartyLockState":
@@ -109,11 +107,11 @@ func (a *HtlcChaincode) Invoke(stub shim.ChaincodeStubInterface) (res peer.Respo
 }
 
 func (a *HtlcChaincode) init(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	if len(args) != 3 {
+	if len(args) < 2 {
 		return shim.Error("invalid arguments")
 	}
 
-	name, channel, counterpartyHtlc := args[0], args[1], args[2]
+	name, channel := args[0], args[1]
 
 	err := stub.PutState(LedgerChainCodeNameKey, []byte(name))
 	if err != nil {
@@ -124,8 +122,6 @@ func (a *HtlcChaincode) init(stub shim.ChaincodeStubInterface, args []string) pe
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-
-	a.MyHTLC.init(stub, counterpartyHtlc)
 
 	return shim.Success([]byte(SuccessFlag))
 }
@@ -304,11 +300,7 @@ func (a *HtlcChaincode) rollback(stub shim.ChaincodeStubInterface, args []string
 	return shim.Success([]byte(SuccessFlag))
 }
 
-func (a *HtlcChaincode) getCounterpartyHtlcAddress(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	return shim.Success(a.MyHTLC.getCounterpartyHtlcAddress(stub))
-}
-
-func (a *HtlcChaincode) getProposalIDs(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (a *HtlcChaincode) getProposalIDs(stub shim.ChaincodeStubInterface) peer.Response {
 	return shim.Success(a.MyHTLC.getProposalIDs(stub))
 }
 
@@ -331,7 +323,6 @@ func (a *HtlcChaincode) setCounterpartyLockState(stub shim.ChaincodeStubInterfac
 	a.MyHTLC.setCounterpartyLockState(stub, hash)
 	return shim.Success([]byte(SuccessFlag))
 }
-
 
 func (a *HtlcChaincode) setCounterpartyUnlockState(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
