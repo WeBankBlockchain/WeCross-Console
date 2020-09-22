@@ -295,7 +295,7 @@ public class Shell {
                     case "login":
                         {
                             rpcFace.login(params, lineReader);
-                            loginUser = ConsoleUtils.getRuntimeUsername();
+                            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             break;
                         }
                     case "registerAccount":
@@ -316,7 +316,7 @@ public class Shell {
                     case "logout":
                         {
                             rpcFace.logout(params);
-                            loginUser = null;
+                            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             break;
                         }
                     default:
