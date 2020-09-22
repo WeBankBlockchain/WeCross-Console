@@ -18,8 +18,6 @@ public class FabricCommand {
     /**
      * install contract
      *
-     * <p>TODO: 干掉orgName
-     *
      * @params fabricInstall [path] [orgName] [sourcePath] [version] [language]
      */
     public void install(String[] params) throws Exception {
@@ -63,8 +61,6 @@ public class FabricCommand {
 
     /**
      * instantiate chaincode
-     *
-     * <p>TODO: 干掉orgName
      *
      * @params fabricInstantiate [path] [orgNames] [sourcePath] [version] [language] [policyFile]
      *     [initArgs]
