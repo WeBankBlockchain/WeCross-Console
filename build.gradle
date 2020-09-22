@@ -83,7 +83,10 @@ jar {
 }
 
 test {
-    testLogging.showStandardStreams = true
+    testLogging {
+        showStandardStreams = false
+        events 'passed', 'skipped', 'failed'
+    }
 }
 
 jacocoTestReport {
