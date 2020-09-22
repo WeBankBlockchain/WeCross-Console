@@ -4,13 +4,33 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
-import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConsoleUtils {
+    public static ThreadLocal<String> runtimeUsernameThreadLocal = new ThreadLocal<>();
+    public static ThreadLocal<TransactionInfo> runtimeTransactionThreadLocal = new ThreadLocal<>();
+
+    public static final String fabricType = "Fabric1.4";
+    public static final String BCOSType = "BCOS2.0";
+    public static final String BCOSGMType = "GM_BCOS2.0";
+    public static final List<String> supportChainList =
+            Arrays.asList(fabricType, BCOSType, BCOSGMType);
+    private static final Logger logger = LoggerFactory.getLogger(ConsoleUtils.class);
+
+    public static String getRuntimeUsername() {
+        String username = runtimeUsernameThreadLocal.get();
+        if (username == null) {
+            logger.error("runtimeUsername is null!");
+            System.out.println("runtimeUsername is null!");
+        }
+        return username;
+    }
+
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
@@ -99,7 +119,7 @@ public class ConsoleUtils {
         return input;
     }
 
-    public static String[] parseAgrs(String[] args) {
+    public static String[] parseArgs(String[] args) {
         String[] result = new String[args.length];
         for (int i = 0; i < args.length; i++) {
             result[i] = parseString(args[i]);

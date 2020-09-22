@@ -3,6 +3,8 @@ package com.webank.wecross.console.custom;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
+import com.webank.wecross.console.exception.ErrorCode;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
@@ -65,29 +67,27 @@ public class BCOSCommand {
     /**
      * deploy contract
      *
-     * @params BCOSDeploy [path] [account] [filePath] [className] [version]
+     * @params BCOSDeploy [path] [filePath] [className] [version]
      */
     public void deploy(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("bcosDeploy");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "bcosDeploy");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.BCOSDeployHelp();
             return;
         }
-        if (params.length < 6) {
-            HelpInfo.promptHelp("bcosDeploy");
-            return;
+        if (params.length < 5) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "bcosDeploy");
         }
 
         String path = params[1];
         RPCUtils.checkPath(path);
         String cnsName = path.split("\\.")[2];
-        String account = params[2];
-        String sourcePath = params[3];
-        String className = params[4];
-        String version = params[5];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String sourcePath = params[2];
+        String className = params[3];
+        String version = params[4];
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         org.springframework.core.io.Resource resource = resolver.getResource("file:" + sourcePath);
@@ -107,7 +107,7 @@ public class BCOSCommand {
 
         List<Object> args =
                 new ArrayList<>(Arrays.asList(cnsName, sourceContent, className, version));
-        for (int i = 6; i < params.length; i++) {
+        for (int i = 5; i < params.length; i++) {
             // for constructor
             args.add(ConsoleUtils.parseString(params[i]));
         }
@@ -120,12 +120,11 @@ public class BCOSCommand {
     /**
      * register abi in cns
      *
-     * @params bcosRegister [path] [account] [filePath] [address] [version]
+     * @params bcosRegister [path] [filePath] [address] [contractName] [version]
      */
     public void register(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("bcosRegister");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "bcosRegister");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.BCOSRegisterHelp();
@@ -133,16 +132,15 @@ public class BCOSCommand {
         }
 
         if (params.length < 6) {
-            HelpInfo.promptHelp("bcosRegister");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "bcosRegister");
         }
 
         String path = params[1];
         RPCUtils.checkPath(path);
-        String cnsName = path.split("\\.")[2];
-        String account = params[2];
-        String sourcePath = params[3];
-        String address = params[4];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String sourcePath = params[2];
+        String address = params[3];
+        String cnsName = params[4];
         String version = params[5];
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();

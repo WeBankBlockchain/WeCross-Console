@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class HTLCImpl implements HTLCFace {
     private WeCrossRPC weCrossRPC;
-    private Logger logger = LoggerFactory.getLogger(HTLCImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HTLCImpl.class);
     private static final String TRUE_FLAG = "true";
     private static final String NULL_FLAG = "null";
     private static final String SPLIT_REGEX = "##";
@@ -30,7 +30,7 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.genTimelockHelp();
+            HelpInfo.genTimeLockHelp();
             return;
         }
 
@@ -77,8 +77,8 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
 
-        String account = params[2];
-        String hash = params[3];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String hash = params[2];
 
         Resource resource = ResourceFactory.build(weCrossRPC, path, account);
         String proposalInfo = resource.call("getProposalInfo", hash)[0].trim();
@@ -119,7 +119,7 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.newProposaltHelp();
+            HelpInfo.newProposalHelp();
             return;
         }
 
@@ -131,11 +131,11 @@ public class HTLCImpl implements HTLCFace {
         if (path == null) {
             return;
         }
-        String account = params[2];
+        String account = ConsoleUtils.getRuntimeUsername();
         String[] args = new String[10];
-        args[0] = ConsoleUtils.parseString(params[3]);
+        args[0] = ConsoleUtils.parseString(params[2]);
         for (int i = 1; i < 10; i++) {
-            args[i] = ConsoleUtils.parseString(params[i + 4]);
+            args[i] = ConsoleUtils.parseString(params[i + 3]);
         }
 
         TransactionResponse response =
@@ -156,13 +156,13 @@ public class HTLCImpl implements HTLCFace {
                 String txHash = response.getReceipt().getHash();
                 long blockNum = response.getReceipt().getBlockNumber();
                 setNewContractTxInfo(
-                        path, account, ConsoleUtils.parseString(params[3]), txHash, blockNum);
-                if (TRUE_FLAG.equalsIgnoreCase(params[5])) {
+                        path, account, ConsoleUtils.parseString(params[2]), txHash, blockNum);
+                if (TRUE_FLAG.equalsIgnoreCase(params[4])) {
                     setSecret(
                             path,
                             account,
-                            ConsoleUtils.parseString(params[3]),
-                            ConsoleUtils.parseString(params[4]));
+                            ConsoleUtils.parseString(params[2]),
+                            ConsoleUtils.parseString(params[3]));
                 }
                 System.out.println("Result: create a htlc proposal successfully");
             } else {
@@ -178,19 +178,19 @@ public class HTLCImpl implements HTLCFace {
         }
 
         Hash hash = new Hash();
-        if (TRUE_FLAG.equalsIgnoreCase(params[5])) {
-            if (!params[3].equals(hash.sha256(params[4]))) {
+        if (TRUE_FLAG.equalsIgnoreCase(params[4])) {
+            if (!params[3].equals(hash.sha256(params[3]))) {
                 System.out.println("hash not matched");
                 return false;
             }
         }
 
-        if (params[6].equals(params[7]) || params[10].equals(params[11])) {
+        if (params[5].equals(params[6]) || params[9].equals(params[10])) {
             System.out.println("the sender and receiver must be different");
         }
 
-        BigInteger amount0 = new BigInteger(params[8]);
-        BigInteger amount1 = new BigInteger(params[12]);
+        BigInteger amount0 = new BigInteger(params[7]);
+        BigInteger amount1 = new BigInteger(params[11]);
 
         if (amount0.compareTo(BigInteger.valueOf(0)) > 0
                 && amount1.compareTo(BigInteger.valueOf(0)) > 0) {

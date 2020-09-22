@@ -33,7 +33,7 @@ public class Initializer {
         try {
             weCrossRPC = WeCrossRPCFactory.build(weCrossRPCService);
         } catch (WeCrossSDKException e) {
-            logger.error("init wecross service failed: {}", e);
+            logger.error("init wecross service failed: {}", e.getMessage());
             throw new WeCrossConsoleException(ErrorCode.INIT_WECROSS_SERVICE_ERROR, e.getMessage());
         }
         rpcFace = new RPCImpl();

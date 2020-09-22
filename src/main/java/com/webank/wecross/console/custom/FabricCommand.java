@@ -1,9 +1,8 @@
 package com.webank.wecross.console.custom;
 
-import com.webank.wecross.console.common.FileUtils;
-import com.webank.wecross.console.common.HelpInfo;
-import com.webank.wecross.console.common.PrintUtils;
-import com.webank.wecross.console.common.TarUtils;
+import com.webank.wecross.console.common.*;
+import com.webank.wecross.console.exception.ErrorCode;
+import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
@@ -19,35 +18,33 @@ public class FabricCommand {
     /**
      * install contract
      *
-     * @params fabricInstall [path] [account] [orgName] [sourcePath] [version] [language]
+     * @params fabricInstall [path] [orgName] [sourcePath] [version] [language]
      */
     public void install(String[] params) throws Exception {
         // The command is
-        // fabricInstall payment.fabric.sacc fabric_admin_org1 Org1 contracts/chaincode/sacc 1.0
+        // fabricInstall payment.fabric.sacc Org1 contracts/chaincode/sacc 1.0
         // GO_LANG
-        // fabricInstall payment.fabric.sacc fabric_admin_org2 Org2 contracts/chaincode/sacc 1.0
+        // fabricInstall payment.fabric.sacc Org2 contracts/chaincode/sacc 1.0
         // GO_LANG
         if (params.length == 1) {
-            HelpInfo.promptHelp("fabricInstall");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstall");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricInstallHelp();
             return;
         }
-        if (params.length != 7) {
-            HelpInfo.promptHelp("fabricInstall");
-            return;
+        if (params.length != 6) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstall");
         }
 
         String path = params[1];
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
-        String account = params[2];
-        String orgName = params[3];
-        String sourcePath = uniformPath(params[4]);
-        String version = params[5];
-        String language = params[6];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String orgName = params[2];
+        String sourcePath = uniformPath(params[3]);
+        String version = params[4];
+        String language = params[5];
 
         String codes;
         if (language.equals("GO_LANG")) {
@@ -65,37 +62,35 @@ public class FabricCommand {
     /**
      * instantiate chaincode
      *
-     * @params fabricInstantiate [path] [account] [orgNames] [sourcePath] [version] [language]
-     *     [policyFile] [initArgs]
+     * @params fabricInstantiate [path] [orgNames] [sourcePath] [version] [language] [policyFile]
+     *     [initArgs]
      */
     public void instantiate(String[] params) throws Exception {
         // The command is:
-        // fabricInstantiate payment.fabric.sacc fabric_admin ["Org1","Org2"]
+        // fabricInstantiate payment.fabric.sacc ["Org1","Org2"]
         // contracts/chaincode/sacc 1.0 GO_LANG policy.yaml ["a","10"]
 
         if (params.length == 1) {
-            HelpInfo.promptHelp("fabricInstantiate");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstantiate");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricInstantiateHelp();
             return;
         }
-        if (params.length != 9) {
-            HelpInfo.promptHelp("fabricInstantiate");
-            return;
+        if (params.length != 8) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricInstantiate");
         }
 
         String path = params[1];
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
-        String account = params[2];
-        String orgNames = params[3];
-        String sourcePath = uniformPath(params[4]);
-        String version = params[5];
-        String language = params[6];
-        String policyFile = params[7];
-        String initArgs = params[8];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String orgNames = params[2];
+        String sourcePath = uniformPath(params[3]);
+        String version = params[4];
+        String language = params[5];
+        String policyFile = params[6];
+        String initArgs = params[7];
 
         String policy;
         if (policyFile.equals("default")) {
@@ -114,37 +109,35 @@ public class FabricCommand {
     /**
      * upgrade chaincode
      *
-     * @params fabricUpgrade [path] [account] [orgNames] [sourcePath] [version] [language]
-     *     [policyFile] [initArgs]
+     * @params fabricUpgrade [path] [orgNames] [sourcePath] [version] [language] [policyFile]
+     *     [initArgs]
      */
     public void upgrade(String[] params) throws Exception {
         // The command is:
-        // upgrade payment.fabric.sacc fabric_admin ["Org1","Org2"]
+        // upgrade payment.fabric.sacc ["Org1","Org2"]
         // contracts/chaincode/sacc 2.0 GO_LANG policy.yaml ["a","10"]
 
         if (params.length == 1) {
-            HelpInfo.promptHelp("fabricUpgrade");
-            return;
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricUpgrade");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.fabricUpgradeHelp();
             return;
         }
-        if (params.length != 9) {
-            HelpInfo.promptHelp("fabricUpgrade");
-            return;
+        if (params.length != 8) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "fabricUpgrade");
         }
 
         String path = params[1];
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
-        String account = params[2];
-        String orgNames = params[3];
-        String sourcePath = uniformPath(params[4]);
-        String version = params[5];
-        String language = params[6];
-        String policyFile = params[7];
-        String initArgs = params[8];
+        String account = ConsoleUtils.getRuntimeUsername();
+        String orgNames = params[2];
+        String sourcePath = uniformPath(params[3]);
+        String version = params[4];
+        String language = params[5];
+        String policyFile = params[6];
+        String initArgs = params[7];
 
         String policy;
         if (policyFile.equals("default")) {
