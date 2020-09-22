@@ -2,7 +2,6 @@ package com.webank.wecross.console.mock;
 
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.PrintUtils;
-import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.exception.WeCrossSDKException;
 import com.webank.wecrosssdk.resource.Resource;
 import com.webank.wecrosssdk.resource.ResourceFactory;
@@ -54,8 +53,6 @@ public class MockResource implements Serializable {
         } catch (WeCrossSDKException e) {
             logger.info("Call error: {}", e.getMessage());
             System.out.println(e.getMessage());
-        } catch (WeCrossConsoleException e) {
-            logger.info("printTransactionResponse error: {}", e.getMessage());
         }
     }
 
@@ -69,8 +66,6 @@ public class MockResource implements Serializable {
         } catch (WeCrossSDKException e) {
             logger.info("SendTransaction error: {}", e.getMessage());
             System.out.println(e.getMessage());
-        } catch (WeCrossConsoleException e) {
-            logger.info("printTransactionResponse error: {}", e.getMessage());
         }
     }
 
