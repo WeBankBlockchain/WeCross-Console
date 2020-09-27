@@ -294,16 +294,16 @@ public class ConsoleUtils {
                 result = new StringBuilder(params[0] + "()");
                 return result.toString();
             } else if (length > 3 && params[2].equals("WeCross.getResource")) {
-                if (length != 5) {
+                if (length != 4) {
                     throw new WeCrossConsoleException(
-                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path] [accountName]");
+                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path]");
                 }
                 result = new StringBuilder(params[0] + " " + params[1] + " " + params[2] + " ");
                 String path = params[3];
                 if (ConsoleUtils.isValidPath(parseString(params[3]))) {
                     path = "\"" + path + "\"";
                 }
-                result.append(path).append(",").append("\"").append(params[4]).append("\"");
+                result.append(path);
                 return result.toString();
             }
             for (; start < length; ++start) {

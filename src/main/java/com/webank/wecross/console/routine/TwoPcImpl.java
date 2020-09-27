@@ -42,7 +42,6 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         String transactionID = params[2];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
@@ -55,15 +54,13 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 4) {
             // no param given means: null (not String[0])
-            response =
-                    weCrossRPC.callTransaction(transactionID, path, account, method, null).send();
+            response = weCrossRPC.callTransaction(transactionID, path, method, null).send();
         } else {
             response =
                     weCrossRPC
                             .callTransaction(
                                     transactionID,
                                     path,
-                                    account,
                                     method,
                                     ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 4, params.length)))
@@ -92,7 +89,6 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         String transactionID = params[2];
         if (!ConsoleUtils.isNumeric(transactionID)) {
             System.out.println(
@@ -112,10 +108,7 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 5) {
             // no param given means: null (not String[0])
-            response =
-                    weCrossRPC
-                            .execTransaction(transactionID, seq, path, account, method, null)
-                            .send();
+            response = weCrossRPC.execTransaction(transactionID, seq, path, method, null).send();
         } else {
             response =
                     weCrossRPC
@@ -123,7 +116,6 @@ public class TwoPcImpl implements TwoPcFace {
                                     transactionID,
                                     seq,
                                     path,
-                                    account,
                                     method,
                                     ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 5, params.length)))
@@ -152,17 +144,14 @@ public class TwoPcImpl implements TwoPcFace {
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths);
 
         RoutineResponse response =
-                weCrossRPC
-                        .startTransaction(transactionID, account, paths.toArray(new String[0]))
-                        .send();
+                weCrossRPC.startTransaction(transactionID, paths.toArray(new String[0])).send();
 
         PrintUtils.printRoutineResponse(response);
-        TransactionInfo transactionInfo = new TransactionInfo(transactionID, account, paths);
+        TransactionInfo transactionInfo = new TransactionInfo(transactionID, paths);
         ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
         FileUtils.writeTransactionLog();
     }
@@ -195,9 +184,6 @@ public class TwoPcImpl implements TwoPcFace {
                                         transactionInfo.getTransactionID(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
-                                                .getAccount(),
-                                        ConsoleUtils.runtimeTransactionThreadLocal
-                                                .get()
                                                 .getPaths()
                                                 .toArray(new String[0]))
                                 .send();
@@ -223,14 +209,11 @@ public class TwoPcImpl implements TwoPcFace {
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths);
 
         RoutineResponse response =
-                weCrossRPC
-                        .commitTransaction(transactionID, account, paths.toArray(new String[0]))
-                        .send();
+                weCrossRPC.commitTransaction(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineResponse(response);
         FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
     }
@@ -260,9 +243,6 @@ public class TwoPcImpl implements TwoPcFace {
                                         transactionInfo.getTransactionID(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
-                                                .getAccount(),
-                                        ConsoleUtils.runtimeTransactionThreadLocal
-                                                .get()
                                                 .getPaths()
                                                 .toArray(new String[0]))
                                 .send();
@@ -288,14 +268,11 @@ public class TwoPcImpl implements TwoPcFace {
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths);
 
         RoutineResponse response =
-                weCrossRPC
-                        .rollbackTransaction(transactionID, account, paths.toArray(new String[0]))
-                        .send();
+                weCrossRPC.rollbackTransaction(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineResponse(response);
         FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
     }
@@ -322,14 +299,11 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths);
 
         RoutineInfoResponse response =
-                weCrossRPC
-                        .getTransactionInfo(transactionID, account, paths.toArray(new String[0]))
-                        .send();
+                weCrossRPC.getTransactionInfo(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineInfoResponse(response);
     }
 
@@ -349,10 +323,9 @@ public class TwoPcImpl implements TwoPcFace {
         }
 
         String path = params[1];
-        String account = ConsoleUtils.getRuntimeUsername();
         int option = Integer.parseInt(params[2]);
 
-        RoutineIDResponse response = weCrossRPC.getTransactionIDs(path, account, option).send();
+        RoutineIDResponse response = weCrossRPC.getTransactionIDs(path, option).send();
         PrintUtils.printRoutineIDResponse(response);
     }
 

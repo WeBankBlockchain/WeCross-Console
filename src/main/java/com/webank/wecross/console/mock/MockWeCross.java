@@ -11,12 +11,12 @@ public class MockWeCross implements Serializable {
         MockWeCross.weCrossRPC = weCrossRPC;
     }
 
-    public static MockResource getResource(String path, String account) {
+    public static MockResource getResource(String path) {
         if (!ConsoleUtils.isValidPath(path)) {
             System.out.println("Please provide a valid path");
             return null;
         }
-        return new MockResource(weCrossRPC, path, account);
+        return new MockResource(weCrossRPC, path);
     }
 
     public WeCrossRPC getWeCrossRPC() {

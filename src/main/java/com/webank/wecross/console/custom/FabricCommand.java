@@ -40,7 +40,6 @@ public class FabricCommand {
         String path = params[1];
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
-        String account = ConsoleUtils.getRuntimeUsername();
         String orgName = params[2];
         String sourcePath = uniformPath(params[3]);
         String version = params[4];
@@ -55,7 +54,7 @@ public class FabricCommand {
 
         Object[] args = new Object[] {name, version, orgName, language, codes};
 
-        CommandResponse response = weCrossRPC.customCommand("install", path, account, args).send();
+        CommandResponse response = weCrossRPC.customCommand("install", path, args).send();
         PrintUtils.printCommandResponse(response);
     }
 
@@ -84,7 +83,6 @@ public class FabricCommand {
         String path = params[1];
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
-        String account = ConsoleUtils.getRuntimeUsername();
         String orgNames = params[2];
         String sourcePath = uniformPath(params[3]);
         String version = params[4];
@@ -101,8 +99,7 @@ public class FabricCommand {
 
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
 
-        CommandResponse response =
-                weCrossRPC.customCommand("instantiate", path, account, args).send();
+        CommandResponse response = weCrossRPC.customCommand("instantiate", path, args).send();
         PrintUtils.printCommandResponse(response);
     }
 
@@ -131,7 +128,6 @@ public class FabricCommand {
         String path = params[1];
         RPCUtils.checkPath(path);
         String name = path.split("\\.")[2];
-        String account = ConsoleUtils.getRuntimeUsername();
         String orgNames = params[2];
         String sourcePath = uniformPath(params[3]);
         String version = params[4];
@@ -148,7 +144,7 @@ public class FabricCommand {
 
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
 
-        CommandResponse response = weCrossRPC.customCommand("upgrade", path, account, args).send();
+        CommandResponse response = weCrossRPC.customCommand("upgrade", path, args).send();
         PrintUtils.printCommandResponse(response);
     }
 
