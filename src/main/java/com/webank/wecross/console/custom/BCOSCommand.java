@@ -111,8 +111,7 @@ public class BCOSCommand {
             args.add(ConsoleUtils.parseString(params[i]));
         }
 
-        CommandResponse response =
-                weCrossRPC.customCommand("deploy", path, args.toArray()).send();
+        CommandResponse response = weCrossRPC.customCommand("deploy", path, args.toArray()).send();
         PrintUtils.printCommandResponse(response);
     }
 
