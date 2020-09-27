@@ -67,8 +67,8 @@ public class ConsoleUtilsTest {
         output = "r.sendTransaction \"String\",\"getString\",\"hello world\"";
         Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
 
-//        input = "r = WeCross.getResource a.b.c";
-//        output = "r = WeCross.getResource \"a.b.c\"";
-//        Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
+        input = "r = WeCross.getResource a.b.c";
+        output = "r = WeCross.getResource \"a.b.c\"";
+        Assert.assertEquals(output, ConsoleUtils.parseCommand(ConsoleUtils.tokenizeCommand(input)));
     }
 }
