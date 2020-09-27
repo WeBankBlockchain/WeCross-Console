@@ -128,17 +128,6 @@ public class FileUtils {
         return transactionID;
     }
 
-    private static String getTransactionAccount(Toml toml) throws WeCrossConsoleException {
-        String transactionAccount = toml.getString("account");
-        if (transactionAccount == null) {
-            String errorMessage =
-                    "Something wrong with parsing [accounts], please check configuration";
-            throw new WeCrossConsoleException(ErrorCode.FIELD_MISSING, errorMessage);
-        }
-
-        return transactionAccount;
-    }
-
     private static List<String> getTransactionPath(Toml toml) throws WeCrossConsoleException {
         List<String> transactionPath = toml.getList("paths");
         if (transactionPath == null) {
@@ -154,11 +143,9 @@ public class FileUtils {
         try {
             Toml toml = getToml(TRANSACTION_LOG_TOML);
             String transactionID = getTransactionID(toml);
-            String transactionAccount = getTransactionAccount(toml);
             List<String> transactionPath = getTransactionPath(toml);
 
-            TransactionInfo transactionInfo =
-                    new TransactionInfo(transactionID, transactionAccount, transactionPath);
+            TransactionInfo transactionInfo = new TransactionInfo(transactionID, transactionPath);
             ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
             JlineUtils.addTransactionInfoCompleters(completers);
         } catch (WeCrossConsoleException e) {

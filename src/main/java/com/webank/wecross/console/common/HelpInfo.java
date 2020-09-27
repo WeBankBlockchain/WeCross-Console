@@ -34,7 +34,7 @@ public class HelpInfo {
                 supportedStubsHelp();
                 break;
             case "listAccounts":
-                listAccountsHelp();
+                listAccountHelp();
                 break;
             case "listLocalResources":
                 listLocalResourcesHelp();
@@ -70,10 +70,10 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void listAccountsHelp() {
+    public static void listAccountHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("List all accounts stored in WeCross router");
-        System.out.println("Usage: listAccounts");
+        System.out.println("List your Universal Account's information");
+        System.out.println("Usage: listAccount");
         ConsoleUtils.singleLine();
     }
 

@@ -296,7 +296,7 @@ public class ConsoleUtils {
             } else if (length > 3 && params[2].equals("WeCross.getResource")) {
                 if (length != 5) {
                     throw new WeCrossConsoleException(
-                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path] [accountName]");
+                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path]");
                 }
                 result = new StringBuilder(params[0] + " " + params[1] + " " + params[2] + " ");
                 String path = params[3];

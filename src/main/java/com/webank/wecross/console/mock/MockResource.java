@@ -20,9 +20,9 @@ public class MockResource implements Serializable {
 
     private Resource resource;
 
-    public MockResource(WeCrossRPC weCrossRPC, String path, String account) {
+    public MockResource(WeCrossRPC weCrossRPC, String path) {
         try {
-            resource = ResourceFactory.build(weCrossRPC, path, account);
+            resource = ResourceFactory.build(weCrossRPC, path);
         } catch (WeCrossSDKException e) {
             System.out.println(e.getMessage());
         }
@@ -81,7 +81,6 @@ public class MockResource implements Serializable {
         Request<TransactionRequest> request = new Request<>();
         request.setMethod(method);
         request.setPath(resource.getPath());
-        request.setAccount(resource.getAccount());
         TransactionRequest transactionRequest = new TransactionRequest();
         transactionRequest.setMethod(func);
         transactionRequest.setArgs(args);

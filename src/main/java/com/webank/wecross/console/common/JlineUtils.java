@@ -197,7 +197,7 @@ public class JlineUtils {
     }
 
     public static void removeTransactionInfoCompleters(List<Completer> completers) {
-        if (ConsoleUtils.runtimeUsernameThreadLocal.get() != null) {
+        if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
             completers.removeIf(completer -> completer.equals(commitCompleter));
             completers.removeIf(completer -> completer.equals(rollbackCompleter));
         }

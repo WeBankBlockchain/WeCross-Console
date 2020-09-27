@@ -68,7 +68,7 @@ public class RPCImpl implements RPCFace {
     @Override
     public void listAccount(String[] params) throws Exception {
         if (params.length != 1) {
-            HelpInfo.listAccountsHelp();
+            HelpInfo.listAccountHelp();
             return;
         }
         AccountResponse response = weCrossRPC.listAccount().send();
@@ -184,19 +184,17 @@ public class RPCImpl implements RPCFace {
                     ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         String method = params[2];
 
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.call(path, account, method, null).send();
+            response = weCrossRPC.call(path, method, null).send();
         } else {
             response =
                     weCrossRPC
                             .call(
                                     path,
-                                    account,
                                     method,
                                     ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 3, params.length)))
@@ -224,19 +222,17 @@ public class RPCImpl implements RPCFace {
                     ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         String method = params[2];
 
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.sendTransaction(path, account, method, null).send();
+            response = weCrossRPC.sendTransaction(path, method, null).send();
         } else {
             response =
                     weCrossRPC
                             .sendTransaction(
                                     path,
-                                    account,
                                     method,
                                     ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 3, params.length)))
@@ -264,19 +260,17 @@ public class RPCImpl implements RPCFace {
                     ErrorCode.INVALID_PATH, "Error: path is invalid, please check again!");
         }
 
-        String account = ConsoleUtils.getRuntimeUsername();
         String method = params[2];
 
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.invoke(path, account, method, null).send();
+            response = weCrossRPC.invoke(path, method, null).send();
         } else {
             response =
                     weCrossRPC
                             .invoke(
                                     path,
-                                    account,
                                     method,
                                     ConsoleUtils.parseArgs(
                                             Arrays.copyOfRange(params, 3, params.length)))
