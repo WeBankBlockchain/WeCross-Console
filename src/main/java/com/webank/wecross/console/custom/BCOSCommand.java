@@ -84,7 +84,6 @@ public class BCOSCommand {
         String path = params[1];
         RPCUtils.checkPath(path);
         String cnsName = path.split("\\.")[2];
-        String account = ConsoleUtils.getRuntimeUsername();
         String sourcePath = params[2];
         String className = params[3];
         String version = params[4];
@@ -112,8 +111,7 @@ public class BCOSCommand {
             args.add(ConsoleUtils.parseString(params[i]));
         }
 
-        CommandResponse response =
-                weCrossRPC.customCommand("deploy", path, account, args.toArray()).send();
+        CommandResponse response = weCrossRPC.customCommand("deploy", path, args.toArray()).send();
         PrintUtils.printCommandResponse(response);
     }
 
@@ -137,7 +135,6 @@ public class BCOSCommand {
 
         String path = params[1];
         RPCUtils.checkPath(path);
-        String account = ConsoleUtils.getRuntimeUsername();
         String sourcePath = params[2];
         String address = params[3];
         String cnsName = params[4];
@@ -169,7 +166,7 @@ public class BCOSCommand {
                                 version));
 
         CommandResponse response =
-                weCrossRPC.customCommand("register", path, account, args.toArray()).send();
+                weCrossRPC.customCommand("register", path, args.toArray()).send();
         PrintUtils.printCommandResponse(response);
     }
 }
