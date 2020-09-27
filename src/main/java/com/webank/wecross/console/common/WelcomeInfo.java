@@ -24,18 +24,24 @@ public class WelcomeInfo {
         sb.append("register                         Register a Universal Account.\n");
         sb.append("login                            Login SDK if you have already registered.\n");
         sb.append("logout                           Logout SDK.\n");
-        sb.append("addChainAccount                  Add a Chain Account to your Universal Account.\n");
-        sb.append("setDefaultAccount                Set the chain account to be the default account to send transaction.\n");
+        sb.append(
+                "addChainAccount                  Add a Chain Account to your Universal Account.\n");
+        sb.append(
+                "setDefaultAccount                Set the chain account to be the default account to send transaction.\n");
         sb.append("supportedStubs                   List supported stubs of WeCross router.\n");
         sb.append("listAccounts                     List your Universal Account's information.\n");
-        sb.append("listLocalResources               List local resources configured by WeCross server.\n");
-        sb.append("listResources                    List all resources including remote resources.\n");
+        sb.append(
+                "listLocalResources               List local resources configured by WeCross server.\n");
+        sb.append(
+                "listResources                    List all resources including remote resources.\n");
         sb.append("status                           Check if the resource exists.\n");
         sb.append("detail                           Get resource information.\n");
         sb.append("call                             Call constant method of smart contract.\n");
         sb.append("sendTransaction                  Call non-constant method of smart contract.\n");
-        sb.append("callTransaction                  Call constant method of smart contract during transaction.\n");
-        sb.append("execTransaction                  Call non-constant method of smart contract during transaction.\n");
+        sb.append(
+                "callTransaction                  Call constant method of smart contract during transaction.\n");
+        sb.append(
+                "execTransaction                  Call non-constant method of smart contract during transaction.\n");
         sb.append("startTransaction                 Start a 2pc transaction.\n");
         sb.append("commitTransaction                Commit a 2pc transaction.\n");
         sb.append("rollbackTransaction              Rollback a 2pc transaction.\n");
@@ -50,7 +56,8 @@ public class WelcomeInfo {
         sb.append("genSecretAndHash                 Generate a secret and its hash.\n");
         sb.append("newHTLCProposal                  Create a htlc transfer proposal .\n");
         sb.append("checkTransferStatus              Check htlc transfer status by hash.\n");
-        sb.append("WeCross.getResource              Init resource by path, and assign it to a custom variable.\n");
+        sb.append(
+                "WeCross.getResource              Init resource by path, and assign it to a custom variable.\n");
         sb.append("[resource].[command]             Equal to: command [path].\n");
 
         System.out.println(sb.toString());

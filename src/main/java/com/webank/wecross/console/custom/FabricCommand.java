@@ -99,8 +99,7 @@ public class FabricCommand {
 
         Object[] args = new Object[] {name, version, orgNames, language, policy, initArgs};
 
-        CommandResponse response =
-                weCrossRPC.customCommand("instantiate", path, args).send();
+        CommandResponse response = weCrossRPC.customCommand("instantiate", path, args).send();
         PrintUtils.printCommandResponse(response);
     }
 

@@ -136,8 +136,7 @@ public class HTLCImpl implements HTLCFace {
             args[i] = ConsoleUtils.parseString(params[i + 3]);
         }
 
-        TransactionResponse response =
-                weCrossRPC.sendTransaction(path, "newProposal", args).send();
+        TransactionResponse response = weCrossRPC.sendTransaction(path, "newProposal", args).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS) {
             ConsoleUtils.printJson(response.toString());
@@ -153,8 +152,7 @@ public class HTLCImpl implements HTLCFace {
             if (SUCCESS_FLAG.equalsIgnoreCase(result)) {
                 String txHash = response.getReceipt().getHash();
                 long blockNum = response.getReceipt().getBlockNumber();
-                setNewContractTxInfo(
-                        path, ConsoleUtils.parseString(params[2]), txHash, blockNum);
+                setNewContractTxInfo(path, ConsoleUtils.parseString(params[2]), txHash, blockNum);
                 if (TRUE_FLAG.equalsIgnoreCase(params[4])) {
                     setSecret(
                             path,
@@ -198,8 +196,7 @@ public class HTLCImpl implements HTLCFace {
         }
     }
 
-    private void setNewContractTxInfo(
-            String path, String hash, String txHash, long blockNum)
+    private void setNewContractTxInfo(String path, String hash, String txHash, long blockNum)
             throws Exception {
         TransactionResponse response =
                 weCrossRPC
@@ -227,8 +224,7 @@ public class HTLCImpl implements HTLCFace {
         }
     }
 
-    private void setSecret(String path, String hash, String secret)
-            throws Exception {
+    private void setSecret(String path, String hash, String secret) throws Exception {
         TransactionResponse response =
                 weCrossRPC.sendTransaction(path, "setSecret", hash, secret).send();
         Receipt receipt = response.getReceipt();
