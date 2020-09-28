@@ -72,6 +72,8 @@ public class Shell {
             keymap.bind(new Reference("beginning-of-line"), "\033[1~");
             keymap.bind(new Reference("end-of-line"), "\033[4~");
 
+            rpcFace.internalLogin(lineReader);
+            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return;
@@ -311,6 +313,8 @@ public class Shell {
                     case "setDefaultAccount":
                         {
                             rpcFace.setDefaultAccount(params);
+                            rpcFace.internalLogin(lineReader);
+                            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             break;
                         }
                     case "logout":

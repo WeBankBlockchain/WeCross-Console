@@ -153,8 +153,7 @@ public class HelpInfo {
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
                 "args -- hash, secret, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1");
-        System.out.println(
-                "[note]: 1. only sender can create this contract, so [account] must be sender's account name");
+        System.out.println("[note]: 1. only sender can create this contract");
         System.out.println(
                 "[note]: 2. if you are initiator who holds the secret, [role] would be true, and *0 is your info. Else, the [role] is false and *1 is your info");
         ConsoleUtils.singleLine();
@@ -354,7 +353,6 @@ public class HelpInfo {
         System.out.println("Usage: fabricInstall [path] [version] [orgName] [language]");
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be installed by name");
-        System.out.println("account -- choose an account to sign");
         System.out.println("orgName -- organization");
         System.out.println("sourcePath -- chaincode project dir from conf/");
         System.out.println("version -- contract version");
@@ -414,9 +412,8 @@ public class HelpInfo {
     public static void checkTransferStatusHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Check htlc transfer status by hash");
-        System.out.println("Usage: checkTransferStatus [path] [account] [hash]");
+        System.out.println("Usage: checkTransferStatus [path] [hash]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- choose an account to sign");
         System.out.println("hash -- transfer contract-id");
         ConsoleUtils.singleLine();
     }

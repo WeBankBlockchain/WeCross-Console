@@ -9,10 +9,7 @@ import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -28,7 +25,10 @@ public class BCOSCommand {
     }
 
     public String mergeSource(
-            String currentDir, String sourceFile, PathMatchingResourcePatternResolver resolver)
+            String currentDir,
+            String sourceFile,
+            PathMatchingResourcePatternResolver resolver,
+            Set<String> dependencies)
             throws Exception {
         StringBuffer sourceBuffer = new StringBuffer();
 
@@ -48,10 +48,24 @@ public class BCOSCommand {
         try {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                if (line.contains("pragma experimental ABIEncoderV2;")) {
+                    if (!dependencies.contains("pragma experimental ABIEncoderV2;")) {
+                        dependencies.add("pragma experimental ABIEncoderV2;");
+                        sourceBuffer.append(line);
+                        sourceBuffer.append(System.lineSeparator());
+                    }
+                    continue;
+                }
+
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     String depSourcePath = matcher.group(1);
-                    sourceBuffer.append(mergeSource(dir, depSourcePath, resolver));
+                    String nextPath = dir + depSourcePath;
+                    if (!dependencies.contains(nextPath)) {
+                        dependencies.add(nextPath);
+                        sourceBuffer.append(
+                                mergeSource(dir, depSourcePath, resolver, dependencies));
+                    }
                 } else {
                     sourceBuffer.append(line);
                     sourceBuffer.append(System.lineSeparator());
@@ -102,7 +116,7 @@ public class BCOSCommand {
         String realPath = resource.getFile().getAbsolutePath();
         String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
 
-        String sourceContent = mergeSource(dir, filename, resolver);
+        String sourceContent = mergeSource(dir, filename, resolver, new HashSet<>());
 
         List<Object> args =
                 new ArrayList<>(Arrays.asList(cnsName, sourceContent, className, version));
@@ -154,7 +168,7 @@ public class BCOSCommand {
         String realPath = resource.getFile().getAbsolutePath();
         String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
 
-        String sourceContent = mergeSource(dir, filename, resolver);
+        String sourceContent = mergeSource(dir, filename, resolver, new HashSet<>());
 
         List<Object> args =
                 new ArrayList<>(

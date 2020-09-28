@@ -27,6 +27,8 @@ public interface RPCFace {
 
     void login(String[] params, LineReader lineReader) throws Exception;
 
+    void internalLogin(LineReader lineReader) throws Exception;
+
     void registerAccount(String[] params, LineReader lineReader) throws Exception;
 
     void addChainAccount(String[] params) throws Exception;
