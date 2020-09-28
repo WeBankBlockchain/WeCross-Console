@@ -13,8 +13,6 @@ contract HTLC {
         bool rolledback;
     }
 
-    string counterpartyHtlcAddress;
-
     mapping(string => string) newProposalTxInfos;
 
     // recode if you're the initiator
@@ -47,16 +45,6 @@ contract HTLC {
             proposalList[i] = nullFlag;
             freeIndexStack[i] = size - i - 1;
         }
-    }
-
-    /*
-        @param: counterpartyHtlcAddress
-    */
-    function setup(string memory _counterpartyHtlcAddress) public
-    returns (string memory result)
-    {
-        counterpartyHtlcAddress = _counterpartyHtlcAddress;
-        result = successFlag;
     }
 
     /*  please override it
@@ -154,11 +142,6 @@ contract HTLC {
         result = "continue";
     }
 
-    function getCounterpartyHtlcAddress() public view
-    returns (string memory result)
-    {
-        result = counterpartyHtlcAddress;
-    }
 
     /*
        @param:
@@ -167,7 +150,7 @@ contract HTLC {
        sender1 | receiver1 | amount1 | timelock1 |
 
    */
-    function newProposal(string memory _hash, string memory _role,string memory _sender0,string memory _receiver0,string memory _amount0,string memory _timelock0,string memory _sender1,string memory _receiver1,string memory _amount1,string memory _timelock1) public
+    function newProposal(string memory _hash, string memory _role, string memory _sender0, string memory _receiver0, string memory _amount0, string memory _timelock0, string memory _sender1, string memory _receiver1, string memory _amount1, string memory _timelock1) public
     returns (string memory result)
     {
         if(depth == 0) {

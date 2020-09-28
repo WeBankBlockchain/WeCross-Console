@@ -316,6 +316,25 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
+    public void internalLogin(LineReader lineReader) throws Exception {
+        UAResponse uaResponse = weCrossRPC.login();
+        // connect success but do not config TOML file
+        if (uaResponse == null) {
+            lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
+            lineReader.getTerminal().flush();
+            Console consoleSys = System.console();
+            String username = consoleSys.readLine("username: ");
+            String password = new String(consoleSys.readPassword("password: "));
+            weCrossRPC.login(username, password).send();
+            ConsoleUtils.runtimeUsernameThreadLocal.set(username);
+        } else {
+            PrintUtils.printUAResponse(uaResponse);
+            ConsoleUtils.runtimeUsernameThreadLocal.set(
+                    uaResponse.getUAReceipt().getUniversalAccount().getUsername());
+        }
+    }
+
+    @Override
     public void registerAccount(String[] params, LineReader lineReader) throws Exception {
         if (params.length == 1) {
             lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
