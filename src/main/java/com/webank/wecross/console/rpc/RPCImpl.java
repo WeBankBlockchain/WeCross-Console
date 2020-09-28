@@ -328,7 +328,6 @@ public class RPCImpl implements RPCFace {
             weCrossRPC.login(username, password).send();
             ConsoleUtils.runtimeUsernameThreadLocal.set(username);
         } else {
-            PrintUtils.printUAResponse(uaResponse);
             ConsoleUtils.runtimeUsernameThreadLocal.set(
                     uaResponse.getUAReceipt().getUniversalAccount().getUsername());
         }
