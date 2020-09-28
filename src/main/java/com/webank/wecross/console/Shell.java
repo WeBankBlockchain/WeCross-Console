@@ -34,15 +34,15 @@ public class Shell {
 
     public static void main(String[] args) {
 
-        LineReader lineReader;
-        GroovyShell groovyShell;
+        LineReader lineReader = null;
+        GroovyShell groovyShell = null;
         MockWeCross mockWeCross;
-        ObjectMapper mapper;
+        ObjectMapper mapper = null;
         Set<String> resourceVars = new HashSet<>();
         Set<String> pathVars = new HashSet<>();
         Map<String, String> pathMaps = new HashMap<>();
         Initializer initializer = new Initializer();
-        List<Completer> completers;
+        List<Completer> completers = null;
 
         try {
             initializer.init();
@@ -53,7 +53,7 @@ public class Shell {
             fabricCommand = initializer.getFabricCommand();
         } catch (WeCrossConsoleException e) {
             System.out.println(e.getMessage());
-            return;
+            System.exit(0);
         }
 
         try {
@@ -72,11 +72,9 @@ public class Shell {
             keymap.bind(new Reference("beginning-of-line"), "\033[1~");
             keymap.bind(new Reference("end-of-line"), "\033[4~");
 
-            rpcFace.internalLogin(lineReader);
-            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return;
+            System.exit(0);
         }
 
         WelcomeInfo.welcome();
@@ -308,6 +306,8 @@ public class Shell {
                     case "addChainAccount":
                         {
                             rpcFace.addChainAccount(params);
+                            rpcFace.internalLogin(lineReader);
+                            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             break;
                         }
                     case "setDefaultAccount":
