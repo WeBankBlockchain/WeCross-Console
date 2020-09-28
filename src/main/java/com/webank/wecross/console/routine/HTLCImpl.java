@@ -167,14 +167,14 @@ public class HTLCImpl implements HTLCFace {
     }
 
     private boolean checkProposal(String[] params) throws NoSuchAlgorithmException {
-        if (params.length != 14) {
+        if (params.length != 13) {
             System.out.println("invalid number of parameters, 14 params needed");
             return false;
         }
 
         Hash hash = new Hash();
         if (TRUE_FLAG.equalsIgnoreCase(params[4])) {
-            if (!params[3].equals(hash.sha256(params[3]))) {
+            if (!params[2].equals(hash.sha256(params[3]))) {
                 System.out.println("hash not matched");
                 return false;
             }

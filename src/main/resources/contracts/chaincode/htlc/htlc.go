@@ -19,7 +19,6 @@ const (
 	ProposalsKey               = "HTLCProposals"
 	InitiatorKeyPrefix         = "Initiator-%s"
 	ParticipantKeyPrefix       = "Participant-%s"
-	CounterpartyHtlcAddressKey = "CounterpartyHtlcAddressKey"
 	NewProposalTxInfoKeyPrefix = "NewProposalTxHash-%s"
 	Size                       = 1024 // capacity of proposal list
 	NullFlag                   = "null"
@@ -66,11 +65,6 @@ func (h *HTLC) getIndex(stub shim.ChaincodeStubInterface, hash string) int {
 	}
 
 	return bytesToInt(index)
-}
-
-func (h *HTLC) init(stub shim.ChaincodeStubInterface, counterpartyHtlcAddress string) {
-	err := stub.PutState(CounterpartyHtlcAddressKey, []byte(counterpartyHtlcAddress))
-	checkError(err)
 }
 
 func (h *HTLC) lock(stub shim.ChaincodeStubInterface, hash string) string {
@@ -158,13 +152,6 @@ func (h *HTLC) rollback(stub shim.ChaincodeStubInterface, hash string) string {
 	}
 
 	return "continue"
-}
-
-func (h *HTLC) getCounterpartyHtlcAddress(stub shim.ChaincodeStubInterface) []byte {
-	counterpartyHtlc, err := stub.GetState(CounterpartyHtlcAddressKey)
-	checkError(err)
-
-	return counterpartyHtlc
 }
 
 func (h *HTLC) newProposal(stub shim.ChaincodeStubInterface, hash, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1 string) {

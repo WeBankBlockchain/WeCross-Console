@@ -9,13 +9,13 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
     address assetContract;
 
     /*
-        @param: assetContract | counterpartyHtlcAddress
+        @param: assetContract
     */
-    function init(string memory _assetContract, string memory _counterpartyHtlcAddress) public
+    function init(string memory _assetContract) public
     returns (string memory result)
     {
-        result = super.setup(_counterpartyHtlcAddress);
         assetContract = stringToAddress(_assetContract);
+        result = successFlag;
     }
 
     /*
