@@ -322,6 +322,7 @@ public class RPCImpl implements RPCFace {
         if (uaResponse == null) {
             lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
             lineReader.getTerminal().flush();
+            System.out.println("Universal Account info has been changed, please login again.");
             Console consoleSys = System.console();
             String username = consoleSys.readLine("username: ");
             String password = new String(consoleSys.readPassword("password: "));

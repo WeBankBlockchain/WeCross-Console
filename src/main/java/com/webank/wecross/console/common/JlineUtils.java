@@ -71,6 +71,7 @@ public class JlineUtils {
                     "status",
                     "detail",
                     "call",
+                    "invoke",
                     "sendTransaction",
                     "newHTLCProposal",
                     "genTimelock",
@@ -123,6 +124,23 @@ public class JlineUtils {
                         NullCompleter.INSTANCE);
         argumentCompleter1.setStrict(false);
         completers.add(argumentCompleter1);
+
+        ArgumentCompleter addChainAccountCompleter =
+                new ArgumentCompleter(
+                        new StringsCompleter("addChainAccount"),
+                        new StringsCompleter(ConsoleUtils.supportChainList),
+                        new FilesCompleter(Paths.get(System.getProperty("user.dir"), "conf"), true),
+                        new FilesCompleter(Paths.get(System.getProperty("user.dir"), "conf"), true),
+                        new StringsCompleter(Arrays.asList("true", "false")),
+                        NullCompleter.INSTANCE);
+        completers.add(addChainAccountCompleter);
+
+        ArgumentCompleter setDefaultAccountCompleter =
+                new ArgumentCompleter(
+                        new StringsCompleter("setDefaultAccount"),
+                        new StringsCompleter(ConsoleUtils.supportChainList),
+                        NullCompleter.INSTANCE);
+        completers.add(setDefaultAccountCompleter);
 
         return completers;
     }
@@ -186,11 +204,13 @@ public class JlineUtils {
             commitCompleter =
                     new ArgumentCompleter(
                             new StringsCompleter("commitTransaction"),
-                            new StringsCompleter(runtimeTransaction));
+                            new StringsCompleter(runtimeTransaction),
+                            NullCompleter.INSTANCE);
             rollbackCompleter =
                     new ArgumentCompleter(
                             new StringsCompleter("rollbackTransaction"),
-                            new StringsCompleter(runtimeTransaction));
+                            new StringsCompleter(runtimeTransaction),
+                            NullCompleter.INSTANCE);
             completers.add(rollbackCompleter);
             completers.add(commitCompleter);
         }
@@ -257,16 +277,6 @@ public class JlineUtils {
                         NullCompleter.INSTANCE);
         fabricArgumentCompleter.setStrict(false);
         completers.add(fabricArgumentCompleter);
-
-        ArgumentCompleter addChainAccountCompleter =
-                new ArgumentCompleter(
-                        new StringsCompleter("addChainAccount"),
-                        new StringsCompleter(ConsoleUtils.supportChainList),
-                        new FilesCompleter(Paths.get(System.getProperty("user.dir"), "conf"), true),
-                        new FilesCompleter(Paths.get(System.getProperty("user.dir"), "conf"), true),
-                        new StringsCompleter(Arrays.asList("true", "false")),
-                        NullCompleter.INSTANCE);
-        completers.add(addChainAccountCompleter);
     }
 
     public static void addResourceVarCompleters(List<Completer> completers, String resourceVar) {

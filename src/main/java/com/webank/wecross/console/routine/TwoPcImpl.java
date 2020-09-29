@@ -166,17 +166,18 @@ public class TwoPcImpl implements TwoPcFace {
                         "Transaction running now, transactionID is: "
                                 + transactionInfo.getTransactionID());
                 System.out.print("Are you sure commit it now?(y/n)  ");
-                char readIn;
+                String readIn;
+                Scanner in = new Scanner(System.in);
                 do {
-                    readIn = (char) System.in.read();
-                } while (readIn == '\t');
-                if (readIn != 'y') {
-                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Cancel commit.");
+                    readIn = in.nextLine();
+                } while (readIn.equals("\t"));
+                if (!readIn.equals("y") && !readIn.equals("Y")) {
+                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Cancel commit.\n");
                 } else {
                     System.out.println(
                             "Committing transaction: "
                                     + transactionInfo.getTransactionID()
-                                    + "...");
+                                    + "...\n");
                 }
                 RoutineResponse response =
                         weCrossRPC
@@ -191,6 +192,7 @@ public class TwoPcImpl implements TwoPcFace {
                 FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
+                System.out.println("There is no transaction running now.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
             }
         }
@@ -227,15 +229,18 @@ public class TwoPcImpl implements TwoPcFace {
                         "Transaction running now, transactionID is: "
                                 + transactionInfo.getTransactionID());
                 System.out.print("Are you sure rollback transaction now?(y/n)  ");
-                char readIn;
+                String readIn;
+                Scanner in = new Scanner(System.in);
                 do {
-                    readIn = (char) System.in.read();
-                } while (readIn == '\t');
-                if (readIn != 'y') {
-                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Cancel rollback.");
+                    readIn = in.nextLine();
+                } while (Objects.equals(readIn, "\t"));
+                if (!readIn.equals("y") && !readIn.equals("Y")) {
+                    throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Cancel rollback.\n");
                 } else {
                     System.out.println(
-                            "Rollback transaction: " + transactionInfo.getTransactionID() + "...");
+                            "Rollback transaction: "
+                                    + transactionInfo.getTransactionID()
+                                    + "...\n");
                 }
                 RoutineResponse response =
                         weCrossRPC
@@ -250,6 +255,7 @@ public class TwoPcImpl implements TwoPcFace {
                 FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
+                System.out.println("There is no transaction running now.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
             }
         }
