@@ -31,6 +31,7 @@ public class Shell {
     private static BCOSCommand bcosCommand;
     private static FabricCommand fabricCommand;
     private static String loginUser;
+    private static String runtimeTransaction;
 
     public static void main(String[] args) {
 
@@ -66,6 +67,10 @@ public class Shell {
 
             completers = JlineUtils.getCompleters(rpcFace.getPaths(), resourceVars, pathVars);
             FileUtils.loadTransactionLog(completers);
+            if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
+                runtimeTransaction =
+                        ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID();
+            }
             lineReader = JlineUtils.getLineReader(completers);
 
             KeyMap<org.jline.reader.Binding> keymap = lineReader.getKeyMaps().get(LineReader.MAIN);
@@ -83,17 +88,20 @@ public class Shell {
             logger.info(Arrays.toString(args));
             try {
                 String prompt =
-                        (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]>";
+                        (runtimeTransaction == null)
+                                ? ""
+                                : "[Transaction running: " + runtimeTransaction + "]\n";
+                prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]>";
                 String request = lineReader.readLine(prompt);
 
                 String[] params;
                 params = ConsoleUtils.tokenizeCommand(request);
                 if (params.length < 1) {
-                    System.out.print("");
+                    System.out.println();
                     continue;
                 }
-                if ("".equals(params[0].trim())) {
-                    System.out.print("");
+                if (params[0].trim().equals("")) {
+                    System.out.println();
                     continue;
                 }
                 if ("quit".equals(params[0])
@@ -214,6 +222,10 @@ public class Shell {
                         {
                             twoPcFace.startTransaction(params);
                             if (params.length >= 4) {
+                                runtimeTransaction =
+                                        ConsoleUtils.runtimeTransactionThreadLocal
+                                                .get()
+                                                .getTransactionID();
                                 JlineUtils.addTransactionInfoCompleters(completers);
                             }
                             break;
@@ -224,6 +236,7 @@ public class Shell {
                             twoPcFace.commitTransaction(params);
                             if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null
                                     && params.length != 2) {
+                                runtimeTransaction = null;
                                 JlineUtils.removeTransactionInfoCompleters(completers);
                                 ConsoleUtils.runtimeTransactionThreadLocal.remove();
                             }
@@ -235,6 +248,7 @@ public class Shell {
                             twoPcFace.rollbackTransaction(params);
                             if (ConsoleUtils.runtimeTransactionThreadLocal != null
                                     && params.length != 2) {
+                                runtimeTransaction = null;
                                 JlineUtils.removeTransactionInfoCompleters(completers);
                                 ConsoleUtils.runtimeTransactionThreadLocal.remove();
                             }
@@ -253,7 +267,7 @@ public class Shell {
                     case "bcosDeploy":
                         {
                             bcosCommand.deploy(params);
-                            if (params.length >= 6) {
+                            if (params.length >= 6 && isPath(params[1])) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
@@ -261,7 +275,7 @@ public class Shell {
                     case "bcosRegister":
                         {
                             bcosCommand.register(params);
-                            if (params.length >= 6) {
+                            if (params.length >= 6 && isPath(params[1])) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
@@ -269,9 +283,9 @@ public class Shell {
                     case "fabricInstall":
                         {
                             fabricCommand.install(params);
-                            if (params.length == 7) {
+                            if (params.length == 7 && isPath(params[1])) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
-                                JlineUtils.addOrgCompleters(completers, params[3]);
+                                JlineUtils.addOrgCompleters(completers, params[2]);
                             }
                             break;
                         }
@@ -279,7 +293,7 @@ public class Shell {
                         {
                             fabricCommand.instantiate(params);
                             if (params.length == 9) {
-                                JlineUtils.addOrgCompleters(completers, params[3]);
+                                JlineUtils.addOrgCompleters(completers, params[2]);
                             }
 
                             break;
@@ -288,7 +302,7 @@ public class Shell {
                         {
                             fabricCommand.upgrade(params);
                             if (params.length == 9) {
-                                JlineUtils.addOrgCompleters(completers, params[3]);
+                                JlineUtils.addOrgCompleters(completers, params[2]);
                             }
                             break;
                         }
@@ -306,15 +320,20 @@ public class Shell {
                     case "addChainAccount":
                         {
                             rpcFace.addChainAccount(params);
-                            rpcFace.internalLogin(lineReader);
-                            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
+                            if (params.length == 6) {
+
+                                rpcFace.internalLogin(lineReader);
+                                loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
+                            }
                             break;
                         }
                     case "setDefaultAccount":
                         {
                             rpcFace.setDefaultAccount(params);
-                            rpcFace.internalLogin(lineReader);
-                            loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
+                            if (params.length == 3) {
+                                rpcFace.internalLogin(lineReader);
+                                loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
+                            }
                             break;
                         }
                     case "logout":

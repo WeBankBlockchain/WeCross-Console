@@ -73,7 +73,7 @@ public class HelpInfo {
     public static void listAccountHelp() {
         ConsoleUtils.singleLine();
         System.out.println("List your Universal Account's information");
-        System.out.println("Usage: listAccount");
+        System.out.println("Usage: listAccount [without any args]");
         ConsoleUtils.singleLine();
     }
 
@@ -163,10 +163,10 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Login SDK if you have already registered");
         System.out.println("Usage: login [username] [password]");
-        System.out.println("[One more thing], you can just type-in 'login' and login ssh-style-ly");
+        System.out.println("[One more thing]: You can just type-in 'login' to login ssh-style-ly");
         System.out.println(
-                "[One last thing], you can write your userInfo into TOML file 'application.toml', ");
-        System.out.println("    and just type-in 'login' to login");
+                "[One last thing]: You can set your userInfo into TOML file 'application.toml' like 'application-sample.toml', ");
+        System.out.println("                  and just type-in 'login' to login");
         ConsoleUtils.singleLine();
     }
 
@@ -175,7 +175,7 @@ public class HelpInfo {
         System.out.println("Register a Universal Account");
         System.out.println("Usage: registerAccount [username] [password]");
         System.out.println(
-                "[One more thing], you can just type-in 'registerAccount' and register an account ssh-style-ly");
+                "[One more thing]: You can just type-in 'registerAccount' to register an account ssh-style-ly");
         ConsoleUtils.singleLine();
     }
 
@@ -192,7 +192,8 @@ public class HelpInfo {
         System.out.println(
                 "Usage: addChainAccount [chainType] [firstKeyPath] [secondKeyPath] [extraData] [isDefault]");
         System.out.println("chainType -- supported chain type");
-        System.out.println("    support chain type now:" + ConsoleUtils.supportChainList);
+        System.out.println(
+                "             supported chain type now:" + ConsoleUtils.supportChainList);
         System.out.println(
                 "firstKeyPath  -- if ([chainType] == BCOS*);   then it stand for pubKeyPath");
         System.out.println(
@@ -205,20 +206,22 @@ public class HelpInfo {
         System.out.println(
                 "        else if ([chainType] == Fabric*); then it stand for membershipID");
         System.out.println(
-                "isDefault -- whether this new chain Account is default account in this [chainType]");
+                "isDefault -- whether this new chain Account is the default sendTransaction chain account in this [chainType]");
         ConsoleUtils.singleLine();
         System.out.println("Example:");
         System.out.println(
                 "    addChainAccount BCOS2.0 path/to/pubKey path/to/secretKey address true");
         System.out.println(
                 "    addChainAccount GM_BCOS2.0 path/to/pubKey path/to/secretKey address false");
-        System.out.println("    addChainAccount Fabric1.4 path/to/cert path/to/key MSP_ID true");
+        System.out.println(
+                "    addChainAccount Fabric1.4 path/to/cert path/to/key membershipID true");
         ConsoleUtils.singleLine();
     }
 
     public static void setDefaultAccountHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Set the chain account to be the default account to send transaction");
+        System.out.println(
+                "Set the chain account to be the default account to send transaction in a certain [chainType]");
         System.out.println("Usage: setDefaultAccount [chainType][keyID]");
         System.out.println("chainType -- supported chain type");
         System.out.println("    support chain type now:" + ConsoleUtils.supportChainList);
@@ -255,6 +258,7 @@ public class HelpInfo {
     }
 
     public static void execTransactionHelp() {
+        ConsoleUtils.singleLine();
         System.out.println("Call non-constant method of smart contract during transaction");
         System.out.println("Usage: execTransaction [path] [transactionID] [seq] [method] [args]");
         System.out.println("path -- the path of the contract resource in wecross router");
@@ -262,6 +266,7 @@ public class HelpInfo {
         System.out.println("seq -- sequence for each step in transaction");
         System.out.println("method -- the method in contract");
         System.out.println("args -- variable parameter list");
+        ConsoleUtils.singleLine();
     }
 
     public static void startTransactionHelp() {
@@ -280,7 +285,7 @@ public class HelpInfo {
         System.out.println("transactionID -- transaction identifier");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
-                "[notes:] It will auto-complete args if you call \"commitTransaction\" without args");
+                "[note]: It will auto-complete args if you call \"commitTransaction\" without args");
         ConsoleUtils.singleLine();
     }
 
@@ -291,7 +296,7 @@ public class HelpInfo {
         System.out.println("transactionID -- transaction identifier");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
-                "[notes:] It will auto-complete args if you call \"rollbackTransaction\" without args");
+                "[note]: It will auto-complete args if you call \"rollbackTransaction\" without args");
         ConsoleUtils.singleLine();
     }
 
