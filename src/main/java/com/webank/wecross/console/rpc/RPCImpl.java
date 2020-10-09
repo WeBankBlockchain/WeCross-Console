@@ -6,6 +6,7 @@ import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
+import com.webank.wecrosssdk.common.StatusCode;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
@@ -293,6 +294,10 @@ public class RPCImpl implements RPCFace {
                 UAResponse response = weCrossRPC.login(username, password).send();
                 PrintUtils.printUAResponse(response);
                 ConsoleUtils.runtimeUsernameThreadLocal.set(username);
+            } else if (uaResponse.getErrorCode() != StatusCode.SUCCESS) {
+                // config TOML file but do not login successfully
+                logger.error("RPC.login fail.");
+                PrintUtils.printUAResponse(uaResponse);
             } else {
                 PrintUtils.printUAResponse(uaResponse);
                 ConsoleUtils.runtimeUsernameThreadLocal.set(

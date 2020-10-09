@@ -18,5 +18,7 @@ public interface TwoPcFace {
 
     void getTransactionInfo(String[] params) throws Exception;
 
+    boolean isTransactionInfoExist(String txID, String[] paths) throws Exception;
+
     void getTransactionIDs(String[] params) throws Exception;
 }

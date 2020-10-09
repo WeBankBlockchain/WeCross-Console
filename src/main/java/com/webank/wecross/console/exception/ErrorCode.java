@@ -7,6 +7,7 @@ public class ErrorCode {
 
     // init wecross service
     public static final int INIT_WECROSS_SERVICE_ERROR = 1001;
+    public static final int HAVE_NOT_LOGGED_IN = 1002;
 
     // status in utils
     public static final int ILLEGAL_PARAM = 2001;
@@ -17,5 +18,4 @@ public class ErrorCode {
 
     // status in routine
     public static final int INVALID_TXID = 3001;
-    public static final int INVALID_SEQ = 3002;
 }
