@@ -11,10 +11,13 @@ import com.webank.wecrosssdk.rpc.methods.response.RoutineInfoResponse;
 import com.webank.wecrosssdk.rpc.methods.response.RoutineResponse;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TwoPcImpl implements TwoPcFace {
     private WeCrossRPC weCrossRPC;
-    private RPCFace rpcFace = new RPCImpl();
+    private final Logger logger = LoggerFactory.getLogger(TwoPcImpl.class);
+    private final RPCFace rpcFace = new RPCImpl();
 
     @Override
     public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
@@ -314,6 +317,24 @@ public class TwoPcImpl implements TwoPcFace {
     }
 
     @Override
+    public boolean isTransactionInfoExist(String txID, String[] paths) throws Exception {
+        if (paths.length < 1) {
+            return false;
+        }
+
+        RoutineInfoResponse response = weCrossRPC.getTransactionInfo(txID, paths).send();
+        if (response == null || response.getInfo() == null) {
+            logger.error("Transaction ID does not exist.");
+            return false;
+        }
+        if (!response.getInfo().contains("status=0")) {
+            logger.error("Transaction {} has been rollback/commit.", txID);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public void getTransactionIDs(String[] params) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("getTransactionIDs");
@@ -323,7 +344,7 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.getTransactionIDsHelp();
             return;
         }
-        if (params.length != 4) {
+        if (params.length != 3) {
             HelpInfo.promptHelp("getTransactionIDs");
             return;
         }
