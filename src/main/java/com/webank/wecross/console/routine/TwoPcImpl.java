@@ -59,15 +59,11 @@ public class TwoPcImpl implements TwoPcFace {
             // no param given means: null (not String[0])
             response = weCrossRPC.callTransaction(transactionID, path, method, null).send();
         } else {
-            response =
-                    weCrossRPC
-                            .callTransaction(
+            response = weCrossRPC.callTransaction(
                                     transactionID,
                                     path,
                                     method,
-                                    ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 4, params.length)))
-                            .send();
+                                    ConsoleUtils.parseArgs(Arrays.copyOfRange(params, 4, params.length))).send();
         }
         PrintUtils.printTransactionResponse(response, true);
     }
@@ -113,16 +109,12 @@ public class TwoPcImpl implements TwoPcFace {
             // no param given means: null (not String[0])
             response = weCrossRPC.execTransaction(transactionID, seq, path, method, null).send();
         } else {
-            response =
-                    weCrossRPC
-                            .execTransaction(
+            response = weCrossRPC.execTransaction(
                                     transactionID,
                                     seq,
                                     path,
                                     method,
-                                    ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 5, params.length)))
-                            .send();
+                                    ConsoleUtils.parseArgs(Arrays.copyOfRange(params, 5, params.length))).send();
         }
         PrintUtils.printTransactionResponse(response, true);
     }
@@ -150,8 +142,7 @@ public class TwoPcImpl implements TwoPcFace {
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths);
 
-        RoutineResponse response =
-                weCrossRPC.startTransaction(transactionID, paths.toArray(new String[0])).send();
+        RoutineResponse response = weCrossRPC.startTransaction(transactionID, paths.toArray(new String[0])).send();
 
         PrintUtils.printRoutineResponse(response);
         TransactionInfo transactionInfo = new TransactionInfo(transactionID, paths);
@@ -182,15 +173,12 @@ public class TwoPcImpl implements TwoPcFace {
                                     + transactionInfo.getTransactionID()
                                     + "...\n");
                 }
-                RoutineResponse response =
-                        weCrossRPC
-                                .commitTransaction(
+                RoutineResponse response = weCrossRPC.commitTransaction(
                                         transactionInfo.getTransactionID(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
                                                 .getPaths()
-                                                .toArray(new String[0]))
-                                .send();
+                                                .toArray(new String[0])).send();
                 PrintUtils.printRoutineResponse(response);
                 FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
                 return;
@@ -311,8 +299,7 @@ public class TwoPcImpl implements TwoPcFace {
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths);
 
-        RoutineInfoResponse response =
-                weCrossRPC.getTransactionInfo(transactionID, paths.toArray(new String[0])).send();
+        RoutineInfoResponse response = weCrossRPC.getTransactionInfo(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineInfoResponse(response);
     }
 

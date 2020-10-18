@@ -47,8 +47,7 @@ public class FileUtils {
         String fullPath = currentDir + sourceFile;
         String dir = fullPath.substring(0, fullPath.lastIndexOf(File.separator)) + File.separator;
 
-        org.springframework.core.io.Resource sourceResource =
-                resolver.getResource("file:" + fullPath);
+        org.springframework.core.io.Resource sourceResource = resolver.getResource("file:" + fullPath);
         if (!sourceResource.exists()) {
             logger.error("Source file: {} not found!", fullPath);
 
@@ -99,8 +98,7 @@ public class FileUtils {
                 path = Paths.get(fileName);
             } else {
                 // Start with "classpath:"
-                PathMatchingResourcePatternResolver resolver =
-                        new PathMatchingResourcePatternResolver();
+                PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
                 path = Paths.get(resolver.getResource(fileName).getURI());
             }
             return new String(Files.readAllBytes(path));

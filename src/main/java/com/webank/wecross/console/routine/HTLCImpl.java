@@ -198,15 +198,12 @@ public class HTLCImpl implements HTLCFace {
 
     private void setNewContractTxInfo(String path, String hash, String txHash, long blockNum)
             throws Exception {
-        TransactionResponse response =
-                weCrossRPC
-                        .sendTransaction(
+        TransactionResponse response = weCrossRPC.sendTransaction(
                                 path,
                                 "setNewProposalTxInfo",
                                 hash,
                                 txHash,
-                                String.valueOf(blockNum))
-                        .send();
+                                String.valueOf(blockNum)).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {
