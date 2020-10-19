@@ -68,7 +68,7 @@ public class RPCImpl implements RPCFace {
 
     @Override
     public void listAccount(String[] params) throws Exception {
-        if (params.length != 1) {
+        if (params.length > 2 || (params.length == 2 && !params[1].equals("-d"))) {
             HelpInfo.listAccountHelp();
             return;
         }
@@ -77,7 +77,12 @@ public class RPCImpl implements RPCFace {
             ConsoleUtils.printJson(response.toString());
         } else {
             UniversalAccount account = response.getAccount();
-            System.out.println(account.toFormatString());
+            if(params.length==1) {
+                System.out.println(account.toFormatString());
+            }
+            else if(params.length==2 && params[1].equals("-d")){
+                System.out.println(account.toDetailString());
+            }
         }
         logger.info("listAccount response: {}", response);
     }
