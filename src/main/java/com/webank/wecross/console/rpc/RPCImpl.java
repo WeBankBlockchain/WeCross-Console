@@ -77,10 +77,9 @@ public class RPCImpl implements RPCFace {
             ConsoleUtils.printJson(response.toString());
         } else {
             UniversalAccount account = response.getAccount();
-            if(params.length==1) {
+            if (params.length == 1) {
                 System.out.println(account.toFormatString());
-            }
-            else if(params.length==2 && params[1].equals("-d")){
+            } else if (params.length == 2 && params[1].equals("-d")) {
                 System.out.println(account.toDetailString());
             }
         }
