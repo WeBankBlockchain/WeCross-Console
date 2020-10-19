@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Shell {
-    private static Logger logger = LoggerFactory.getLogger(Shell.class);
+    private static final Logger logger = LoggerFactory.getLogger(Shell.class);
 
     private static RPCFace rpcFace;
     private static HTLCFace htlcFace;
@@ -65,12 +65,7 @@ public class Shell {
             mockWeCross = new MockWeCross(initializer.getWeCrossRPC());
             groovyShell.setProperty("WeCross", mockWeCross);
 
-            completers = JlineUtils.getCompleters(rpcFace.getPaths(), resourceVars, pathVars);
-            FileUtils.loadTransactionLog(completers);
-            if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
-                runtimeTransaction =
-                        ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID();
-            }
+            completers = JlineUtils.getNoAuthCompleters();
             lineReader = JlineUtils.getLineReader(completers);
 
             KeyMap<org.jline.reader.Binding> keymap = lineReader.getKeyMaps().get(LineReader.MAIN);
@@ -86,6 +81,10 @@ public class Shell {
 
         while (true) {
             logger.info(Arrays.toString(args));
+            if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
+                runtimeTransaction =
+                        ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID();
+            }
             try {
                 String prompt =
                         (runtimeTransaction == null)
@@ -221,7 +220,7 @@ public class Shell {
                     case "startTransaction":
                         {
                             twoPcFace.startTransaction(params);
-                            if (params.length >= 4) {
+                            if (params.length >= 3) {
                                 runtimeTransaction =
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
@@ -310,6 +309,11 @@ public class Shell {
                         {
                             rpcFace.login(params, lineReader);
                             loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
+                            if (loginUser != null) {
+                                JlineUtils.updateCompleters(
+                                        completers, rpcFace.getPaths(), resourceVars, pathVars);
+                                FileUtils.loadTransactionLog(completers, twoPcFace);
+                            }
                             break;
                         }
                     case "registerAccount":
@@ -340,6 +344,9 @@ public class Shell {
                         {
                             rpcFace.logout(params);
                             loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
+                            if (loginUser == null) {
+                                completers = JlineUtils.getNoAuthCompleters();
+                            }
                             break;
                         }
                     default:

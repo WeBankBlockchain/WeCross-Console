@@ -21,7 +21,7 @@ public class WelcomeInfo {
         ConsoleUtils.singleLine();
         StringBuilder sb = new StringBuilder();
         sb.append("quit                             Quit console.\n");
-        sb.append("register                         Register a Universal Account.\n");
+        sb.append("registerAccount                  Register a Universal Account.\n");
         sb.append("login                            Login SDK if you have already registered.\n");
         sb.append("logout                           Logout SDK.\n");
         sb.append(
@@ -29,7 +29,7 @@ public class WelcomeInfo {
         sb.append(
                 "setDefaultAccount                Set the chain account to be the default account to send transaction.\n");
         sb.append("supportedStubs                   List supported stubs of WeCross router.\n");
-        sb.append("listAccounts                     List your Universal Account's information.\n");
+        sb.append("listAccount                      List your Universal Account's information.\n");
         sb.append(
                 "listLocalResources               List local resources configured by WeCross server.\n");
         sb.append(

@@ -24,10 +24,9 @@ public class JlineUtils {
     private static Set<String> resourceVars = new HashSet<>();
     private static Set<String> contractMethods = new HashSet<>();
     private static Set<String> orgs = new HashSet<>();
-    private static Map<Integer, String> indexTransactionIDMap = new HashMap<>();
     private static ArgumentCompleter commitCompleter = new ArgumentCompleter();
     private static ArgumentCompleter rollbackCompleter = new ArgumentCompleter();
-    private static List<String> pathVarSupportedCommands =
+    private static final List<String> pathVarSupportedCommands =
             Arrays.asList(
                     "status",
                     "detail",
@@ -39,9 +38,10 @@ public class JlineUtils {
                     "callTransaction",
                     "execTransaction");
 
-    private static List<String> callContractCommands = Arrays.asList("call", "sendTransaction");
+    private static final List<String> callContractCommands =
+            Arrays.asList("call", "sendTransaction");
 
-    private static List<String> pathVarNotSupportedCommands =
+    private static final List<String> pathVarNotSupportedCommands =
             Arrays.asList(
                     "bcosDeploy",
                     "bcosRegister",
@@ -55,12 +55,12 @@ public class JlineUtils {
                     "addChainAccount",
                     "setDefaultAccount");
 
-    private static List<String> fabricCommands =
+    private static final List<String> fabricCommands =
             Arrays.asList("fabricInstall", "fabricInstantiate", "fabricUpgrade");
 
-    private static List<String> bcosCommands = Arrays.asList("bcosDeploy", "bcosRegister");
+    private static final List<String> bcosCommands = Arrays.asList("bcosDeploy", "bcosRegister");
 
-    private static List<String> allCommands =
+    private static final List<String> allCommands =
             Arrays.asList(
                     "help",
                     "quit",
@@ -104,13 +104,24 @@ public class JlineUtils {
         }
     }
 
-    public static List<Completer> getCompleters(
-            Set<String> paths, Set<String> resourceVars, Set<String> pathVars) {
+    public static List<Completer> getNoAuthCompleters() {
+        List<Completer> completers = new ArrayList<>();
+        addCommandCompleters(completers);
+        return completers;
+    }
+
+    public static void updateCompleters(
+            List<Completer> completers,
+            Set<String> paths,
+            Set<String> resourceVars,
+            Set<String> pathVars) {
+        if (!completers.isEmpty()) {
+            completers.clear();
+        }
+
         JlineUtils.paths.addAll(paths);
         JlineUtils.pathVars.addAll(pathVars);
         JlineUtils.resourceVars.addAll(resourceVars);
-
-        List<Completer> completers = new ArrayList<>();
 
         addCommandCompleters(completers);
         addPathsCompleters(completers, paths);
@@ -141,35 +152,6 @@ public class JlineUtils {
                         new StringsCompleter(ConsoleUtils.supportChainList),
                         NullCompleter.INSTANCE);
         completers.add(setDefaultAccountCompleter);
-
-        return completers;
-    }
-
-    public static void updateCompleters(
-            List<Completer> completers,
-            Set<String> paths,
-            Set<String> resourceVars,
-            Set<String> pathVars) {
-        if (!completers.isEmpty()) {
-            completers.clear();
-        }
-
-        JlineUtils.paths.addAll(paths);
-        JlineUtils.pathVars.addAll(pathVars);
-        JlineUtils.resourceVars.addAll(resourceVars);
-
-        addCommandCompleters(completers);
-        addPathsCompleters(completers, paths);
-        addVarsCompleters(completers, resourceVars, pathVars);
-
-        ArgumentCompleter argumentCompleter1 =
-                new ArgumentCompleter(
-                        new StringsCompleter(),
-                        new StringsCompleter("="),
-                        new StringsCompleter("WeCross.getResource"),
-                        NullCompleter.INSTANCE);
-        argumentCompleter1.setStrict(false);
-        completers.add(argumentCompleter1);
     }
 
     public static void addPathsCompleters(List<Completer> completers, Set<String> paths) {

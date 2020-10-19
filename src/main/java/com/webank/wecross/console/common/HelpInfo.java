@@ -73,7 +73,8 @@ public class HelpInfo {
     public static void listAccountHelp() {
         ConsoleUtils.singleLine();
         System.out.println("List your Universal Account's information");
-        System.out.println("Usage: listAccount [without any args]");
+        System.out.println("Usage: listAccount [arg]");
+        System.out.println("arg -- '-d': To list a detailed info");
         ConsoleUtils.singleLine();
     }
 

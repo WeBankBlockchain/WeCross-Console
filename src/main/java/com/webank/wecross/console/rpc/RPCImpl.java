@@ -6,6 +6,7 @@ import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
+import com.webank.wecrosssdk.common.StatusCode;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.common.Resources;
@@ -67,7 +68,7 @@ public class RPCImpl implements RPCFace {
 
     @Override
     public void listAccount(String[] params) throws Exception {
-        if (params.length != 1) {
+        if (params.length > 2 || (params.length == 2 && !params[1].equals("-d"))) {
             HelpInfo.listAccountHelp();
             return;
         }
@@ -76,7 +77,11 @@ public class RPCImpl implements RPCFace {
             ConsoleUtils.printJson(response.toString());
         } else {
             UniversalAccount account = response.getAccount();
-            System.out.println(account.toFormatString());
+            if (params.length == 1) {
+                System.out.println(account.toFormatString());
+            } else if (params.length == 2 && params[1].equals("-d")) {
+                System.out.println(account.toDetailString());
+            }
         }
         logger.info("listAccount response: {}", response);
     }
@@ -293,6 +298,10 @@ public class RPCImpl implements RPCFace {
                 UAResponse response = weCrossRPC.login(username, password).send();
                 PrintUtils.printUAResponse(response);
                 ConsoleUtils.runtimeUsernameThreadLocal.set(username);
+            } else if (uaResponse.getErrorCode() != StatusCode.SUCCESS) {
+                // config TOML file but do not login successfully
+                logger.error("RPC.login fail.");
+                PrintUtils.printUAResponse(uaResponse);
             } else {
                 PrintUtils.printUAResponse(uaResponse);
                 ConsoleUtils.runtimeUsernameThreadLocal.set(
