@@ -166,7 +166,7 @@ public class Shell {
                         {
                             rpcFace.call(params, pathMaps);
                             if (params.length >= 4) {
-                                JlineUtils.addContractMethodCompleters(completers, params[3]);
+                                JlineUtils.addContractMethodCompleters(completers, params[2]);
                             }
                             break;
                         }
@@ -175,7 +175,7 @@ public class Shell {
                         {
                             rpcFace.sendTransaction(params, pathMaps);
                             if (params.length >= 4) {
-                                JlineUtils.addContractMethodCompleters(completers, params[3]);
+                                JlineUtils.addContractMethodCompleters(completers, params[2]);
                             }
                             break;
                         }
@@ -183,7 +183,7 @@ public class Shell {
                         {
                             rpcFace.invoke(params, pathMaps);
                             if (params.length >= 4) {
-                                JlineUtils.addContractMethodCompleters(completers, params[3]);
+                                JlineUtils.addContractMethodCompleters(completers, params[2]);
                             }
                             break;
                         }
@@ -307,7 +307,7 @@ public class Shell {
                         }
                     case "login":
                         {
-                            rpcFace.login(params, lineReader);
+                            rpcFace.login(params);
                             loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             if (loginUser != null) {
                                 JlineUtils.updateCompleters(
@@ -318,15 +318,14 @@ public class Shell {
                         }
                     case "registerAccount":
                         {
-                            rpcFace.registerAccount(params, lineReader);
+                            rpcFace.registerAccount(params);
                             break;
                         }
                     case "addChainAccount":
                         {
                             rpcFace.addChainAccount(params);
                             if (params.length == 6) {
-
-                                rpcFace.internalLogin(lineReader);
+                                rpcFace.internalLogin();
                                 loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             }
                             break;
@@ -335,7 +334,7 @@ public class Shell {
                         {
                             rpcFace.setDefaultAccount(params);
                             if (params.length == 3) {
-                                rpcFace.internalLogin(lineReader);
+                                rpcFace.internalLogin();
                                 loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             }
                             break;

@@ -192,7 +192,7 @@ public class TwoPcImpl implements TwoPcFace {
                                                 .toArray(new String[0]))
                                 .send();
                 PrintUtils.printRoutineResponse(response);
-                FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
+                FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
                 System.out.println("There is no transaction running now.");
@@ -220,7 +220,7 @@ public class TwoPcImpl implements TwoPcFace {
         RoutineResponse response =
                 weCrossRPC.commitTransaction(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineResponse(response);
-        FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
+        FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
     }
 
     @Override
@@ -255,7 +255,7 @@ public class TwoPcImpl implements TwoPcFace {
                                                 .toArray(new String[0]))
                                 .send();
                 PrintUtils.printRoutineResponse(response);
-                FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
+                FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
                 System.out.println("There is no transaction running now.");
@@ -283,7 +283,7 @@ public class TwoPcImpl implements TwoPcFace {
         RoutineResponse response =
                 weCrossRPC.rollbackTransaction(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineResponse(response);
-        FileUtils.cleanTransactionLog(FileUtils.TRANSACTION_LOG_TOML);
+        FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
     }
 
     @Override
