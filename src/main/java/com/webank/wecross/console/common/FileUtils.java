@@ -2,10 +2,11 @@ package com.webank.wecross.console.common;
 
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
+import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.routine.TwoPcFace;
-import com.webank.wecrosssdk.exception.ErrorCode;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jline.reader.Completer;
@@ -25,14 +27,25 @@ public class FileUtils {
 
     public static final String TRANSACTION_LOG_TOML = "transactionLog.toml";
     public static final String CONF = "conf";
-    private static Logger logger = LoggerFactory.getLogger(FileUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
-    private static Toml getToml(String fileName) throws WeCrossConsoleException {
+    public static Toml getToml(String fileName) throws WeCrossConsoleException {
         try {
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
-            return new Toml().read(resolver.getResource(fileName).getInputStream());
-        } catch (Exception e) {
+            Path path;
+            if (fileName.indexOf("classpath:") != 0) {
+                path = Paths.get(fileName);
+            } else {
+                PathMatchingResourcePatternResolver resolver =
+                        new PathMatchingResourcePatternResolver();
+                if (!resolver.getResource(fileName).exists()) {
+                    throw new WeCrossConsoleException(
+                            ErrorCode.TX_LOG_NOT_EXIST,
+                            TRANSACTION_LOG_TOML + " doesn't exist, clean transaction context.");
+                }
+                path = Paths.get(resolver.getResource(fileName).getURI());
+            }
+            return new Toml().read(path.toFile());
+        } catch (IOException e) {
             throw new WeCrossConsoleException(
                     ErrorCode.INTERNAL_ERROR,
                     "Something wrong with parsing " + fileName + ": " + e);
@@ -40,9 +53,12 @@ public class FileUtils {
     }
 
     public static String mergeSource(
-            String currentDir, String sourceFile, PathMatchingResourcePatternResolver resolver)
-            throws IOException {
-        StringBuilder sourceBuffer = new StringBuilder();
+            String currentDir,
+            String sourceFile,
+            PathMatchingResourcePatternResolver resolver,
+            Set<String> dependencies)
+            throws Exception {
+        StringBuffer sourceBuffer = new StringBuffer();
 
         String fullPath = currentDir + sourceFile;
         String dir = fullPath.substring(0, fullPath.lastIndexOf(File.separator)) + File.separator;
@@ -59,10 +75,24 @@ public class FileUtils {
         try (Scanner scanner = new Scanner(sourceResource.getInputStream(), "UTF-8")) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                if (line.contains("pragma experimental ABIEncoderV2;")) {
+                    if (!dependencies.contains("pragma experimental ABIEncoderV2;")) {
+                        dependencies.add("pragma experimental ABIEncoderV2;");
+                        sourceBuffer.append(line);
+                        sourceBuffer.append(System.lineSeparator());
+                    }
+                    continue;
+                }
+
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     String depSourcePath = matcher.group(1);
-                    sourceBuffer.append(mergeSource(dir, depSourcePath, resolver));
+                    String nextPath = dir + depSourcePath;
+                    if (!dependencies.contains(nextPath)) {
+                        dependencies.add(nextPath);
+                        sourceBuffer.append(
+                                mergeSource(dir, depSourcePath, resolver, dependencies));
+                    }
                 } else {
                     sourceBuffer.append(line);
                     sourceBuffer.append(System.lineSeparator());
@@ -71,24 +101,6 @@ public class FileUtils {
         }
 
         return sourceBuffer.toString();
-    }
-
-    public static String readSourceFile(String path) throws IOException {
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        org.springframework.core.io.Resource resource = resolver.getResource("file:" + path);
-        if (!resource.exists()) {
-            resource = resolver.getResource("classpath:" + path);
-            if (!resource.exists()) {
-                logger.error("Source file: {} not exists", path);
-                throw new IOException("Source file: " + path + " not exists");
-            }
-        }
-
-        String filename = resource.getFilename();
-        String realPath = resource.getFile().getAbsolutePath();
-        String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
-
-        return mergeSource(dir, filename, resolver);
     }
 
     public static String readFileContent(String fileName) throws IOException {
@@ -115,23 +127,23 @@ public class FileUtils {
         return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static String getTransactionID(Toml toml) throws WeCrossConsoleException {
+    public static String getTransactionID(Toml toml) throws WeCrossConsoleException {
         String transactionID = toml.getString("transactionID");
         if (transactionID == null) {
             String errorMessage =
                     "Something wrong with parsing [transactionID], please check configuration";
-            throw new WeCrossConsoleException(ErrorCode.FIELD_MISSING, errorMessage);
+            throw new WeCrossConsoleException(ErrorCode.INVALID_TXID, errorMessage);
         }
 
         return transactionID;
     }
 
-    private static List<String> getTransactionPath(Toml toml) throws WeCrossConsoleException {
+    public static List<String> getTransactionPath(Toml toml) throws WeCrossConsoleException {
         List<String> transactionPath = toml.getList("paths");
         if (transactionPath == null) {
             String errorMessage =
                     "Something wrong with parsing [paths], please check configuration";
-            throw new WeCrossConsoleException(ErrorCode.FIELD_MISSING, errorMessage);
+            throw new WeCrossConsoleException(ErrorCode.INVALID_PATH, errorMessage);
         }
 
         return transactionPath;
@@ -153,9 +165,13 @@ public class FileUtils {
             ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
             JlineUtils.addTransactionInfoCompleters(completers);
         } catch (WeCrossConsoleException e) {
-            logger.warn("Load transactionLog Toml file fail, error: {}.", e.getMessage());
+            if (e.getErrorCode() == ErrorCode.TX_LOG_NOT_EXIST) {
+                logger.info("Load transactionLog Toml file fail, {}", e.getMessage());
+            } else {
+                logger.warn("Load transactionLog Toml file fail, error: {}.", e.getMessage());
+            }
         } catch (Exception e) {
-            logger.warn("Load transactionLog Toml file fail, error is " + e.getMessage());
+            logger.warn("Load transactionLog Toml file fail, error: {}", e.getMessage());
         }
     }
 
@@ -170,8 +186,8 @@ public class FileUtils {
         }
     }
 
-    public static void cleanTransactionLog(String filename) throws WeCrossConsoleException {
-        File file = new File(CONF, filename);
+    public static void cleanFile(String prefix, String filename) throws WeCrossConsoleException {
+        File file = new File(prefix, filename);
         if (!file.exists()) {
             logger.error("Cannot find file: {}", filename);
             return;
@@ -179,7 +195,17 @@ public class FileUtils {
         if (!file.delete()) {
             logger.error("Cannot delete file: {}", filename);
             throw new WeCrossConsoleException(
-                    ErrorCode.FIELD_MISSING, "Cannot delete file: " + filename);
+                    ErrorCode.INTERNAL_ERROR, "Cannot delete file: " + filename);
+        }
+    }
+
+    public static void writeFile(String fileName, String content, boolean append)
+            throws WeCrossConsoleException {
+        try (FileWriter writer = new FileWriter(fileName, append)) {
+            writer.write(content + "\n");
+        } catch (IOException e) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR, "Load file " + fileName + " fail, error: " + e);
         }
     }
 }

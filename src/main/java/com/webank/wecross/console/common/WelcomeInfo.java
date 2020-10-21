@@ -37,6 +37,8 @@ public class WelcomeInfo {
         sb.append("status                           Check if the resource exists.\n");
         sb.append("detail                           Get resource information.\n");
         sb.append("call                             Call constant method of smart contract.\n");
+        sb.append(
+                "invoke                           Call non-constant method of smart contract, will auto-transfer to command execTransaction during transaction.\n");
         sb.append("sendTransaction                  Call non-constant method of smart contract.\n");
         sb.append(
                 "callTransaction                  Call constant method of smart contract during transaction.\n");

@@ -1,6 +1,7 @@
 package com.webank.wecross.console.custom;
 
 import com.webank.wecross.console.common.ConsoleUtils;
+import com.webank.wecross.console.common.FileUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.exception.ErrorCode;
@@ -10,8 +11,6 @@ import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import java.io.File;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -22,60 +21,6 @@ public class BCOSCommand {
 
     public BCOSCommand(WeCrossRPC weCrossRPC) {
         this.weCrossRPC = weCrossRPC;
-    }
-
-    public String mergeSource(
-            String currentDir,
-            String sourceFile,
-            PathMatchingResourcePatternResolver resolver,
-            Set<String> dependencies)
-            throws Exception {
-        StringBuffer sourceBuffer = new StringBuffer();
-
-        String fullPath = currentDir + sourceFile;
-        String dir = fullPath.substring(0, fullPath.lastIndexOf(File.separator)) + File.separator;
-
-        org.springframework.core.io.Resource sourceResource =
-                resolver.getResource("file:" + fullPath);
-        if (!sourceResource.exists()) {
-            logger.error("Source file: {} not found!", fullPath);
-
-            throw new Exception("Source file:" + fullPath + " not found");
-        }
-
-        Pattern pattern = Pattern.compile("^\\s*import\\s+[\"'](.+)[\"']\\s*;\\s*$");
-        Scanner scanner = new Scanner(sourceResource.getInputStream(), "UTF-8");
-        try {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (line.contains("pragma experimental ABIEncoderV2;")) {
-                    if (!dependencies.contains("pragma experimental ABIEncoderV2;")) {
-                        dependencies.add("pragma experimental ABIEncoderV2;");
-                        sourceBuffer.append(line);
-                        sourceBuffer.append(System.lineSeparator());
-                    }
-                    continue;
-                }
-
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    String depSourcePath = matcher.group(1);
-                    String nextPath = dir + depSourcePath;
-                    if (!dependencies.contains(nextPath)) {
-                        dependencies.add(nextPath);
-                        sourceBuffer.append(
-                                mergeSource(dir, depSourcePath, resolver, dependencies));
-                    }
-                } else {
-                    sourceBuffer.append(line);
-                    sourceBuffer.append(System.lineSeparator());
-                }
-            }
-        } finally {
-            scanner.close();
-        }
-
-        return sourceBuffer.toString();
     }
 
     /**
@@ -116,7 +61,7 @@ public class BCOSCommand {
         String realPath = resource.getFile().getAbsolutePath();
         String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
 
-        String sourceContent = mergeSource(dir, filename, resolver, new HashSet<>());
+        String sourceContent = FileUtils.mergeSource(dir, filename, resolver, new HashSet<>());
 
         List<Object> args =
                 new ArrayList<>(Arrays.asList(cnsName, sourceContent, className, version));
@@ -168,7 +113,7 @@ public class BCOSCommand {
         String realPath = resource.getFile().getAbsolutePath();
         String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
 
-        String sourceContent = mergeSource(dir, filename, resolver, new HashSet<>());
+        String sourceContent = FileUtils.mergeSource(dir, filename, resolver, new HashSet<>());
 
         List<Object> args =
                 new ArrayList<>(
