@@ -20,7 +20,7 @@ public class FileUtilsTest {
         try (FileWriter writer = new FileWriter(fileName)) {
             writer.write("Hello World");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
         String readFileContent = FileUtils.readFileContent(fileName);
@@ -37,7 +37,7 @@ public class FileUtilsTest {
         try {
             writer.write(transactionInfo, new File(fileName));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
         Toml toml = FileUtils.getToml(fileName);
