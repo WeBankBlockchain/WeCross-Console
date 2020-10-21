@@ -68,12 +68,11 @@ public class FileUtils {
         if (!sourceResource.exists()) {
             logger.error("Source file: {} not found!", fullPath);
 
-            throw new Exception("Source file:" + fullPath + " not found");
+            throw new IOException("Source file:" + fullPath + " not found");
         }
 
         Pattern pattern = Pattern.compile("^\\s*import\\s+[\"'](.+)[\"']\\s*;\\s*$");
-        Scanner scanner = new Scanner(sourceResource.getInputStream(), "UTF-8");
-        try {
+        try (Scanner scanner = new Scanner(sourceResource.getInputStream(), "UTF-8")) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (line.contains("pragma experimental ABIEncoderV2;")) {
@@ -99,8 +98,6 @@ public class FileUtils {
                     sourceBuffer.append(System.lineSeparator());
                 }
             }
-        } finally {
-            scanner.close();
         }
 
         return sourceBuffer.toString();
@@ -202,11 +199,13 @@ public class FileUtils {
         }
     }
 
-    public static void writeFile(String fileName, String content, boolean append) throws WeCrossConsoleException{
-        try (FileWriter writer = new FileWriter(fileName,append)) {
-            writer.write(content+"\n");
+    public static void writeFile(String fileName, String content, boolean append)
+            throws WeCrossConsoleException {
+        try (FileWriter writer = new FileWriter(fileName, append)) {
+            writer.write(content + "\n");
         } catch (IOException e) {
-            throw new WeCrossConsoleException(ErrorCode.INTERNAL_ERROR,"Load file "+fileName+" fail, error: " + e);
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR, "Load file " + fileName + " fail, error: " + e);
         }
     }
 }

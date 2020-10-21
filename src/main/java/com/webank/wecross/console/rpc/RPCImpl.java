@@ -342,17 +342,20 @@ public class RPCImpl implements RPCFace {
         if (params.length == 1) {
             Console consoleSys = System.console();
             System.out.println(
-                    "\033[31;1m"+"tips: username can contain alphabet, digit and some special characters: [-_]");
+                    "\033[31;1m"
+                            + "tips: username can contain alphabet, digit and some special characters: [-_]");
             System.out.println("      and the length is in range [4,16]. \033[0m");
             String username = consoleSys.readLine("\033[32;1musername: \033[0m");
             System.out.println(
-                    "\033[31;1m"+"tips: password can contain alphabet, digit and some special characters: [@+!%*#?]");
+                    "\033[31;1m"
+                            + "tips: password can contain alphabet, digit and some special characters: [@+!%*#?]");
             System.out.println("      and the length is in range [1,16]. \033[0m");
             String password = new String(consoleSys.readPassword("\033[32;1mpassword: \033[0m"));
 
             UAResponse response = weCrossRPC.register(username, password).send();
             PrintUtils.printUAResponse(response);
-            System.out.print("Will you save account you've just registered to conf/registerAccount.txt?(y/n)  ");
+            System.out.print(
+                    "Will you save account you've just registered to conf/registerAccount.txt?(y/n)  ");
             String readIn;
             Scanner in = new Scanner(System.in);
             do {
@@ -360,8 +363,8 @@ public class RPCImpl implements RPCFace {
             } while (Objects.equals(readIn, "\t"));
             if (readIn.equals("y") || readIn.equals("Y")) {
                 System.out.println("Saving to conf/registerAccount.tx ...");
-                String content = "username: "+username+"\npassword: "+password;
-                FileUtils.writeFile("conf/registerAccount.txt",content,true);
+                String content = "username: " + username + "\npassword: " + password;
+                FileUtils.writeFile("conf/registerAccount.txt", content, true);
             }
             return;
         }
