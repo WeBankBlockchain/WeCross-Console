@@ -377,7 +377,6 @@ public class Shell {
                             break;
                         }
                 }
-                System.out.println();
             } catch (WeCrossConsoleException e) {
                 if (e.getErrorCode() == ErrorCode.PARAM_MISSING) {
                     HelpInfo.promptHelp(e.getMessage());
@@ -388,8 +387,8 @@ public class Shell {
             } catch (Exception e) {
                 logger.info("Exception: ", e);
                 System.out.println(e.getMessage());
-                System.out.println();
             }
+            System.out.println();
         }
         System.exit(0);
     }

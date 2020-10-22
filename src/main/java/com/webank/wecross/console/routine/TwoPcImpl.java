@@ -47,9 +47,9 @@ public class TwoPcImpl implements TwoPcFace {
 
         String transactionID = params[2];
         if (!ConsoleUtils.isNumeric(transactionID)) {
-            System.out.println(
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_TXID,
                     "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return;
         }
 
         String method = params[3];
@@ -141,6 +141,13 @@ public class TwoPcImpl implements TwoPcFace {
         }
 
         String transactionID = params[1];
+        if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_TXID,
+                    "There is a transaction "
+                            + ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID()
+                            + " running now, please commit/rollback it first.");
+        }
         if (!ConsoleUtils.isNumeric(transactionID)) {
             throw new WeCrossConsoleException(
                     ErrorCode.INVALID_TXID,
