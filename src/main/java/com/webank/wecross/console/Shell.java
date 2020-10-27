@@ -287,7 +287,7 @@ public class Shell {
                     case "fabricInstall":
                         {
                             fabricCommand.install(params);
-                            if (params.length == 7 && isPath(params[1])) {
+                            if (params.length == 6 && isPath(params[1])) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                                 JlineUtils.addOrgCompleters(completers, params[2]);
                             }
@@ -296,7 +296,7 @@ public class Shell {
                     case "fabricInstantiate":
                         {
                             fabricCommand.instantiate(params);
-                            if (params.length == 9) {
+                            if (params.length == 8) {
                                 JlineUtils.addOrgCompleters(completers, params[2]);
                             }
 
@@ -305,7 +305,7 @@ public class Shell {
                     case "fabricUpgrade":
                         {
                             fabricCommand.upgrade(params);
-                            if (params.length == 9) {
+                            if (params.length == 8) {
                                 JlineUtils.addOrgCompleters(completers, params[2]);
                             }
                             break;
