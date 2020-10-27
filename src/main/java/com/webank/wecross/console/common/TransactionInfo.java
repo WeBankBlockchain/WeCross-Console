@@ -38,4 +38,12 @@ public class TransactionInfo {
         }
         return sb.toString();
     }
+
+    public String toPathString() {
+        StringBuilder sb = new StringBuilder();
+        for (String path : paths) {
+            sb.append(path).append(" ");
+        }
+        return sb.toString();
+    }
 }

@@ -220,7 +220,7 @@ public class Shell {
                     case "startTransaction":
                         {
                             twoPcFace.startTransaction(params);
-                            if (params.length >= 3) {
+                            if (params.length >= 2) {
                                 runtimeTransaction =
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
@@ -233,8 +233,8 @@ public class Shell {
                         {
                             // only support one console do one transaction
                             twoPcFace.commitTransaction(params);
-                            if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null
-                                    && params.length != 2) {
+                            if (params.length == 1
+                                    || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
                                 JlineUtils.removeTransactionInfoCompleters(completers);
                                 ConsoleUtils.runtimeTransactionThreadLocal.remove();
@@ -245,8 +245,8 @@ public class Shell {
                         {
                             // only support one console do one transaction
                             twoPcFace.rollbackTransaction(params);
-                            if (ConsoleUtils.runtimeTransactionThreadLocal != null
-                                    && params.length != 2) {
+                            if (params.length == 1
+                                    || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
                                 JlineUtils.removeTransactionInfoCompleters(completers);
                                 ConsoleUtils.runtimeTransactionThreadLocal.remove();
@@ -261,6 +261,11 @@ public class Shell {
                     case "getTransactionIDs":
                         {
                             twoPcFace.getTransactionIDs(params);
+                            break;
+                        }
+                    case "getCurrentTransactionID":
+                        {
+                            twoPcFace.getCurrentTransactionID(params);
                             break;
                         }
                     case "bcosDeploy":

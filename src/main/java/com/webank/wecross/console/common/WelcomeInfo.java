@@ -58,6 +58,7 @@ public class WelcomeInfo {
         sb.append("genSecretAndHash                 Generate a secret and its hash.\n");
         sb.append("newHTLCProposal                  Create a htlc transfer proposal .\n");
         sb.append("checkTransferStatus              Check htlc transfer status by hash.\n");
+        sb.append("getCurrentTransactionID          Get Current 2pc Transaction ID.\n");
         sb.append(
                 "WeCross.getResource              Init resource by path, and assign it to a custom variable.\n");
         sb.append("[resource].[command]             Equal to: command [path].\n");

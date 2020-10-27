@@ -10,6 +10,7 @@ import com.webank.wecrosssdk.rpc.methods.response.RoutineIDResponse;
 import com.webank.wecrosssdk.rpc.methods.response.RoutineInfoResponse;
 import com.webank.wecrosssdk.rpc.methods.response.RoutineResponse;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
+import com.webank.wecrosssdk.utils.RPCUtils;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,27 +36,30 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.callTransactionHelp();
             return;
         }
-        if (params.length < 4) {
+        if (params.length < 3) {
             HelpInfo.promptHelp("callTransaction");
             return;
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) {
+        TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
+        if (transactionInfo == null) {
+            System.out.println("There is no Transaction running now, please check again.");
             return;
         }
-
-        String transactionID = params[2];
-        if (!ConsoleUtils.isNumeric(transactionID)) {
+        if (path == null) {
             throw new WeCrossConsoleException(
-                    ErrorCode.INVALID_TXID,
-                    "Error: " + transactionID + " is not a valid id, only number allowed!");
+                    ErrorCode.INVALID_PATH, "callTransaction: Path is invalid.");
         }
-
-        String method = params[3];
-
+        if (!transactionInfo.getPaths().contains(path)) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_PATH,
+                    "callTransaction: Path is not in transaction, please check command 'call'.");
+        }
+        String transactionID = transactionInfo.getTransactionID();
+        String method = params[2];
         TransactionResponse response;
-        if (params.length == 4) {
+        if (params.length == 3) {
             // no param given means: null (not String[0])
             response = weCrossRPC.callTransaction(transactionID, path, method, null).send();
         } else {
@@ -66,7 +70,7 @@ public class TwoPcImpl implements TwoPcFace {
                                     path,
                                     method,
                                     ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 4, params.length)))
+                                            Arrays.copyOfRange(params, 3, params.length)))
                             .send();
         }
         PrintUtils.printTransactionResponse(response, true);
@@ -82,46 +86,43 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.execTransactionHelp();
             return;
         }
-        if (params.length < 5) {
+        if (params.length < 3) {
             HelpInfo.promptHelp("execTransaction");
             return;
         }
 
         String path = ConsoleUtils.parsePath(params, pathMaps);
+        TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
+        if (transactionInfo == null) {
+            System.out.println("There is no Transaction running now, please check again.");
+            return;
+        }
         if (path == null) {
-            return;
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_PATH, "execTransaction: Path is invalid.");
         }
-
-        String transactionID = params[2];
-        if (!ConsoleUtils.isNumeric(transactionID)) {
-            System.out.println(
-                    "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return;
+        if (!transactionInfo.getPaths().contains(path)) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INVALID_PATH,
+                    "execTransaction: Path is not in transaction, please check command 'sendTransaction'.");
         }
+        String transactionID = transactionInfo.getTransactionID();
 
-        String seq = params[3];
-        if (!ConsoleUtils.isNaturalInteger(seq)) {
-            System.out.println(
-                    "Error: " + seq + " is not a valid seq, only natural integer allowed!");
-            return;
-        }
-
-        String method = params[4];
+        String method = params[2];
 
         TransactionResponse response;
-        if (params.length == 5) {
+        if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.execTransaction(transactionID, seq, path, method, null).send();
+            response = weCrossRPC.execTransaction(transactionID, path, method, null).send();
         } else {
             response =
                     weCrossRPC
                             .execTransaction(
                                     transactionID,
-                                    seq,
                                     path,
                                     method,
                                     ConsoleUtils.parseArgs(
-                                            Arrays.copyOfRange(params, 5, params.length)))
+                                            Arrays.copyOfRange(params, 3, params.length)))
                             .send();
         }
         PrintUtils.printTransactionResponse(response, true);
@@ -136,11 +137,8 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.startTransactionHelp();
             return;
         }
-        if (params.length < 3) {
-            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "startTransaction");
-        }
 
-        String transactionID = params[1];
+        String transactionID = RPCUtils.genTransactionID();
         if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
             throw new WeCrossConsoleException(
                     ErrorCode.INVALID_TXID,
@@ -148,19 +146,15 @@ public class TwoPcImpl implements TwoPcFace {
                             + ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID()
                             + " running now, please commit/rollback it first.");
         }
-        if (!ConsoleUtils.isNumeric(transactionID)) {
-            throw new WeCrossConsoleException(
-                    ErrorCode.INVALID_TXID,
-                    "Error: " + transactionID + " is not a valid id, only number allowed!");
-        }
 
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, paths);
+        parseTransactionParam(params, paths, 1);
 
         RoutineResponse response =
                 weCrossRPC.startTransaction(transactionID, paths.toArray(new String[0])).send();
 
         PrintUtils.printRoutineResponse(response);
+        System.out.println("Transaction ID is: " + transactionID);
         TransactionInfo transactionInfo = new TransactionInfo(transactionID, paths);
         ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
         FileUtils.writeTransactionLog();
@@ -210,19 +204,14 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.commitTransactionHelp();
             return;
         }
-        if (params.length < 3) {
-            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
-        }
 
-        String transactionID = params[1];
-        if (!ConsoleUtils.isNumeric(transactionID)) {
-            throw new WeCrossConsoleException(
-                    ErrorCode.INVALID_TXID,
-                    "Error: " + transactionID + " is not a valid id, only number allowed!");
+        if (transactionInfo == null) {
+            System.out.println("There is no Transaction running now, please check again.");
+            return;
         }
-
+        String transactionID = transactionInfo.getTransactionID();
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, paths);
+        parseTransactionParam(params, paths, 1);
 
         RoutineResponse response =
                 weCrossRPC.commitTransaction(transactionID, paths.toArray(new String[0])).send();
@@ -273,19 +262,14 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.rollbackTransactionHelp();
             return;
         }
-        if (params.length < 3) {
-            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
+        if (transactionInfo == null) {
+            System.out.println("There is no Transaction running now, please check again.");
+            return;
         }
-
-        String transactionID = params[1];
-        if (!ConsoleUtils.isNumeric(transactionID)) {
-            throw new WeCrossConsoleException(
-                    ErrorCode.INVALID_TXID,
-                    "Error: " + transactionID + " is not a valid id, only number allowed!");
-        }
+        String transactionID = transactionInfo.getTransactionID();
 
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, paths);
+        parseTransactionParam(params, paths, 1);
 
         RoutineResponse response =
                 weCrossRPC.rollbackTransaction(transactionID, paths.toArray(new String[0])).send();
@@ -309,14 +293,9 @@ public class TwoPcImpl implements TwoPcFace {
         }
 
         String transactionID = params[1];
-        if (!ConsoleUtils.isNumeric(transactionID)) {
-            System.out.println(
-                    "Error: " + transactionID + " is not a valid id, only number allowed!");
-            return;
-        }
 
         List<String> paths = new ArrayList<>();
-        parseTransactionParam(params, paths);
+        parseTransactionParam(params, paths, 2);
 
         RoutineInfoResponse response =
                 weCrossRPC.getTransactionInfo(transactionID, paths.toArray(new String[0])).send();
@@ -363,10 +342,26 @@ public class TwoPcImpl implements TwoPcFace {
         PrintUtils.printRoutineIDResponse(response);
     }
 
-    private void parseTransactionParam(String[] params, List<String> paths) throws Exception {
+    @Override
+    public void getCurrentTransactionID(String[] params) throws Exception {
+        if (params.length != 1) {
+            HelpInfo.getCurrentTransactionIDHelp();
+            return;
+        }
+        String currentTransactionID = weCrossRPC.getCurrentTransactionID();
+        if (currentTransactionID == null) {
+            System.out.println("There is no Transaction running now, please check again.");
+        } else {
+            System.out.println(
+                    "There is a Transaction running now, ID is: " + currentTransactionID + ".");
+        }
+    }
+
+    private void parseTransactionParam(String[] params, List<String> paths, int startPos)
+            throws Exception {
         Set<String> allPaths = rpcFace.getPaths();
 
-        for (int i = 2; i < params.length; i++) {
+        for (int i = startPos; i < params.length; i++) {
             if (!allPaths.contains(params[i])) {
                 throw new Exception("resource " + params[i] + " not found");
             }

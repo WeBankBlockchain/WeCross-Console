@@ -69,12 +69,13 @@ public class FileUtilsTest {
             System.out.println(e);
         }
         File dir = new File(System.getProperty("user.dir"));
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith("test-");
-            }
-        };
+        FilenameFilter filter =
+                new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.startsWith("test-");
+                    }
+                };
         String[] children = dir.list(filter);
         Assert.assertNotNull(children);
         Assert.assertEquals(2, children.length);
