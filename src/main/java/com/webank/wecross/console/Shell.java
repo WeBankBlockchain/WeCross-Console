@@ -165,7 +165,7 @@ public class Shell {
                     case "call":
                         {
                             rpcFace.call(params, pathMaps);
-                            if (params.length >= 4) {
+                            if (params.length >= 3) {
                                 JlineUtils.addContractMethodCompleters(completers, params[2]);
                             }
                             break;
@@ -174,7 +174,7 @@ public class Shell {
                     case "sendTransaction":
                         {
                             rpcFace.sendTransaction(params, pathMaps);
-                            if (params.length >= 4) {
+                            if (params.length >= 3) {
                                 JlineUtils.addContractMethodCompleters(completers, params[2]);
                             }
                             break;
@@ -182,7 +182,7 @@ public class Shell {
                     case "invoke":
                         {
                             rpcFace.invoke(params, pathMaps);
-                            if (params.length >= 4) {
+                            if (params.length >= 3) {
                                 JlineUtils.addContractMethodCompleters(completers, params[2]);
                             }
                             break;
