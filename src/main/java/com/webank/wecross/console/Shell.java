@@ -90,6 +90,7 @@ public class Shell {
                         (runtimeTransaction == null)
                                 ? ""
                                 : "[Transaction running: " + runtimeTransaction + "]\n";
+                loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                 prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]>";
                 String request = lineReader.readLine(prompt);
 
@@ -331,7 +332,6 @@ public class Shell {
                             rpcFace.addChainAccount(params);
                             if (params.length == 6) {
                                 rpcFace.internalLogin();
-                                loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             }
                             break;
                         }
@@ -340,7 +340,6 @@ public class Shell {
                             rpcFace.setDefaultAccount(params);
                             if (params.length == 3) {
                                 rpcFace.internalLogin();
-                                loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             }
                             break;
                         }
