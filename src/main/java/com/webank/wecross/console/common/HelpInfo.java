@@ -319,6 +319,13 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void getCurrentTransactionIDHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("get Current 2pc Transaction ID");
+        System.out.println("Usage: getCurrentTransaction [without args]");
+        ConsoleUtils.singleLine();
+    }
+
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Deploy contract and register contract info to CNS in BCOS chain ");

@@ -322,19 +322,15 @@ public class RPCImpl implements RPCFace {
 
     @Override
     public void internalLogin() throws Exception {
-        UAResponse uaResponse = weCrossRPC.login();
-        // connect success but do not config TOML file
-        if (uaResponse == null) {
-            System.out.println("Universal Account info has been changed, please login again.");
-            Console consoleSys = System.console();
-            String username = consoleSys.readLine("username: ");
-            String password = new String(consoleSys.readPassword("password: "));
-            weCrossRPC.login(username, password).send();
-            ConsoleUtils.runtimeUsernameThreadLocal.set(username);
-        } else {
-            ConsoleUtils.runtimeUsernameThreadLocal.set(
-                    uaResponse.getUAReceipt().getUniversalAccount().getUsername());
-        }
+        System.out.println("Universal Account info has been changed, please login again.");
+        weCrossRPC.logout().send();
+        ConsoleUtils.runtimeUsernameThreadLocal.remove();
+        Console consoleSys = System.console();
+        String username = consoleSys.readLine("username: ");
+        String password = new String(consoleSys.readPassword("password: "));
+        UAResponse uaResponse = weCrossRPC.login(username, password).send();
+        PrintUtils.printUAResponse(uaResponse);
+        ConsoleUtils.runtimeUsernameThreadLocal.set(username);
     }
 
     @Override

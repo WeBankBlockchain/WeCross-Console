@@ -151,7 +151,7 @@ public class FileUtils {
 
     public static void loadTransactionLog(List<Completer> completers, TwoPcFace twoPcFace) {
         try {
-            Toml toml = getToml(TRANSACTION_LOG_TOML);
+            Toml toml = getToml("classpath:" + TRANSACTION_LOG_TOML);
             String transactionID = getTransactionID(toml);
             List<String> transactionPath = getTransactionPath(toml);
 
