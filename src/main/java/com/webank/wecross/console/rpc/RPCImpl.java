@@ -1,11 +1,13 @@
 package com.webank.wecross.console.rpc;
 
+import com.moandjiezana.toml.Toml;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.FileUtils;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
+import com.webank.wecrosssdk.common.Constant;
 import com.webank.wecrosssdk.common.StatusCode;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import com.webank.wecrosssdk.rpc.common.ResourceDetail;
@@ -16,11 +18,10 @@ import com.webank.wecrosssdk.rpc.common.account.FabricAccount;
 import com.webank.wecrosssdk.rpc.common.account.UniversalAccount;
 import com.webank.wecrosssdk.rpc.methods.Response;
 import com.webank.wecrosssdk.rpc.methods.response.*;
+import com.webank.wecrosssdk.utils.ConfigUtils;
 import java.io.Console;
 import java.io.File;
 import java.util.*;
-import org.jline.reader.LineReader;
-import org.jline.utils.InfoCmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,7 @@ public class RPCImpl implements RPCFace {
 
     @Override
     public void listAccount(String[] params) throws Exception {
-        if (params.length != 1) {
+        if (params.length > 2 || (params.length == 2 && !params[1].equals("-d"))) {
             HelpInfo.listAccountHelp();
             return;
         }
@@ -77,7 +78,11 @@ public class RPCImpl implements RPCFace {
             ConsoleUtils.printJson(response.toString());
         } else {
             UniversalAccount account = response.getAccount();
-            System.out.println(account.toFormatString());
+            if (params.length == 1) {
+                System.out.println(account.toFormatString());
+            } else if (params.length == 2 && params[1].equals("-d")) {
+                System.out.println(account.toDetailString());
+            }
         }
         logger.info("listAccount response: {}", response);
     }
@@ -280,28 +285,40 @@ public class RPCImpl implements RPCFace {
         PrintUtils.printTransactionResponse(response, false);
     }
 
+    private UAResponse loginWithoutArgs(WeCrossRPC weCrossRPC) throws Exception {
+        Toml toml = ConfigUtils.getToml(Constant.APPLICATION_CONFIG_FILE);
+        String username = toml.getString("login.username");
+        String password = toml.getString("login.password");
+        if (username == null || password == null) {
+            logger.info(
+                    "loginWithoutArgs: TOML file did not config [login] message, can not auto-login.");
+            return null;
+        }
+        UAResponse uaResponse = weCrossRPC.login(username, password).send();
+        ConsoleUtils.runtimeUsernameThreadLocal.set(username);
+        ConsoleUtils.runtimePasswordThreadLocal.set(password);
+        return uaResponse;
+    }
+
     @Override
-    public void login(String[] params, LineReader lineReader) throws Exception {
+    public void login(String[] params) throws Exception {
         if (params.length == 1) {
-            UAResponse uaResponse = weCrossRPC.login();
+            UAResponse uaResponse = loginWithoutArgs(weCrossRPC);
             // connect success but do not config TOML file
             if (uaResponse == null) {
-                lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
-                lineReader.getTerminal().flush();
                 Console consoleSys = System.console();
                 String username = consoleSys.readLine("username: ");
                 String password = new String(consoleSys.readPassword("password: "));
                 UAResponse response = weCrossRPC.login(username, password).send();
                 PrintUtils.printUAResponse(response);
                 ConsoleUtils.runtimeUsernameThreadLocal.set(username);
+                ConsoleUtils.runtimePasswordThreadLocal.set(password);
             } else if (uaResponse.getErrorCode() != StatusCode.SUCCESS) {
                 // config TOML file but do not login successfully
                 logger.error("RPC.login fail.");
                 PrintUtils.printUAResponse(uaResponse);
             } else {
                 PrintUtils.printUAResponse(uaResponse);
-                ConsoleUtils.runtimeUsernameThreadLocal.set(
-                        uaResponse.getUAReceipt().getUniversalAccount().getUsername());
             }
             return;
         }
@@ -318,37 +335,47 @@ public class RPCImpl implements RPCFace {
         UAResponse uaResponse = weCrossRPC.login(username, password).send();
         PrintUtils.printUAResponse(uaResponse);
         ConsoleUtils.runtimeUsernameThreadLocal.set(username);
+        ConsoleUtils.runtimePasswordThreadLocal.set(password);
     }
 
     @Override
-    public void internalLogin(LineReader lineReader) throws Exception {
-        UAResponse uaResponse = weCrossRPC.login();
-        // connect success but do not config TOML file
-        if (uaResponse == null) {
-            lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
-            lineReader.getTerminal().flush();
-            System.out.println("Universal Account info has been changed, please login again.");
-            Console consoleSys = System.console();
-            String username = consoleSys.readLine("username: ");
-            String password = new String(consoleSys.readPassword("password: "));
-            weCrossRPC.login(username, password).send();
-            ConsoleUtils.runtimeUsernameThreadLocal.set(username);
-        } else {
-            ConsoleUtils.runtimeUsernameThreadLocal.set(
-                    uaResponse.getUAReceipt().getUniversalAccount().getUsername());
-        }
+    public void internalLogin() throws Exception {
+        System.out.println("Universal Account info has been changed, now auto-login again.");
+        String username = ConsoleUtils.runtimeUsernameThreadLocal.get();
+        String password = ConsoleUtils.runtimePasswordThreadLocal.get();
+        UAResponse uaResponse = weCrossRPC.login(username, password).send();
+        PrintUtils.printUAResponse(uaResponse);
     }
 
     @Override
-    public void registerAccount(String[] params, LineReader lineReader) throws Exception {
+    public void registerAccount(String[] params) throws Exception {
         if (params.length == 1) {
-            lineReader.getTerminal().puts(InfoCmp.Capability.clear_screen);
-            lineReader.getTerminal().flush();
             Console consoleSys = System.console();
-            String username = consoleSys.readLine("username: ");
-            String password = new String(consoleSys.readPassword("password: "));
+            System.out.println(
+                    "\033[31;1m"
+                            + "tips: username can contain alphabet, digit and some special characters: [-_]");
+            System.out.println("      and the length is in range [4,16]. \033[0m");
+            String username = consoleSys.readLine("\033[32;1musername: \033[0m");
+            System.out.println(
+                    "\033[31;1m"
+                            + "tips: password can contain alphabet, digit and some special characters: [@+!%*#?]");
+            System.out.println("      and the length is in range [1,16]. \033[0m");
+            String password = new String(consoleSys.readPassword("\033[32;1mpassword: \033[0m"));
+
             UAResponse response = weCrossRPC.register(username, password).send();
             PrintUtils.printUAResponse(response);
+            System.out.print(
+                    "Will you save account you've just registered to conf/registerAccount.txt?(y/n)  ");
+            String readIn;
+            Scanner in = new Scanner(System.in);
+            do {
+                readIn = in.nextLine();
+            } while (Objects.equals(readIn, "\t"));
+            if (readIn.equals("y") || readIn.equals("Y")) {
+                System.out.println("Saving to conf/registerAccount.tx ...");
+                String content = "username: " + username + "\npassword: " + password;
+                FileUtils.writeFile("conf/registerAccount.txt", content, true);
+            }
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
@@ -388,8 +415,8 @@ public class RPCImpl implements RPCFace {
             String secKeyPath = params[3];
             String ext = params[4];
             boolean isDefault = Boolean.parseBoolean(params[5]);
-            String pubKey = FileUtils.readSourceFile(pubKeyPath);
-            String secKey = FileUtils.readSourceFile(secKeyPath);
+            String pubKey = FileUtils.readFileContent(pubKeyPath);
+            String secKey = FileUtils.readFileContent(secKeyPath);
 
             ChainAccount chainAccount = new BCOSAccount(type, pubKey, secKey, ext, isDefault);
             UAResponse uaResponse = weCrossRPC.addChainAccount(type, chainAccount).send();
@@ -402,8 +429,8 @@ public class RPCImpl implements RPCFace {
             String ext = params[4];
             boolean isDefault = Boolean.parseBoolean(params[5]);
 
-            String cert = FileUtils.readSourceFile(certPath);
-            String key = FileUtils.readSourceFile(keyPath);
+            String cert = FileUtils.readFileContent(certPath);
+            String key = FileUtils.readFileContent(keyPath);
             ChainAccount chainAccount = new FabricAccount(type, cert, key, ext, isDefault);
             UAResponse uaResponse = weCrossRPC.addChainAccount(type, chainAccount).send();
             PrintUtils.printUAResponse(uaResponse);
@@ -440,6 +467,7 @@ public class RPCImpl implements RPCFace {
             UAResponse uaResponse = weCrossRPC.logout().send();
             PrintUtils.printUAResponse(uaResponse);
             ConsoleUtils.runtimeUsernameThreadLocal.remove();
+            ConsoleUtils.runtimePasswordThreadLocal.remove();
         }
         if (params.length == 2 && ("-h".equals(params[1]) || "--help".equals(params[1]))) {
             HelpInfo.logoutHelp();

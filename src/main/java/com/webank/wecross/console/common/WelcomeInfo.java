@@ -21,7 +21,7 @@ public class WelcomeInfo {
         ConsoleUtils.singleLine();
         StringBuilder sb = new StringBuilder();
         sb.append("quit                             Quit console.\n");
-        sb.append("register                         Register a Universal Account.\n");
+        sb.append("registerAccount                  Register a Universal Account.\n");
         sb.append("login                            Login SDK if you have already registered.\n");
         sb.append("logout                           Logout SDK.\n");
         sb.append(
@@ -29,7 +29,7 @@ public class WelcomeInfo {
         sb.append(
                 "setDefaultAccount                Set the chain account to be the default account to send transaction.\n");
         sb.append("supportedStubs                   List supported stubs of WeCross router.\n");
-        sb.append("listAccounts                     List your Universal Account's information.\n");
+        sb.append("listAccount                      List your Universal Account's information.\n");
         sb.append(
                 "listLocalResources               List local resources configured by WeCross server.\n");
         sb.append(
@@ -37,6 +37,8 @@ public class WelcomeInfo {
         sb.append("status                           Check if the resource exists.\n");
         sb.append("detail                           Get resource information.\n");
         sb.append("call                             Call constant method of smart contract.\n");
+        sb.append(
+                "invoke                           Call non-constant method of smart contract, will auto-transfer to command execTransaction during transaction.\n");
         sb.append("sendTransaction                  Call non-constant method of smart contract.\n");
         sb.append(
                 "callTransaction                  Call constant method of smart contract during transaction.\n");
@@ -56,6 +58,7 @@ public class WelcomeInfo {
         sb.append("genSecretAndHash                 Generate a secret and its hash.\n");
         sb.append("newHTLCProposal                  Create a htlc transfer proposal .\n");
         sb.append("checkTransferStatus              Check htlc transfer status by hash.\n");
+        sb.append("getCurrentTransactionID          Get Current 2pc Transaction ID.\n");
         sb.append(
                 "WeCross.getResource              Init resource by path, and assign it to a custom variable.\n");
         sb.append("[resource].[command]             Equal to: command [path].\n");

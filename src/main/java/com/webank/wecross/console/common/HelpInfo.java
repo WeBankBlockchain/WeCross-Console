@@ -73,7 +73,8 @@ public class HelpInfo {
     public static void listAccountHelp() {
         ConsoleUtils.singleLine();
         System.out.println("List your Universal Account's information");
-        System.out.println("Usage: listAccount [without any args]");
+        System.out.println("Usage: listAccount [arg]");
+        System.out.println("arg -- '-d': To list a detailed info");
         ConsoleUtils.singleLine();
     }
 
@@ -315,6 +316,13 @@ public class HelpInfo {
         System.out.println("Usage: getTransactionIDs [path] [option]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println("option -- 0 all, 1 finished, 2 unfinished");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void getCurrentTransactionIDHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("get Current 2pc Transaction ID");
+        System.out.println("Usage: getCurrentTransaction [without args]");
         ConsoleUtils.singleLine();
     }
 

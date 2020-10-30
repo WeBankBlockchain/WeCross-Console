@@ -93,7 +93,8 @@ public class JlineUtils {
                     "registerAccount",
                     "logout",
                     "addChainAccount",
-                    "setDefaultAccount");
+                    "setDefaultAccount",
+                    "getCurrentTransactionID");
 
     public static void addCommandCompleters(List<Completer> completers) {
         // commands
@@ -182,7 +183,8 @@ public class JlineUtils {
 
     public static void addTransactionInfoCompleters(List<Completer> completers) {
         if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
-            String runtimeTransaction = ConsoleUtils.runtimeTransactionThreadLocal.get().toString();
+            String runtimeTransaction =
+                    ConsoleUtils.runtimeTransactionThreadLocal.get().toPathString();
             commitCompleter =
                     new ArgumentCompleter(
                             new StringsCompleter("commitTransaction"),

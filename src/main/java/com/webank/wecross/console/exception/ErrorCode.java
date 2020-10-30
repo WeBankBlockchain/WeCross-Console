@@ -18,4 +18,5 @@ public class ErrorCode {
 
     // status in routine
     public static final int INVALID_TXID = 3001;
+    public static final int TX_LOG_NOT_EXIST = 3002;
 }
