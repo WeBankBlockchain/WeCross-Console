@@ -4,6 +4,7 @@
     sslCert = 'classpath:ssl.crt'
     caCert = 'classpath:ca.crt'
 
-[login]
-    username = 'username'
-    password = 'password'
+#[login]
+    #username = 'username'
+    #password = 'password'
+
