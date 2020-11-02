@@ -333,7 +333,7 @@ public class HelpInfo {
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be deployed");
         System.out.println(
                 "Source file path from conf/ -- The solidity source code file path, e.g: HelloWorld.sol");
-        System.out.println("Class name -- The contract to be deploy");
+        System.out.println("Contract name -- The contract to be deploy");
         System.out.println("Version -- The contract version");
         System.out.println("Example:");
         System.out.println(
