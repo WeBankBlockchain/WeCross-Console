@@ -211,7 +211,7 @@ public class HTLCImpl implements HTLCFace {
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {
             if (receipt != null) {
-                System.out.println("failed to setNewProposalTxInfo: " + receipt.getErrorMessage());
+                System.out.println("failed to setNewProposalTxInfo: " + receipt.getMessage());
             } else {
                 System.out.println("failed to setNewProposalTxInfo: " + response.getMessage());
             }
@@ -231,7 +231,7 @@ public class HTLCImpl implements HTLCFace {
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {
             if (receipt != null) {
-                System.out.println("failed to setSecret: " + receipt.getErrorMessage());
+                System.out.println("failed to setSecret: " + receipt.getMessage());
             } else {
                 System.out.println("failed to setSecret: " + response.getMessage());
             }

@@ -6,10 +6,10 @@ import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
-import com.webank.wecrosssdk.rpc.methods.response.RoutineIDResponse;
-import com.webank.wecrosssdk.rpc.methods.response.RoutineInfoResponse;
-import com.webank.wecrosssdk.rpc.methods.response.RoutineResponse;
 import com.webank.wecrosssdk.rpc.methods.response.TransactionResponse;
+import com.webank.wecrosssdk.rpc.methods.response.XAResponse;
+import com.webank.wecrosssdk.rpc.methods.response.XATransactionListResponse;
+import com.webank.wecrosssdk.rpc.methods.response.XATransactionResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import java.util.*;
 import org.slf4j.Logger;
@@ -61,11 +61,11 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.callTransaction(transactionID, path, method, null).send();
+            response = weCrossRPC.callXA(transactionID, path, method, null).send();
         } else {
             response =
                     weCrossRPC
-                            .callTransaction(
+                            .callXA(
                                     transactionID,
                                     path,
                                     method,
@@ -113,11 +113,11 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.execTransaction(transactionID, path, method, null).send();
+            response = weCrossRPC.sendXATransaction(transactionID, path, method, null).send();
         } else {
             response =
                     weCrossRPC
-                            .execTransaction(
+                            .sendXATransaction(
                                     transactionID,
                                     path,
                                     method,
@@ -150,8 +150,8 @@ public class TwoPcImpl implements TwoPcFace {
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths, 1);
 
-        RoutineResponse response =
-                weCrossRPC.startTransaction(transactionID, paths.toArray(new String[0])).send();
+        XAResponse response =
+                weCrossRPC.startXATransaction(transactionID, paths.toArray(new String[0])).send();
 
         PrintUtils.printRoutineResponse(response);
         System.out.println("Transaction ID is: " + transactionID);
@@ -183,9 +183,9 @@ public class TwoPcImpl implements TwoPcFace {
                                     + transactionInfo.getTransactionID()
                                     + "...\n");
                 }
-                RoutineResponse response =
+                XAResponse response =
                         weCrossRPC
-                                .commitTransaction(
+                                .commitXATransaction(
                                         transactionInfo.getTransactionID(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
@@ -213,8 +213,8 @@ public class TwoPcImpl implements TwoPcFace {
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths, 1);
 
-        RoutineResponse response =
-                weCrossRPC.commitTransaction(transactionID, paths.toArray(new String[0])).send();
+        XAResponse response =
+                weCrossRPC.commitXATransaction(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineResponse(response);
         FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
     }
@@ -241,9 +241,9 @@ public class TwoPcImpl implements TwoPcFace {
                                     + transactionInfo.getTransactionID()
                                     + "...\n");
                 }
-                RoutineResponse response =
+                XAResponse response =
                         weCrossRPC
-                                .rollbackTransaction(
+                                .rollbackXATransaction(
                                         transactionInfo.getTransactionID(),
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
@@ -271,9 +271,11 @@ public class TwoPcImpl implements TwoPcFace {
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths, 1);
 
-        RoutineResponse response =
-                weCrossRPC.rollbackTransaction(transactionID, paths.toArray(new String[0])).send();
-        PrintUtils.printRoutineResponse(response);
+        XAResponse response =
+                weCrossRPC
+                        .rollbackXATransaction(transactionID, paths.toArray(new String[0]))
+                        .send();
+        PrintUtils.printRollbackResponse(response);
         FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
     }
 
@@ -297,8 +299,8 @@ public class TwoPcImpl implements TwoPcFace {
         List<String> paths = new ArrayList<>();
         parseTransactionParam(params, paths, 2);
 
-        RoutineInfoResponse response =
-                weCrossRPC.getTransactionInfo(transactionID, paths.toArray(new String[0])).send();
+        XATransactionResponse response =
+                weCrossRPC.getXATransaction(transactionID, paths.toArray(new String[0])).send();
         PrintUtils.printRoutineInfoResponse(response);
     }
 
@@ -308,12 +310,12 @@ public class TwoPcImpl implements TwoPcFace {
             return false;
         }
 
-        RoutineInfoResponse response = weCrossRPC.getTransactionInfo(txID, paths).send();
-        if (response == null || response.getInfo() == null) {
+        XATransactionResponse response = weCrossRPC.getXATransaction(txID, paths).send();
+        if (response == null || response.getRawXATransactionResponse().getXaTransaction() == null) {
             logger.error("Transaction ID does not exist.");
             return false;
         }
-        if (!response.getInfo().contains("status=0")) {
+        if (response.getRawXATransactionResponse().getXaTransaction().getStatus() != "processing") {
             logger.error("Transaction {} has been rollback/commit.", txID);
             return false;
         }
@@ -330,15 +332,14 @@ public class TwoPcImpl implements TwoPcFace {
             HelpInfo.getTransactionIDsHelp();
             return;
         }
-        if (params.length != 3) {
+        if (params.length != 2) {
             HelpInfo.promptHelp("getTransactionIDs");
             return;
         }
 
-        String path = params[1];
-        int option = Integer.parseInt(params[2]);
+        int size = Integer.parseInt(params[1]);
 
-        RoutineIDResponse response = weCrossRPC.getTransactionIDs(path, option).send();
+        XATransactionListResponse response = weCrossRPC.listXATransactions(size).send();
         PrintUtils.printRoutineIDResponse(response);
     }
 
