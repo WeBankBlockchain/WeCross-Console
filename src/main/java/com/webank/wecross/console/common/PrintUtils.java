@@ -30,7 +30,7 @@ public class PrintUtils {
                     "Error: code("
                             + response.getReceipt().getErrorCode()
                             + "), message("
-                            + response.getReceipt().getErrorMessage()
+                            + response.getReceipt().getMessage()
                             + ")");
         } else {
             if (!isCall) {
@@ -44,8 +44,7 @@ public class PrintUtils {
         }
     }
 
-    public static void printRoutineResponse(RoutineResponse response)
-            throws WeCrossConsoleException {
+    public static void printRoutineResponse(XAResponse response) throws WeCrossConsoleException {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
@@ -56,12 +55,16 @@ public class PrintUtils {
                             + "), message("
                             + response.getMessage()
                             + ")");
+        } else if (response.getXARawResponse().getStatus() != StatusCode.SUCCESS) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
+                    Arrays.toString(response.getXARawResponse().getChainErrorMessages().toArray()));
         } else {
             System.out.println("Result: success!");
         }
     }
 
-    public static void printRoutineInfoResponse(RoutineInfoResponse response) throws Exception {
+    public static void printRollbackResponse(XAResponse response) throws WeCrossConsoleException {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
@@ -72,12 +75,41 @@ public class PrintUtils {
                             + "), message("
                             + response.getMessage()
                             + ")");
+        } else if (response.getXARawResponse().getStatus() != StatusCode.SUCCESS) {
+            System.out.println(
+                    Arrays.toString(response.getXARawResponse().getChainErrorMessages().toArray()));
         } else {
-            ConsoleUtils.printJson(response.getInfo());
+            System.out.println("Result: success!");
         }
     }
 
-    public static void printRoutineIDResponse(RoutineIDResponse response)
+    public static void printRoutineInfoResponse(XATransactionResponse response) throws Exception {
+        if (response == null) {
+            throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
+        } else if (response.getErrorCode() != StatusCode.SUCCESS) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
+                    "Error: code("
+                            + response.getErrorCode()
+                            + "), message("
+                            + response.getMessage()
+                            + ")");
+        } else if (response.getRawXATransactionResponse().getXaResponse().getStatus()
+                != StatusCode.SUCCESS) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.INTERNAL_ERROR,
+                    Arrays.toString(
+                            response.getRawXATransactionResponse()
+                                    .getXaResponse()
+                                    .getChainErrorMessages()
+                                    .toArray()));
+        } else {
+            ConsoleUtils.printJson(
+                    response.getRawXATransactionResponse().getXaTransaction().toString());
+        }
+    }
+
+    public static void printRoutineIDResponse(XATransactionListResponse response)
             throws WeCrossConsoleException {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
@@ -90,7 +122,12 @@ public class PrintUtils {
                             + response.getMessage()
                             + ")");
         } else {
-            System.out.println("Result: " + Arrays.toString(response.getIDs()));
+            System.out.println(
+                    "Result: "
+                            + Arrays.toString(
+                                    response.getRawXATransactionListResponse()
+                                            .getXaList()
+                                            .toArray()));
         }
     }
 
