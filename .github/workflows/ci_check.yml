@@ -17,3 +17,5 @@ jobs:
         java-version: 1.8
     - name: run ci_check.sh
       run: bash .ci/ci_check.sh
+    - name: upload coverage
+      run: bash <(curl -s https://codecov.io/bash)
