@@ -15,9 +15,9 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TwoPcImpl implements TwoPcFace {
+public class XAImpl implements XAFace {
     private WeCrossRPC weCrossRPC;
-    private final Logger logger = LoggerFactory.getLogger(TwoPcImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(XAImpl.class);
     private final RPCFace rpcFace = new RPCImpl();
 
     @Override
