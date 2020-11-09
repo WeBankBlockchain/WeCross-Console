@@ -13,7 +13,7 @@ version = '1.0.0-rc5'
 sourceCompatibility = '1.8'
 
 repositories {
-    // jcenter()
+    jcenter()
     maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
