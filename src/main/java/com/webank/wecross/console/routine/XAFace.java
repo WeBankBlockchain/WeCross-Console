@@ -3,7 +3,7 @@ package com.webank.wecross.console.routine;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import java.util.Map;
 
-public interface TwoPcFace {
+public interface XAFace {
     void setWeCrossRPC(WeCrossRPC weCrossRPC);
 
     void callTransaction(String[] params, Map<String, String> pathMaps) throws Exception;

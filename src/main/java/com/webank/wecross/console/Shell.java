@@ -9,7 +9,7 @@ import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.mock.MockWeCross;
 import com.webank.wecross.console.routine.HTLCFace;
-import com.webank.wecross.console.routine.TwoPcFace;
+import com.webank.wecross.console.routine.XAFace;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import groovy.lang.Binding;
@@ -27,7 +27,7 @@ public class Shell {
 
     private static RPCFace rpcFace;
     private static HTLCFace htlcFace;
-    private static TwoPcFace twoPcFace;
+    private static XAFace xaFace;
     private static BCOSCommand bcosCommand;
     private static FabricCommand fabricCommand;
     private static String loginUser;
@@ -49,7 +49,7 @@ public class Shell {
             initializer.init();
             rpcFace = initializer.getRpcFace();
             htlcFace = initializer.getHtlcFace();
-            twoPcFace = initializer.getTwoPcFace();
+            xaFace = initializer.getXaFace();
             bcosCommand = initializer.getBcosCommand();
             fabricCommand = initializer.getFabricCommand();
         } catch (WeCrossConsoleException e) {
@@ -210,17 +210,17 @@ public class Shell {
                         }
                     case "callTransaction":
                         {
-                            twoPcFace.callTransaction(params, pathMaps);
+                            xaFace.callTransaction(params, pathMaps);
                             break;
                         }
                     case "execTransaction":
                         {
-                            twoPcFace.execTransaction(params, pathMaps);
+                            xaFace.execTransaction(params, pathMaps);
                             break;
                         }
                     case "startTransaction":
                         {
-                            twoPcFace.startTransaction(params);
+                            xaFace.startTransaction(params);
                             if (params.length >= 2) {
                                 runtimeTransaction =
                                         ConsoleUtils.runtimeTransactionThreadLocal
@@ -233,7 +233,7 @@ public class Shell {
                     case "commitTransaction":
                         {
                             // only support one console do one transaction
-                            twoPcFace.commitTransaction(params);
+                            xaFace.commitTransaction(params);
                             if (params.length == 1
                                     || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
@@ -245,7 +245,7 @@ public class Shell {
                     case "rollbackTransaction":
                         {
                             // only support one console do one transaction
-                            twoPcFace.rollbackTransaction(params);
+                            xaFace.rollbackTransaction(params);
                             if (params.length == 1
                                     || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
@@ -256,17 +256,17 @@ public class Shell {
                         }
                     case "getTransactionInfo":
                         {
-                            twoPcFace.getTransactionInfo(params);
+                            xaFace.getTransactionInfo(params);
                             break;
                         }
                     case "getTransactionIDs":
                         {
-                            twoPcFace.getTransactionIDs(params);
+                            xaFace.getTransactionIDs(params);
                             break;
                         }
                     case "getCurrentTransactionID":
                         {
-                            twoPcFace.getCurrentTransactionID(params);
+                            xaFace.getCurrentTransactionID(params);
                             break;
                         }
                     case "bcosDeploy":
@@ -318,7 +318,7 @@ public class Shell {
                             if (loginUser != null) {
                                 JlineUtils.updateCompleters(
                                         completers, rpcFace.getPaths(), resourceVars, pathVars);
-                                FileUtils.loadTransactionLog(completers, twoPcFace);
+                                FileUtils.loadTransactionLog(completers, xaFace);
                             }
                             break;
                         }

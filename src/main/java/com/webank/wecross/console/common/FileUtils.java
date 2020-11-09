@@ -4,7 +4,7 @@ import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
-import com.webank.wecross.console.routine.TwoPcFace;
+import com.webank.wecross.console.routine.XAFace;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -149,13 +149,13 @@ public class FileUtils {
         return transactionPath;
     }
 
-    public static void loadTransactionLog(List<Completer> completers, TwoPcFace twoPcFace) {
+    public static void loadTransactionLog(List<Completer> completers, XAFace xaFace) {
         try {
             Toml toml = getToml("classpath:" + TRANSACTION_LOG_TOML);
             String transactionID = getTransactionID(toml);
             List<String> transactionPath = getTransactionPath(toml);
 
-            if (!twoPcFace.isTransactionInfoExist(
+            if (!xaFace.isTransactionInfoExist(
                     transactionID, transactionPath.toArray(new String[0]))) {
                 logger.error(
                         "loadTransactionLog error: the transaction in toml file had already been committed/rollbacked or even doesn't exist.");
