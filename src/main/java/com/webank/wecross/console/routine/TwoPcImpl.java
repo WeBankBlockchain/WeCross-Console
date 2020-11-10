@@ -61,7 +61,7 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.callTransaction(transactionID, path, method, null).send();
+            response = weCrossRPC.callTransaction(transactionID, path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -113,7 +113,7 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.execTransaction(transactionID, path, method, null).send();
+            response = weCrossRPC.execTransaction(transactionID, path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -205,6 +205,10 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
 
+        if (ConsoleUtils.runtimeUsernameThreadLocal.get() == null) {
+            System.out.println("Command commitTransaction needs Auth, please login.");
+            return;
+        }
         if (transactionInfo == null) {
             System.out.println("There is no Transaction running now, please check again.");
             return;
@@ -260,6 +264,10 @@ public class TwoPcImpl implements TwoPcFace {
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
             HelpInfo.rollbackTransactionHelp();
+            return;
+        }
+        if (ConsoleUtils.runtimeUsernameThreadLocal.get() == null) {
+            System.out.println("Command rollbackTransaction needs Auth, please login.");
             return;
         }
         if (transactionInfo == null) {

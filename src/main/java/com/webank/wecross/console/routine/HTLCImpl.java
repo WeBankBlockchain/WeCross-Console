@@ -25,7 +25,7 @@ public class HTLCImpl implements HTLCFace {
 
     @Override
     public void genTimelock(String[] params) {
-        if (params.length == 1) {
+        if (params.length != 2) {
             HelpInfo.promptHelp("genTimelock");
             return;
         }
@@ -63,7 +63,7 @@ public class HTLCImpl implements HTLCFace {
     @Override
     public void checkTransferStatus(String[] params, Map<String, String> pathMaps)
             throws Exception {
-        if (params.length == 1) {
+        if (params.length == 1 || params.length > 3) {
             HelpInfo.promptHelp("checkTransferStatus");
             return;
         }
@@ -72,43 +72,45 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
 
-        String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) {
-            return;
+        if (params.length == 3) {
+            String path = ConsoleUtils.parsePath(params, pathMaps);
+            if (path == null) {
+                return;
+            }
+
+            String hash = params[2];
+
+            Resource resource = ResourceFactory.build(weCrossRPC, path);
+            String proposalInfo = resource.call("getProposalInfo", hash)[0].trim();
+            if (NULL_FLAG.equals(proposalInfo)) {
+                System.out.println("status: proposal not found!");
+                return;
+            }
+            String[] proposalItems = proposalInfo.split(SPLIT_REGEX);
+            BigInteger timelock = new BigInteger(proposalItems[2]);
+
+            boolean selfUnlocked = TRUE_FLAG.equals(proposalItems[4]);
+            boolean selfRolledback = TRUE_FLAG.equals(proposalItems[5]);
+            boolean counterpartyUnlocked = TRUE_FLAG.equals(proposalItems[8]);
+
+            if (selfUnlocked && counterpartyUnlocked) {
+                System.out.println("status: succeeded!");
+                return;
+            }
+
+            if (selfRolledback) {
+                System.out.println("status: rolled back!");
+                return;
+            }
+
+            BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
+            if (timelock.compareTo(now) <= 0) {
+                System.out.println("status: failed!");
+                return;
+            }
+
+            System.out.println("status: ongoing!");
         }
-
-        String hash = params[2];
-
-        Resource resource = ResourceFactory.build(weCrossRPC, path);
-        String proposalInfo = resource.call("getProposalInfo", hash)[0].trim();
-        if (NULL_FLAG.equals(proposalInfo)) {
-            System.out.println("status: proposal not found!");
-            return;
-        }
-        String[] proposalItems = proposalInfo.split(SPLIT_REGEX);
-        BigInteger timelock = new BigInteger(proposalItems[2]);
-
-        boolean selfUnlocked = TRUE_FLAG.equals(proposalItems[4]);
-        boolean selfRolledback = TRUE_FLAG.equals(proposalItems[5]);
-        boolean counterpartyUnlocked = TRUE_FLAG.equals(proposalItems[8]);
-
-        if (selfUnlocked && counterpartyUnlocked) {
-            System.out.println("status: succeeded!");
-            return;
-        }
-
-        if (selfRolledback) {
-            System.out.println("status: rolled back!");
-            return;
-        }
-
-        BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
-        if (timelock.compareTo(now) <= 0) {
-            System.out.println("status: failed!");
-            return;
-        }
-
-        System.out.println("status: ongoing!");
     }
 
     @Override

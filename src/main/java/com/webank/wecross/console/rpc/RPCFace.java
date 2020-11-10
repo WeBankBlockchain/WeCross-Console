@@ -1,5 +1,6 @@
 package com.webank.wecross.console.rpc;
 
+import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
 import java.util.Map;
 import java.util.Set;
@@ -36,5 +37,5 @@ public interface RPCFace {
 
     void logout(String[] params) throws Exception;
 
-    Set<String> getPaths();
+    Set<String> getPaths() throws WeCrossConsoleException;
 }
