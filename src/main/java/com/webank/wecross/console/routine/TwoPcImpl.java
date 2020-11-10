@@ -44,7 +44,8 @@ public class TwoPcImpl implements TwoPcFace {
         String path = ConsoleUtils.parsePath(params, pathMaps);
         TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now, can not do command 'callTransaction', please check again.");
             return;
         }
         if (path == null) {
@@ -61,7 +62,8 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.callTransaction(transactionID, path, method, (String[]) null).send();
+            response =
+                    weCrossRPC.callTransaction(transactionID, path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -94,7 +96,8 @@ public class TwoPcImpl implements TwoPcFace {
         String path = ConsoleUtils.parsePath(params, pathMaps);
         TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now,can not do command 'execTransaction' , please check again.");
             return;
         }
         if (path == null) {
@@ -113,7 +116,8 @@ public class TwoPcImpl implements TwoPcFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.execTransaction(transactionID, path, method, (String[]) null).send();
+            response =
+                    weCrossRPC.execTransaction(transactionID, path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -196,7 +200,8 @@ public class TwoPcImpl implements TwoPcFace {
                 FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
-                System.out.println("There is no transaction running now.");
+                System.out.println(
+                        "There is no transaction running now, can not do command 'commitTransaction'.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
             }
         }
@@ -210,7 +215,8 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now, can not do command 'commitTransaction', please check again.");
             return;
         }
         String transactionID = transactionInfo.getTransactionID();
@@ -258,7 +264,8 @@ public class TwoPcImpl implements TwoPcFace {
                 FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
-                System.out.println("There is no transaction running now.");
+                System.out.println(
+                        "There is no transaction running now, can not do command 'rollbackTransaction'.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
             }
         }
@@ -271,7 +278,8 @@ public class TwoPcImpl implements TwoPcFace {
             return;
         }
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now, can not do command 'rollbackTransaction', please check again.");
             return;
         }
         String transactionID = transactionInfo.getTransactionID();
