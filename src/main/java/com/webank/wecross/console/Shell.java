@@ -350,6 +350,8 @@ public class Shell {
                             loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             if (loginUser == null) {
                                 completers = JlineUtils.getNoAuthCompleters();
+                                runtimeTransaction = null;
+                                ConsoleUtils.runtimeTransactionThreadLocal.remove();
                             }
                             break;
                         }
