@@ -221,7 +221,8 @@ public class Shell {
                     case "startTransaction":
                         {
                             twoPcFace.startTransaction(params);
-                            if (params.length >= 2) {
+                            if (params.length >= 2
+                                    && (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction =
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
