@@ -3,6 +3,7 @@
     sslKey = 'classpath:ssl.key'
     sslCert = 'classpath:ssl.crt'
     caCert = 'classpath:ca.crt'
+    sslSwitch = 2  # SSL_OFF(2), SSL_ON(1), SSL_ON_CLIENT_AUTH(0);
 
 #[login]
     #username = 'username'
