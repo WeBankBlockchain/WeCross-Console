@@ -415,7 +415,7 @@ public class RPCImpl implements RPCFace {
             String pubKeyPath = params[2];
             String secKeyPath = params[3];
             String ext = params[4];
-            boolean isDefault = Boolean.parseBoolean(params[5]);
+            boolean isDefault = checkBooleanString(params[5]);
             String pubKey = FileUtils.readFileContent(pubKeyPath);
             String secKey = FileUtils.readFileContent(secKeyPath);
 

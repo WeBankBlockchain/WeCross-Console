@@ -200,8 +200,6 @@ public class TwoPcImpl implements TwoPcFace {
                 FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
-                System.out.println(
-                        "There is no transaction running now, can not do command 'commitTransaction'.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
             }
         }
@@ -264,8 +262,6 @@ public class TwoPcImpl implements TwoPcFace {
                 FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
-                System.out.println(
-                        "There is no transaction running now, can not do command 'rollbackTransaction'.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
             }
         }
