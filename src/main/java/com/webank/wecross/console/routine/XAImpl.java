@@ -207,6 +207,7 @@ public class XAImpl implements XAFace {
             System.out.println("Command commitTransaction needs Auth, please login.");
             return;
         }
+
         if (transactionID == null) {
             System.out.println(
                     "There is no Transaction running now, can not do command 'commitTransaction', please check again.");
@@ -261,6 +262,7 @@ public class XAImpl implements XAFace {
             System.out.println("Command rollbackTransaction needs Auth, please login.");
             return;
         }
+
         if (transactionID == null) {
             System.out.println(
                     "There is no Transaction running now, can not do command 'rollbackTransaction', please check again.");
