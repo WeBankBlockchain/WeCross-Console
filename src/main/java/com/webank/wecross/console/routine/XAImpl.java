@@ -44,7 +44,8 @@ public class XAImpl implements XAFace {
         String path = ConsoleUtils.parsePath(params, pathMaps);
         TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now, can not do command 'callTransaction', please check again.");
             return;
         }
         if (path == null) {
@@ -61,7 +62,7 @@ public class XAImpl implements XAFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.callXA(transactionID, path, method, null).send();
+            response = weCrossRPC.callXA(transactionID, path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -94,7 +95,8 @@ public class XAImpl implements XAFace {
         String path = ConsoleUtils.parsePath(params, pathMaps);
         TransactionInfo transactionInfo = ConsoleUtils.runtimeTransactionThreadLocal.get();
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now,can not do command 'execTransaction' , please check again.");
             return;
         }
         if (path == null) {
@@ -113,7 +115,10 @@ public class XAImpl implements XAFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.sendXATransaction(transactionID, path, method, null).send();
+            response =
+                    weCrossRPC
+                            .sendXATransaction(transactionID, path, method, (String[]) null)
+                            .send();
         } else {
             response =
                     weCrossRPC
@@ -196,7 +201,6 @@ public class XAImpl implements XAFace {
                 FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
-                System.out.println("There is no transaction running now.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "commitTransaction");
             }
         }
@@ -205,8 +209,13 @@ public class XAImpl implements XAFace {
             return;
         }
 
+        if (ConsoleUtils.runtimeUsernameThreadLocal.get() == null) {
+            System.out.println("Command commitTransaction needs Auth, please login.");
+            return;
+        }
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now, can not do command 'commitTransaction', please check again.");
             return;
         }
         String transactionID = transactionInfo.getTransactionID();
@@ -254,7 +263,6 @@ public class XAImpl implements XAFace {
                 FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             } else {
-                System.out.println("There is no transaction running now.");
                 throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "rollbackTransaction");
             }
         }
@@ -262,8 +270,13 @@ public class XAImpl implements XAFace {
             HelpInfo.rollbackTransactionHelp();
             return;
         }
+        if (ConsoleUtils.runtimeUsernameThreadLocal.get() == null) {
+            System.out.println("Command rollbackTransaction needs Auth, please login.");
+            return;
+        }
         if (transactionInfo == null) {
-            System.out.println("There is no Transaction running now, please check again.");
+            System.out.println(
+                    "There is no Transaction running now, can not do command 'rollbackTransaction', please check again.");
             return;
         }
         String transactionID = transactionInfo.getTransactionID();
@@ -315,7 +328,10 @@ public class XAImpl implements XAFace {
             logger.error("Transaction ID does not exist.");
             return false;
         }
-        if (response.getRawXATransactionResponse().getXaTransaction().getStatus() != "processing") {
+        if (!response.getRawXATransactionResponse()
+                .getXaTransaction()
+                .getStatus()
+                .equals("processing")) {
             logger.error("Transaction {} has been rollback/commit.", txID);
             return false;
         }
