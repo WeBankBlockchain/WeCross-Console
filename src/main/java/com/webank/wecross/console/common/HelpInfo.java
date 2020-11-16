@@ -250,9 +250,8 @@ public class HelpInfo {
     public static void callTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Call constant method of smart contract during transaction");
-        System.out.println("Usage: callTransaction [path] [transactionID] [method] [args]");
+        System.out.println("Usage: callTransaction [path] [method] [args]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("transactionID -- transaction identifier");
         System.out.println("method -- the method in contract");
         System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
@@ -261,10 +260,8 @@ public class HelpInfo {
     public static void execTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Call non-constant method of smart contract during transaction");
-        System.out.println("Usage: execTransaction [path] [transactionID] [seq] [method] [args]");
+        System.out.println("Usage: execTransaction [path] [method] [args]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("transactionID -- transaction identifier");
-        System.out.println("seq -- sequence for each step in transaction");
         System.out.println("method -- the method in contract");
         System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
@@ -273,8 +270,7 @@ public class HelpInfo {
     public static void startTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Start a 2pc transaction");
-        System.out.println("Usage: startTransaction [transactionID] [path_1] ... [path_n]");
-        System.out.println("transactionID -- transaction identifier");
+        System.out.println("Usage: startTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
         ConsoleUtils.singleLine();
     }
@@ -282,8 +278,7 @@ public class HelpInfo {
     public static void commitTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Commit a 2pc transaction");
-        System.out.println("Usage: commitTransaction [transactionID] [path_1] ... [path_n]");
-        System.out.println("transactionID -- transaction identifier");
+        System.out.println("Usage: commitTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
                 "[note]: It will auto-complete args if you call \"commitTransaction\" without args");
@@ -293,8 +288,7 @@ public class HelpInfo {
     public static void rollbackTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Rollback a 2pc transaction");
-        System.out.println("Usage: rollbackTransaction [transactionID] [path_1] ... [path_n]");
-        System.out.println("transactionID -- transaction identifier");
+        System.out.println("Usage: rollbackTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
                 "[note]: It will auto-complete args if you call \"rollbackTransaction\" without args");
@@ -333,7 +327,7 @@ public class HelpInfo {
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be deployed");
         System.out.println(
                 "Source file path from conf/ -- The solidity source code file path, e.g: HelloWorld.sol");
-        System.out.println("Class name -- The contract to be deploy");
+        System.out.println("Contract name -- The contract to be deploy");
         System.out.println("Version -- The contract version");
         System.out.println("Example:");
         System.out.println(
