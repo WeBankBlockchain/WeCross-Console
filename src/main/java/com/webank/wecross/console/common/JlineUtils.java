@@ -84,6 +84,7 @@ public class JlineUtils {
                     "rollbackTransaction",
                     "getTransactionInfo",
                     "getTransactionIDs",
+                    "loadTransaction",
                     "bcosDeploy",
                     "bcosRegister",
                     "fabricInstall",

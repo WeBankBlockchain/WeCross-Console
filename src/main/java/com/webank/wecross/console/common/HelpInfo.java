@@ -295,6 +295,15 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void loadTransactionHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Load a specified transaction context");
+        System.out.println("Usage: loadTransaction [transactionID] [path_1] ... [path_n]");
+        System.out.println("transactionID -- transaction identifier");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        ConsoleUtils.singleLine();
+    }
+
     public static void getTransactionInfoHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Get info of specified transaction");

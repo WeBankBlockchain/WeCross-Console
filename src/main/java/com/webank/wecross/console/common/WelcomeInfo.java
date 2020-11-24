@@ -47,6 +47,7 @@ public class WelcomeInfo {
         sb.append("startTransaction                 Start a 2pc transaction.\n");
         sb.append("commitTransaction                Commit a 2pc transaction.\n");
         sb.append("rollbackTransaction              Rollback a 2pc transaction.\n");
+        sb.append("loadTransaction                  Load a specified transaction context.\n");
         sb.append("getTransactionInfo               Get info of specified transaction.\n");
         sb.append("getTransactionIDs                Get transaction ids of 2pc.\n");
         sb.append("bcosDeploy                       Deploy contract in BCOS chain.\n");

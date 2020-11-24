@@ -318,6 +318,44 @@ public class XAImpl implements XAFace {
     }
 
     @Override
+    public void loadTransaction(String[] params) throws Exception {
+        if (params.length == 1) {
+            HelpInfo.promptHelp("loadTransaction");
+            return;
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.loadTransactionHelp();
+            return;
+        }
+        if (params.length < 3) {
+            HelpInfo.promptHelp("loadTransaction");
+            return;
+        }
+        if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.ILLEGAL_PARAM,
+                    "You are in a transactional context now, the transaction is "
+                            + ConsoleUtils.runtimeTransactionThreadLocal.get().toString());
+        }
+
+        String transactionID = params[1];
+
+        List<String> paths = new ArrayList<>();
+        parseTransactionParam(params, paths, 2);
+
+        if (!isTransactionInfoExist(transactionID, paths.toArray(new String[0]))) {
+            logger.error(
+                    "loadTransaction error: the transaction had already been committed/rollbacked or even doesn't exist.");
+            throw new WeCrossConsoleException(
+                    ErrorCode.ILLEGAL_PARAM,
+                    "The transaction had already been committed/rollbacked or even doesn't exist.");
+        }
+        TransactionInfo transactionInfo = new TransactionInfo(transactionID, paths);
+        ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
+        System.out.println("Load transaction success!");
+    }
+
+    @Override
     public boolean isTransactionInfoExist(String txID, String[] paths) throws Exception {
         if (paths.length < 1) {
             return false;
