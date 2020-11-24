@@ -221,7 +221,8 @@ public class Shell {
                     case "startTransaction":
                         {
                             xaFace.startTransaction(params);
-                            if (params.length >= 2) {
+                            if (params.length >= 2
+                                    && (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction =
                                         ConsoleUtils.runtimeTransactionThreadLocal
                                                 .get()
@@ -349,6 +350,8 @@ public class Shell {
                             loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
                             if (loginUser == null) {
                                 completers = JlineUtils.getNoAuthCompleters();
+                                runtimeTransaction = null;
+                                ConsoleUtils.runtimeTransactionThreadLocal.remove();
                             }
                             break;
                         }

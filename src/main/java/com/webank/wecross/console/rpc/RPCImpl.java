@@ -37,7 +37,7 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public Set<String> getPaths() {
+    public Set<String> getPaths() throws WeCrossConsoleException {
         Set<String> paths = new HashSet<>();
         try {
             ResourceResponse response = weCrossRPC.listResources(false).send();
@@ -46,7 +46,8 @@ public class RPCImpl implements RPCFace {
                 paths.add(resourceInfo.getPath());
             }
         } catch (Exception e) {
-            logger.warn("Get paths failed when starting console,", e);
+            logger.warn("Get paths failed, error: ", e);
+            throw new WeCrossConsoleException(ErrorCode.INTERNAL_ERROR, e.getMessage());
         }
         return paths;
     }
@@ -195,7 +196,7 @@ public class RPCImpl implements RPCFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.call(path, method, null).send();
+            response = weCrossRPC.call(path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -233,7 +234,7 @@ public class RPCImpl implements RPCFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.sendTransaction(path, method, null).send();
+            response = weCrossRPC.sendTransaction(path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -271,7 +272,7 @@ public class RPCImpl implements RPCFace {
         TransactionResponse response;
         if (params.length == 3) {
             // no param given means: null (not String[0])
-            response = weCrossRPC.invoke(path, method, null).send();
+            response = weCrossRPC.invoke(path, method, (String[]) null).send();
         } else {
             response =
                     weCrossRPC
@@ -414,7 +415,7 @@ public class RPCImpl implements RPCFace {
             String pubKeyPath = params[2];
             String secKeyPath = params[3];
             String ext = params[4];
-            boolean isDefault = Boolean.parseBoolean(params[5]);
+            boolean isDefault = checkBooleanString(params[5]);
             String pubKey = FileUtils.readFileContent(pubKeyPath);
             String secKey = FileUtils.readFileContent(secKeyPath);
 
@@ -427,7 +428,7 @@ public class RPCImpl implements RPCFace {
             String certPath = params[2];
             String keyPath = params[3];
             String ext = params[4];
-            boolean isDefault = Boolean.parseBoolean(params[5]);
+            boolean isDefault = checkBooleanString(params[5]);
 
             String cert = FileUtils.readFileContent(certPath);
             String key = FileUtils.readFileContent(keyPath);
@@ -484,5 +485,14 @@ public class RPCImpl implements RPCFace {
         } else {
             return "classpath:" + path;
         }
+    }
+
+    private boolean checkBooleanString(String str) throws WeCrossConsoleException {
+        if (!"true".equalsIgnoreCase(str) && !"false".equalsIgnoreCase(str)) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.ILLEGAL_PARAM,
+                    "Boolean value you input is wrong, please check again.");
+        }
+        return Boolean.parseBoolean(str);
     }
 }

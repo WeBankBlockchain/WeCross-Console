@@ -44,7 +44,7 @@ public class BCOSCommand {
         RPCUtils.checkPath(path);
         String cnsName = path.split("\\.")[2];
         String sourcePath = params[2];
-        String className = params[3];
+        String contractName = params[3];
         String version = params[4];
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -64,7 +64,7 @@ public class BCOSCommand {
         String sourceContent = FileUtils.mergeSource(dir, filename, resolver, new HashSet<>());
 
         List<Object> args =
-                new ArrayList<>(Arrays.asList(cnsName, sourceContent, className, version));
+                new ArrayList<>(Arrays.asList(cnsName, sourceContent, contractName, version));
         for (int i = 5; i < params.length; i++) {
             // for constructor
             args.add(ConsoleUtils.parseString(params[i]));
@@ -94,9 +94,10 @@ public class BCOSCommand {
 
         String path = params[1];
         RPCUtils.checkPath(path);
+        String cnsName = path.split("\\.")[2];
         String sourcePath = params[2];
         String address = params[3];
-        String cnsName = params[4];
+        String contractName = params[4];
         String version = params[5];
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -122,6 +123,7 @@ public class BCOSCommand {
                                 sourcePath.endsWith("abi") ? "abi" : "sol",
                                 sourceContent,
                                 address,
+                                contractName,
                                 version));
 
         CommandResponse response =
