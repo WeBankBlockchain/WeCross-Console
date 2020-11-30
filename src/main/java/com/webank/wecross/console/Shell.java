@@ -269,14 +269,14 @@ public class Shell {
                             }
                             break;
                         }
-                    case "getTransactionInfo":
+                    case "getXATransaction":
                         {
-                            xaFace.getTransactionInfo(params);
+                            xaFace.getXATransaction(params);
                             break;
                         }
-                    case "getTransactionIDs":
+                    case "listXATransaction":
                         {
-                            xaFace.getTransactionIDs(params);
+                            xaFace.listXATransaction(params);
                             break;
                         }
                     case "getCurrentTransactionID":

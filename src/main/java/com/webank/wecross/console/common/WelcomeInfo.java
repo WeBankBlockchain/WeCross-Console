@@ -48,8 +48,8 @@ public class WelcomeInfo {
         sb.append("commitTransaction                Commit a 2pc transaction.\n");
         sb.append("rollbackTransaction              Rollback a 2pc transaction.\n");
         sb.append("loadTransaction                  Load a specified transaction context.\n");
-        sb.append("getTransactionInfo               Get info of specified transaction.\n");
-        sb.append("getTransactionIDs                Get transaction ids of 2pc.\n");
+        sb.append("getXATransaction                 Get info of specified XA transaction.\n");
+        sb.append("listXATransaction                List XA transactions in route.\n");
         sb.append("bcosDeploy                       Deploy contract in BCOS chain.\n");
         sb.append("bcosRegister                     Register contract abi in BCOS chain.\n");
         sb.append("fabricInstall                    Install chaincode in fabric chain.\n");

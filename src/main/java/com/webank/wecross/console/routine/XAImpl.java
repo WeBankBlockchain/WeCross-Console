@@ -293,17 +293,17 @@ public class XAImpl implements XAFace {
     }
 
     @Override
-    public void getTransactionInfo(String[] params) throws Exception {
+    public void getXATransaction(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("getTransactionInfo");
+            HelpInfo.promptHelp("getXATransaction");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.getTransactionInfoHelp();
+            HelpInfo.getXATransactionHelp();
             return;
         }
         if (params.length < 3) {
-            HelpInfo.promptHelp("getTransactionInfo");
+            HelpInfo.promptHelp("getXATransaction");
             return;
         }
 
@@ -372,22 +372,33 @@ public class XAImpl implements XAFace {
                 .equals("processing")) {
             logger.error("Transaction {} has been rollback/commit.", txID);
             return false;
+        } else {
+            List<String> pathList =
+                    response.getRawXATransactionResponse().getXaTransaction().getPaths();
+            if (pathList.size() != paths.length) {
+                return false;
+            }
+            for (String path : paths) {
+                if (!pathList.contains(path)) {
+                    return false;
+                }
+            }
         }
         return true;
     }
 
     @Override
-    public void getTransactionIDs(String[] params) throws Exception {
+    public void listXATransaction(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("getTransactionIDs");
+            HelpInfo.promptHelp("listXATransaction");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.getTransactionIDsHelp();
+            HelpInfo.listXATransactionHelp();
             return;
         }
         if (params.length != 2) {
-            HelpInfo.promptHelp("getTransactionIDs");
+            HelpInfo.promptHelp("listXATransaction");
             return;
         }
 
