@@ -24,5 +24,5 @@ public interface XAFace {
 
     boolean isTransactionInfoExist(String txID, String[] paths) throws Exception;
 
-    void listXATransaction(String[] params) throws Exception;
+    void listXATransactions(String[] params) throws Exception;
 }

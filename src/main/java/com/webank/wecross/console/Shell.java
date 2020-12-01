@@ -274,9 +274,9 @@ public class Shell {
                             xaFace.getXATransaction(params);
                             break;
                         }
-                    case "listXATransaction":
+                    case "listXATransactions":
                         {
-                            xaFace.listXATransaction(params);
+                            xaFace.listXATransactions(params);
                             break;
                         }
                     case "getCurrentTransactionID":

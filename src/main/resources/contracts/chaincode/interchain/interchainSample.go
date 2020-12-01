@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	ChannelKey     = "channel"
-	HubNameKey     = "hub_name"
-	DataKey        = "data"
+	ChannelKey = "channel"
+	HubNameKey = "hub_name"
+	DataKey    = "data"
 )
 
 type Interchain struct {
@@ -23,7 +23,11 @@ func (i *Interchain) Init(stub shim.ChaincodeStubInterface) (res peer.Response) 
 		}
 	}()
 
-	err := stub.PutState(DataKey, []byte("Talk is cheap, show me the code."))
+	data := []string{"Talk is cheap, show me the code."}
+	dataBytes, err := json.Marshal(data)
+	checkError(err)
+
+	err = stub.PutState(DataKey, dataBytes)
 	checkError(err)
 
 	return shim.Success(nil)
@@ -41,8 +45,8 @@ func (i *Interchain) Invoke(stub shim.ChaincodeStubInterface) (res peer.Response
 	switch fcn {
 	case "init":
 		res = i.init(stub, args)
-	case "callBcos":
-		res = i.callBcos(stub, args)
+	case "interchain":
+		res = i.interchain(stub, args)
 	case "callback":
 		res = i.callback(stub, args)
 	case "get":
@@ -77,7 +81,7 @@ func (i *Interchain) init(stub shim.ChaincodeStubInterface, args []string) peer.
  * invoke other chain
  * @args path || method || args || callbackPath || callbackMethod
  */
-func (i *Interchain) callBcos(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (i *Interchain) interchain(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 5 {
 		return shim.Error("incorrect number of arguments, expecting 5")
 	}
@@ -106,6 +110,7 @@ func (i *Interchain) callBcos(stub shim.ChaincodeStubInterface, args []string) p
 
 /*
  * @args state || result
+ * result is json form of string array
  */
 func (i *Interchain) callback(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 2 {
@@ -116,7 +121,6 @@ func (i *Interchain) callback(stub shim.ChaincodeStubInterface, args []string) p
 		err := stub.PutState(DataKey, []byte(args[1]))
 		checkError(err)
 	}
-
 	return shim.Success([]byte(args[1]))
 }
 
