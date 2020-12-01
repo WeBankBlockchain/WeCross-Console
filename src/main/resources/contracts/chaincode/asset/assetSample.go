@@ -14,16 +14,16 @@ const (
 	AccountKey  = "Account-%s"
 )
 
-type Assert struct {
+type Asset struct {
 }
 
-func (a *Assert) Init(stub shim.ChaincodeStubInterface) peer.Response {
+func (a *Asset) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	setBalance(stub, "Alice", 1000)
 	setBalance(stub, "Oscar", 100)
 	return shim.Success(nil)
 }
 
-func (a *Assert) Invoke(stub shim.ChaincodeStubInterface) (res peer.Response) {
+func (a *Asset) Invoke(stub shim.ChaincodeStubInterface) (res peer.Response) {
 	fn, args := stub.GetFunctionAndParameters()
 	switch fn {
 	case "transfer":
@@ -42,7 +42,7 @@ func (a *Assert) Invoke(stub shim.ChaincodeStubInterface) (res peer.Response) {
 }
 
 // sender, receiver, amount
-func (a *Assert) transfer(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (a *Asset) transfer(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 3 {
 		return shim.Error("Invalid args length, should be: [sender, receiver, amount]")
 	}
@@ -62,19 +62,19 @@ func (a *Assert) transfer(stub shim.ChaincodeStubInterface, args []string) peer.
 	return shim.Success([]byte(SuccessFlag))
 }
 
-func (a *Assert) transfer_revert(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (a *Asset) transfer_revert(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	newArgs := []string{args[1], args[0], args[2]}
 	return a.transfer(stub, newArgs)
 }
 
-func (a *Assert) balanceOf(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (a *Asset) balanceOf(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
 		return shim.Error("Invalid args length, should be: [account]")
 	}
 	return shim.Success(uint64ToBytes(getBalance(stub, args[0])))
 }
 
-func (a *Assert) balanceOf_revert(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (a *Asset) balanceOf_revert(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
 		return shim.Error("Invalid args length, should be: [account]")
 	}
@@ -129,7 +129,7 @@ func checkError(err error) {
 }
 
 func main() {
-	if err := shim.Start(new(Assert)); err != nil {
-		fmt.Printf("Error starting Assert chaincode: %s", err)
+	if err := shim.Start(new(Asset)); err != nil {
+		fmt.Printf("Error starting Asset chaincode: %s", err)
 	}
 }

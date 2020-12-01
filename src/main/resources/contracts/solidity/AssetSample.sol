@@ -1,6 +1,6 @@
 pragma solidity >=0.4.22 <0.6.0;
 
-contract Assert {
+contract Asset {
     mapping(string => uint256) ledger;
 
     string constant SUCCESS_FLAG = "Success";
