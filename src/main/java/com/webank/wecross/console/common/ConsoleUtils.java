@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 public class ConsoleUtils {
     public static ThreadLocal<String> runtimeUsernameThreadLocal = new ThreadLocal<>();
     public static ThreadLocal<String> runtimePasswordThreadLocal = new ThreadLocal<>();
-    public static ThreadLocal<TransactionInfo> runtimeTransactionThreadLocal = new ThreadLocal<>();
 
     public static final String fabricType = "Fabric1.4";
     public static final String BCOSType = "BCOS2.0";
