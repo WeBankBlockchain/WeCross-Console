@@ -1,6 +1,5 @@
 package com.webank.wecross.console.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
@@ -118,8 +117,7 @@ public class PrintUtils {
         }
     }
 
-    public static void printRoutineIDResponse(XATransactionListResponse response)
-            throws Exception {
+    public static void printRoutineIDResponse(XATransactionListResponse response) throws Exception {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
