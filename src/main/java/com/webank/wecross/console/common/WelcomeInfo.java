@@ -44,9 +44,9 @@ public class WelcomeInfo {
                 "callTransaction                  Call constant method of smart contract during transaction.\n");
         sb.append(
                 "execTransaction                  Call non-constant method of smart contract during transaction.\n");
-        sb.append("startTransaction                 Start a 2pc transaction.\n");
-        sb.append("commitTransaction                Commit a 2pc transaction.\n");
-        sb.append("rollbackTransaction              Rollback a 2pc transaction.\n");
+        sb.append("startTransaction                 Start an xa transaction.\n");
+        sb.append("commitTransaction                Commit an xa transaction.\n");
+        sb.append("rollbackTransaction              Rollback an xa transaction.\n");
         sb.append("loadTransaction                  Load a specified transaction context.\n");
         sb.append("getXATransaction                 Get info of specified XA transaction.\n");
         sb.append("listXATransaction                List XA transactions in route.\n");
@@ -59,7 +59,7 @@ public class WelcomeInfo {
         sb.append("genSecretAndHash                 Generate a secret and its hash.\n");
         sb.append("newHTLCProposal                  Create a htlc transfer proposal .\n");
         sb.append("checkTransferStatus              Check htlc transfer status by hash.\n");
-        sb.append("getCurrentTransactionID          Get Current 2pc Transaction ID.\n");
+        sb.append("getCurrentTransactionID          Get Current xa Transaction ID.\n");
         sb.append(
                 "WeCross.getResource              Init resource by path, and assign it to a custom variable.\n");
         sb.append("[resource].[command]             Equal to: command [path].\n");

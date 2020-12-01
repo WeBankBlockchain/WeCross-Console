@@ -7,14 +7,14 @@ import "./WeCrossHub.sol";
 contract InterchainSample {
     WeCrossHub hub;
 
-    string data = "Talk is cheap, show me the code.";
+    string[] data = ["Talk is cheap, show me the code."];
 
     function init(address _hub) public
     {
         hub = WeCrossHub(_hub);
     }
 
-    function callFabric(string memory _path, string memory _method, string memory _args, string memory _callbackPath, string memory _callbackMethod) public
+    function interchain(string memory _path, string memory _method, string memory _args, string memory _callbackPath, string memory _callbackMethod) public
     returns(string memory)
     {
         string[] memory args = new string[](1);
@@ -23,8 +23,8 @@ contract InterchainSample {
         return hub.interchainInvoke(_path, _method, args, _callbackPath, _callbackMethod);
     }
 
-    function callback(bool state, string memory _result) public
-    returns(string memory)
+    function callback(bool state, string[] memory _result) public
+    returns(string[] memory)
     {
         if(state) {
             data = _result;
@@ -34,13 +34,13 @@ contract InterchainSample {
     }
 
     function get() public view
-    returns(string memory)
+    returns(string[] memory)
     {
         return data;
     }
 
-    function set(string memory _data) public
-    returns(string memory)
+    function set(string[] memory _data) public
+    returns(string[] memory)
     {
         data = _data;
         return data;

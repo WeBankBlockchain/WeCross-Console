@@ -101,10 +101,10 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void listXATransactionHelp() {
+    public static void listXATransactionsHelp() {
         ConsoleUtils.singleLine();
         System.out.println("List XA transactions");
-        System.out.println("Usage: listXATransaction [size]");
+        System.out.println("Usage: listXATransactions [size]");
         System.out.println("size -- the size of XA transactions to list, must range in [1, 1024]");
         ConsoleUtils.singleLine();
     }
@@ -147,7 +147,7 @@ public class HelpInfo {
     public static void invokeHelp() {
         ConsoleUtils.singleLine();
         System.out.println(
-                "Call non-constant method of smart contract, if a 2pc Transaction is running, it will auto-transfer to command execTransaction");
+                "Call non-constant method of smart contract, if an xa Transaction is running, it will auto-transfer to command execTransaction");
         System.out.println("Usage: invoke [path] [method] [...args]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println("method -- the method in contract");
@@ -277,7 +277,7 @@ public class HelpInfo {
 
     public static void startTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Start a 2pc transaction");
+        System.out.println("Start an xa transaction");
         System.out.println("Usage: startTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
         ConsoleUtils.singleLine();
@@ -285,7 +285,7 @@ public class HelpInfo {
 
     public static void commitTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Commit a 2pc transaction");
+        System.out.println("Commit an xa transaction");
         System.out.println("Usage: commitTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
@@ -295,7 +295,7 @@ public class HelpInfo {
 
     public static void rollbackTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Rollback a 2pc transaction");
+        System.out.println("Rollback an xa transaction");
         System.out.println("Usage: rollbackTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
@@ -323,7 +323,7 @@ public class HelpInfo {
 
     public static void getCurrentTransactionIDHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("get Current 2pc Transaction ID");
+        System.out.println("get Current xa Transaction ID");
         System.out.println("Usage: getCurrentTransaction [without args]");
         ConsoleUtils.singleLine();
     }

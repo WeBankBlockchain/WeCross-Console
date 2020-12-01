@@ -23,7 +23,9 @@ func (t *Evidence) Invoke(stub shim.ChaincodeStubInterface)  (res peer.Response)
 		case "newEvidence_revert":
 			res = t.newEvidence_revert(stub, args) 
 		case "queryEvidence":
-			res = t.queryEvidence(stub, args) 
+			res = t.queryEvidence(stub, args)
+		case "queryEvidence_revert":
+			res = t.queryEvidence_revert(stub, args)
 		default:
 			return shim.Error("invalid function name")
 	}
@@ -41,7 +43,7 @@ func (t *Evidence) newEvidence(stub shim.ChaincodeStubInterface, args []string) 
 	if err != nil {
 		return shim.Error(fmt.Errorf("Failed to new evidence: %s", args[0]).Error())
 	}
-	return shim.Success([]byte("newEvidence success"))
+	return shim.Success([]byte("Success"))
 }
 
 // id, evidenceInfo
@@ -54,7 +56,7 @@ func (t *Evidence) newEvidence_revert(stub shim.ChaincodeStubInterface, args []s
 	if err != nil {
 		return shim.Error(fmt.Errorf("Failed to revert evidence: %s", args[0]).Error())
 	}
-	return shim.Success([]byte("newEvidence_revert success"))
+	return shim.Success([]byte("Success"))
 }
 
 // id
@@ -69,6 +71,10 @@ func (t *Evidence) queryEvidence(stub shim.ChaincodeStubInterface, args []string
 	}
 
 	return shim.Success([]byte(value)) 
+}
+
+func (t *Evidence) queryEvidence_revert(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	return shim.Success([]byte("Success"))
 }
 
 func main() {

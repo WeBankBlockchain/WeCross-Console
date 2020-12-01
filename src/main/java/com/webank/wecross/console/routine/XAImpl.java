@@ -388,17 +388,17 @@ public class XAImpl implements XAFace {
     }
 
     @Override
-    public void listXATransaction(String[] params) throws Exception {
+    public void listXATransactions(String[] params) throws Exception {
         if (params.length == 1) {
-            HelpInfo.promptHelp("listXATransaction");
+            HelpInfo.promptHelp("listXATransactions");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.listXATransactionHelp();
+            HelpInfo.listXATransactionsHelp();
             return;
         }
         if (params.length != 2) {
-            HelpInfo.promptHelp("listXATransaction");
+            HelpInfo.promptHelp("listXATransactions");
             return;
         }
 
