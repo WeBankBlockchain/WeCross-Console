@@ -48,6 +48,8 @@ public class PrintUtils {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
+            ConsoleUtils.runtimeTransactionThreadLocal.remove();
+            FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
             throw new WeCrossConsoleException(
                     ErrorCode.INTERNAL_ERROR,
                     "Error: code("
@@ -56,6 +58,8 @@ public class PrintUtils {
                             + response.getMessage()
                             + ")");
         } else if (response.getXARawResponse().getStatus() != StatusCode.SUCCESS) {
+            ConsoleUtils.runtimeTransactionThreadLocal.remove();
+            FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
             throw new WeCrossConsoleException(
                     ErrorCode.INTERNAL_ERROR,
                     Arrays.toString(response.getXARawResponse().getChainErrorMessages().toArray()));

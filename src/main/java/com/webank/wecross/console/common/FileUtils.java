@@ -159,6 +159,7 @@ public class FileUtils {
                     transactionID, transactionPath.toArray(new String[0]))) {
                 logger.error(
                         "loadTransactionLog error: the transaction in toml file had already been committed/rollbacked or even doesn't exist.");
+                FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             }
             TransactionInfo transactionInfo = new TransactionInfo(transactionID, transactionPath);

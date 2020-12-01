@@ -84,6 +84,8 @@ public class Shell {
             if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
                 runtimeTransaction =
                         ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID();
+            } else {
+                runtimeTransaction = null;
             }
             try {
                 String prompt =
@@ -208,6 +210,18 @@ public class Shell {
                             htlcFace.checkTransferStatus(params, pathMaps);
                             break;
                         }
+                    case "loadTransaction":
+                        {
+                            xaFace.loadTransaction(params);
+                            if (params.length >= 3) {
+                                runtimeTransaction =
+                                        ConsoleUtils.runtimeTransactionThreadLocal
+                                                .get()
+                                                .getTransactionID();
+                                JlineUtils.addTransactionInfoCompleters(completers);
+                            }
+                            break;
+                        }
                     case "callTransaction":
                         {
                             xaFace.callTransaction(params, pathMaps);
@@ -255,14 +269,14 @@ public class Shell {
                             }
                             break;
                         }
-                    case "getTransactionInfo":
+                    case "getXATransaction":
                         {
-                            xaFace.getTransactionInfo(params);
+                            xaFace.getXATransaction(params);
                             break;
                         }
-                    case "getTransactionIDs":
+                    case "listXATransaction":
                         {
-                            xaFace.getTransactionIDs(params);
+                            xaFace.listXATransaction(params);
                             break;
                         }
                     case "getCurrentTransactionID":

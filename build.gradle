@@ -9,7 +9,7 @@ apply plugin: 'java'
 apply plugin: 'jacoco'
 
 group = 'com.webank'
-version = '1.0.0-rc5'
+version = '1.0.0'
 sourceCompatibility = '1.8'
 
 repositories {

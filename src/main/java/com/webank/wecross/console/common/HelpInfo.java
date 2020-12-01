@@ -101,6 +101,14 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void listXATransactionHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("List XA transactions");
+        System.out.println("Usage: listXATransaction [size]");
+        System.out.println("size -- the size of XA transactions to list, must range in [1, 1024]");
+        ConsoleUtils.singleLine();
+    }
+
     public static void statusHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Check if the resource exists.");
@@ -295,21 +303,21 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void getTransactionInfoHelp() {
+    public static void loadTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Get info of specified transaction");
-        System.out.println("Usage: getTransactionInfo [transactionID] [path_1] ... [path_n]");
+        System.out.println("Load a specified transaction context");
+        System.out.println("Usage: loadTransaction [transactionID] [path_1] ... [path_n]");
         System.out.println("transactionID -- transaction identifier");
         System.out.println("path -- the path of the contract resource in wecross router");
         ConsoleUtils.singleLine();
     }
 
-    public static void getTransactionIDsHelp() {
+    public static void getXATransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Get transaction ids of 2pc");
-        System.out.println("Usage: getTransactionIDs [path] [option]");
+        System.out.println("Get info of specified XA transaction");
+        System.out.println("Usage: getXATransaction [transactionID] [path_1] ... [path_n]");
+        System.out.println("transactionID -- transaction identifier");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("option -- 0 all, 1 finished, 2 unfinished");
         ConsoleUtils.singleLine();
     }
 
