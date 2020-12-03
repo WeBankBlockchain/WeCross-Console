@@ -1,5 +1,6 @@
 package com.webank.wecross.console.common;
 
+import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -83,7 +84,7 @@ public class JlineUtils {
                     "commitTransaction",
                     "rollbackTransaction",
                     "getXATransaction",
-                    "listXATransaction",
+                    "listXATransactions",
                     "loadTransaction",
                     "bcosDeploy",
                     "bcosRegister",
@@ -183,9 +184,12 @@ public class JlineUtils {
     }
 
     public static void addTransactionInfoCompleters(List<Completer> completers) {
-        if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
-            String runtimeTransaction =
-                    ConsoleUtils.runtimeTransactionThreadLocal.get().toPathString();
+        if (TransactionContext.currentXATransactionID() != null) {
+            TransactionInfo transactionInfo =
+                    new TransactionInfo(
+                            TransactionContext.currentXATransactionID(),
+                            TransactionContext.pathInTransactionThreadLocal.get());
+            String runtimeTransaction = transactionInfo.toPathString();
             commitCompleter =
                     new ArgumentCompleter(
                             new StringsCompleter("commitTransaction"),
@@ -202,7 +206,7 @@ public class JlineUtils {
     }
 
     public static void removeTransactionInfoCompleters(List<Completer> completers) {
-        if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
+        if (TransactionContext.currentXATransactionID() != null) {
             completers.removeIf(completer -> completer.equals(commitCompleter));
             completers.removeIf(completer -> completer.equals(rollbackCompleter));
         }
