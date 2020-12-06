@@ -118,8 +118,8 @@ public class FileUtils {
             }
             return new String(Files.readAllBytes(path));
         } catch (Exception e) {
-            logger.error("Read file error: {}", e.getMessage());
-            throw new IOException("Read file error: " + e.getMessage());
+            logger.error("Read file error: ", e);
+            throw new IOException("Read file error: " + e);
         }
     }
 

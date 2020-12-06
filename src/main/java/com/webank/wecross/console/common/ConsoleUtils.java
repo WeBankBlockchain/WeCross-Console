@@ -69,7 +69,7 @@ public class ConsoleUtils {
         }
         if (params[1].equals("=")) {
             if (params[2].equals("WeCross.getResource")) {
-                if (length != 5) {
+                if (length != 4) {
                     return false;
                 }
                 if (pathMaps.keySet().contains(params[3])) {
