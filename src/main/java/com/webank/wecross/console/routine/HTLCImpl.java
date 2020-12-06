@@ -71,8 +71,9 @@ public class HTLCImpl implements HTLCFace {
             HelpInfo.checkTransferStatusHelp();
             return;
         }
-
-        if (params.length == 3) {
+        if (params.length == 2) {
+            HelpInfo.promptHelp("checkTransferStatus");
+        } else {
             String path = ConsoleUtils.parsePath(params, pathMaps);
             if (path == null) {
                 return;

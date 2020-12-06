@@ -163,10 +163,8 @@ public class FileUtils {
                 FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             }
-            TransactionInfo transactionInfo = new TransactionInfo(transactionID, transactionPath);
             TransactionContext.txThreadLocal.set(transactionID);
             TransactionContext.pathInTransactionThreadLocal.set(transactionPath);
-            JlineUtils.addTransactionInfoCompleters(completers);
         } catch (WeCrossConsoleException e) {
             if (e.getErrorCode() == ErrorCode.TX_LOG_NOT_EXIST) {
                 logger.info("Load transactionLog Toml file fail, {}", e.getMessage());

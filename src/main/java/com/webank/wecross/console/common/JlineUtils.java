@@ -1,6 +1,5 @@
 package com.webank.wecross.console.common;
 
-import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -25,8 +24,6 @@ public class JlineUtils {
     private static Set<String> resourceVars = new HashSet<>();
     private static Set<String> contractMethods = new HashSet<>();
     private static Set<String> orgs = new HashSet<>();
-    private static ArgumentCompleter commitCompleter = new ArgumentCompleter();
-    private static ArgumentCompleter rollbackCompleter = new ArgumentCompleter();
     private static final List<String> pathVarSupportedCommands =
             Arrays.asList(
                     "status",
@@ -49,7 +46,6 @@ public class JlineUtils {
                     "fabricInstall",
                     "fabricInstantiate",
                     "fabricUpgrade",
-                    "getTransactionIDs",
                     "login",
                     "registerAccount",
                     "logout",
@@ -180,35 +176,6 @@ public class JlineUtils {
             if (!JlineUtils.paths.contains(path)) {
                 addPathCompleters(completers, path);
             }
-        }
-    }
-
-    public static void addTransactionInfoCompleters(List<Completer> completers) {
-        if (TransactionContext.currentXATransactionID() != null) {
-            TransactionInfo transactionInfo =
-                    new TransactionInfo(
-                            TransactionContext.currentXATransactionID(),
-                            TransactionContext.pathInTransactionThreadLocal.get());
-            String runtimeTransaction = transactionInfo.toPathString();
-            commitCompleter =
-                    new ArgumentCompleter(
-                            new StringsCompleter("commitTransaction"),
-                            new StringsCompleter(runtimeTransaction),
-                            NullCompleter.INSTANCE);
-            rollbackCompleter =
-                    new ArgumentCompleter(
-                            new StringsCompleter("rollbackTransaction"),
-                            new StringsCompleter(runtimeTransaction),
-                            NullCompleter.INSTANCE);
-            completers.add(rollbackCompleter);
-            completers.add(commitCompleter);
-        }
-    }
-
-    public static void removeTransactionInfoCompleters(List<Completer> completers) {
-        if (TransactionContext.currentXATransactionID() != null) {
-            completers.removeIf(completer -> completer.equals(commitCompleter));
-            completers.removeIf(completer -> completer.equals(rollbackCompleter));
         }
     }
 
