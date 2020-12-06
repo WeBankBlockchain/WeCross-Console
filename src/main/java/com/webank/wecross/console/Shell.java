@@ -93,7 +93,7 @@ public class Shell {
                                 ? ""
                                 : "[Transaction running: " + runtimeTransaction + "]\n";
                 loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
-                prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]>";
+                prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]> ";
                 String request = lineReader.readLine(prompt);
 
                 String[] params;
