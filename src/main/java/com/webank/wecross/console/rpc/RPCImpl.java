@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moandjiezana.toml.Toml;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.FileUtils;
+import com.webank.wecross.console.common.Hash;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.LoginRequest;
+import com.webank.wecross.console.common.LoginSalt;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.common.RSAUtility;
 import com.webank.wecross.console.exception.ErrorCode;
@@ -34,6 +36,7 @@ public class RPCImpl implements RPCFace {
     private WeCrossRPC weCrossRPC;
 
     private final Logger logger = LoggerFactory.getLogger(RPCImpl.class);
+    private Hash hash = new Hash();
 
     @Override
     public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
@@ -296,10 +299,11 @@ public class RPCImpl implements RPCFace {
         String pub = pubResponse.getData().getPub();
         AuthCodeReceipt.AuthCodeInfo authCode = authCodeResponse.getData().getAuthCode();
 
+        String confusedPassword = hash.sha256(LoginSalt.LoginSalt + password);
         logger.info("pub: {}, token: {}", pub, authCode.getRandomToken());
 
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setPassword(password);
+        loginRequest.setPassword(confusedPassword);
         loginRequest.setUsername(username);
         loginRequest.setRandomToken(authCode.getRandomToken());
 
