@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moandjiezana.toml.Toml;
 import com.webank.wecross.console.common.ConsoleUtils;
 import com.webank.wecross.console.common.FileUtils;
+import com.webank.wecross.console.common.Hash;
 import com.webank.wecross.console.common.HelpInfo;
 import com.webank.wecross.console.common.LoginRequest;
+import com.webank.wecross.console.common.LoginSalt;
 import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.common.RSAUtility;
+import com.webank.wecross.console.common.RegisterRequest;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.common.Constant;
@@ -34,6 +37,7 @@ public class RPCImpl implements RPCFace {
     private WeCrossRPC weCrossRPC;
 
     private final Logger logger = LoggerFactory.getLogger(RPCImpl.class);
+    private Hash hash = new Hash();
 
     @Override
     public void setWeCrossRPC(WeCrossRPC weCrossRPC) {
@@ -296,10 +300,11 @@ public class RPCImpl implements RPCFace {
         String pub = pubResponse.getData().getPub();
         AuthCodeReceipt.AuthCodeInfo authCode = authCodeResponse.getData().getAuthCode();
 
+        String confusedPassword = hash.sha256(LoginSalt.LoginSalt + password);
         logger.info("pub: {}, token: {}", pub, authCode.getRandomToken());
 
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setPassword(password);
+        loginRequest.setPassword(confusedPassword);
         loginRequest.setUsername(username);
         loginRequest.setRandomToken(authCode.getRandomToken());
 
@@ -308,6 +313,34 @@ public class RPCImpl implements RPCFace {
         String params =
                 RSAUtility.encryptBase64(objectMapper.writeValueAsBytes(loginRequest), publicKey);
         UAResponse uaResponse = weCrossRPC.login(username, password, params).send();
+        if (logger.isDebugEnabled()) {
+            logger.debug("UAResponse: {}", uaResponse);
+        }
+
+        return uaResponse;
+    }
+
+    private UAResponse registerWithEncryptParams(String username, String password)
+            throws Exception {
+        PubResponse pubResponse = weCrossRPC.queryPub().send();
+        AuthCodeResponse authCodeResponse = weCrossRPC.queryAuthCode().send();
+        String pub = pubResponse.getData().getPub();
+        AuthCodeReceipt.AuthCodeInfo authCode = authCodeResponse.getData().getAuthCode();
+
+        String confusedPassword = hash.sha256(LoginSalt.LoginSalt + password);
+        logger.info("pub: {}, token: {}", pub, authCode.getRandomToken());
+
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setPassword(confusedPassword);
+        registerRequest.setUsername(username);
+        registerRequest.setRandomToken(authCode.getRandomToken());
+
+        PublicKey publicKey = RSAUtility.createPublicKey(pub);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String params =
+                RSAUtility.encryptBase64(
+                        objectMapper.writeValueAsBytes(registerRequest), publicKey);
+        UAResponse uaResponse = weCrossRPC.register(username, password, params).send();
         if (logger.isDebugEnabled()) {
             logger.debug("UAResponse: {}", uaResponse);
         }
@@ -392,7 +425,7 @@ public class RPCImpl implements RPCFace {
             System.out.println("      and the length is in range [1,16]. \033[0m");
             String password = new String(consoleSys.readPassword("\033[32;1mpassword: \033[0m"));
 
-            UAResponse response = weCrossRPC.register(username, password).send();
+            UAResponse response = registerWithEncryptParams(username, password);
             PrintUtils.printUAResponse(response);
             System.out.print(
                     "Will you save account you've just registered to conf/registerAccount.txt?(y/n)  ");
@@ -417,7 +450,8 @@ public class RPCImpl implements RPCFace {
         }
         String username = params[1];
         String password = params[2];
-        UAResponse uaResponse = weCrossRPC.register(username, password).send();
+        UAResponse uaResponse = registerWithEncryptParams(username, password);
+        ;
         PrintUtils.printUAResponse(uaResponse);
     }
 

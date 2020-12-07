@@ -1,6 +1,6 @@
 package com.webank.wecross.console.common;
 
-public class LoginRequest {
+public class RegisterRequest {
     private String username;
     private String password;
     private String randomToken;
@@ -31,7 +31,7 @@ public class LoginRequest {
 
     @Override
     public String toString() {
-        return "LoginRequest{"
+        return "RegisterRequest{"
                 + "username='"
                 + username
                 + '\''
