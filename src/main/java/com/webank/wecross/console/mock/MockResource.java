@@ -42,8 +42,7 @@ public class MockResource implements Serializable {
 
     public void call(String method, String... args) {
         try {
-            String[] result = resource.call(method, args);
-            logger.info("call response: {}", Arrays.toString(result));
+            System.out.println("Result: " + Arrays.toString(resource.call(method, args)));
         } catch (WeCrossSDKException e) {
             logger.info("call error: {}", e.getMessage());
             System.out.println(e.getMessage());
@@ -52,8 +51,8 @@ public class MockResource implements Serializable {
 
     public void sendTransaction(String method, String... args) {
         try {
-            String[] result = resource.sendTransaction(method, args);
-            logger.info("sendTransaction response: {}", Arrays.toString(result));
+            System.out.println(
+                    "Result: " + Arrays.toString(resource.sendTransaction(method, args)));
         } catch (WeCrossSDKException e) {
             logger.info("sendTransaction error: {}", e.getMessage());
             System.out.println(e.getMessage());

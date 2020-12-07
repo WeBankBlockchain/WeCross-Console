@@ -93,7 +93,7 @@ public class Shell {
                                 ? ""
                                 : "[Transaction running: " + runtimeTransaction + "]\n";
                 loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
-                prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]>";
+                prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]> ";
                 String request = lineReader.readLine(prompt);
 
                 String[] params;
@@ -215,7 +215,6 @@ public class Shell {
                             xaFace.loadTransaction(params);
                             if (params.length >= 3) {
                                 runtimeTransaction = TransactionContext.currentXATransactionID();
-                                JlineUtils.addTransactionInfoCompleters(completers);
                             }
                             break;
                         }
@@ -235,7 +234,6 @@ public class Shell {
                             if (params.length >= 2
                                     && (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = TransactionContext.currentXATransactionID();
-                                JlineUtils.addTransactionInfoCompleters(completers);
                             }
                             break;
                         }
@@ -246,7 +244,6 @@ public class Shell {
                             if (params.length == 1
                                     || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
-                                JlineUtils.removeTransactionInfoCompleters(completers);
                                 TransactionContext.txThreadLocal.remove();
                                 TransactionContext.pathInTransactionThreadLocal.remove();
                             }
@@ -259,7 +256,6 @@ public class Shell {
                             if (params.length == 1
                                     || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
-                                JlineUtils.removeTransactionInfoCompleters(completers);
                                 TransactionContext.txThreadLocal.remove();
                                 TransactionContext.pathInTransactionThreadLocal.remove();
                             }
