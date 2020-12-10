@@ -116,7 +116,9 @@ public class RPCImpl implements RPCFace {
         } else {
             ResourceDetail[] resourceDetails =
                     resourcesResponse.getResources().getResourceDetails();
-            for (ResourceDetail resourceDetail : resourceDetails) {
+            Set<ResourceDetail> set = new TreeSet<>(Comparator.comparing(ResourceDetail::getPath));
+            set.addAll(Arrays.asList(resourceDetails));
+            for (ResourceDetail resourceDetail : set) {
                 System.out.println(
                         "path: "
                                 + resourceDetail.getPath()
