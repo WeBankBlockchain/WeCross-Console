@@ -1,4 +1,4 @@
-pragma solidity >=0.4.24 <0.6.11;
+pragma solidity >=0.4.24 <0.6.0;
 pragma experimental ABIEncoderV2;
 
 contract HelloWeCross {

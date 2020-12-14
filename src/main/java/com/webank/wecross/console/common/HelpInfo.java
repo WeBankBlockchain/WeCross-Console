@@ -34,7 +34,7 @@ public class HelpInfo {
                 supportedStubsHelp();
                 break;
             case "listAccounts":
-                listAccountsHelp();
+                listAccountHelp();
                 break;
             case "listLocalResources":
                 listLocalResourcesHelp();
@@ -70,10 +70,11 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void listAccountsHelp() {
+    public static void listAccountHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("List all accounts stored in WeCross router");
-        System.out.println("Usage: listAccounts");
+        System.out.println("List your Universal Account's information");
+        System.out.println("Usage: listAccount [arg]");
+        System.out.println("arg -- '-d': To list a detailed info");
         ConsoleUtils.singleLine();
     }
 
@@ -100,6 +101,14 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void listXATransactionsHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("List XA transactions");
+        System.out.println("Usage: listXATransactions [size]");
+        System.out.println("size -- the size of XA transactions to list, must range in [1, 1024]");
+        ConsoleUtils.singleLine();
+    }
+
     public static void statusHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Check if the resource exists.");
@@ -118,9 +127,8 @@ public class HelpInfo {
     public static void callHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Call constant method of smart contract");
-        System.out.println("Usage: call [path] [account] [method] [...args]");
+        System.out.println("Usage: call [path] [method] [...args]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- choose an account to sign");
         System.out.println("method -- the method in contract");
         System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
@@ -129,30 +137,109 @@ public class HelpInfo {
     public static void sendTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Call non-constant method of smart contract");
-        System.out.println("Usage: sendTransaction [path] [account] [method] [...args]");
+        System.out.println("Usage: sendTransaction [path] [method] [...args]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- choose an account to sign");
         System.out.println("method -- the method in contract");
         System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
     }
 
-    public static void newProposaltHelp() {
+    public static void invokeHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println(
+                "Call non-constant method of smart contract, if an xa Transaction is running, it will auto-transfer to command execTransaction");
+        System.out.println("Usage: invoke [path] [method] [...args]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void newProposalHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Create a htlc transfer proposal");
-        System.out.println("Usage: newHTLCProposal [path] [account] [...args]");
+        System.out.println("Usage: newHTLCProposal [path] [...args]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- sender's account name");
         System.out.println(
                 "args -- hash, secret, role, sender0, receiver0, amount0, timelock0, sender1, receiver1, amount1, timelock1");
-        System.out.println(
-                "[note]: 1. only sender can create this contract, so [account] must be sender's account name");
+        System.out.println("[note]: 1. only sender can create this contract");
         System.out.println(
                 "[note]: 2. if you are initiator who holds the secret, [role] would be true, and *0 is your info. Else, the [role] is false and *1 is your info");
         ConsoleUtils.singleLine();
     }
 
-    public static void genTimelockHelp() {
+    public static void loginHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Login SDK if you have already registered");
+        System.out.println("Usage: login [username] [password]");
+        System.out.println("[One more thing]: You can just type-in 'login' to login ssh-style-ly");
+        System.out.println(
+                "[One last thing]: You can set your userInfo into TOML file 'application.toml' like 'application-sample.toml', ");
+        System.out.println("                  and just type-in 'login' to login");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void registerHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Register a Universal Account");
+        System.out.println("Usage: registerAccount [username] [password]");
+        System.out.println(
+                "[One more thing]: You can just type-in 'registerAccount' to register an account ssh-style-ly");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void logoutHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Logout SDK");
+        System.out.println("Usage: logout [without any args]");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void addChainAccountHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Add a Chain Account to your Universal Account");
+        System.out.println(
+                "Usage: addChainAccount [chainType] [firstKeyPath] [secondKeyPath] [extraData] [isDefault]");
+        System.out.println("chainType -- supported chain type");
+        System.out.println(
+                "             supported chain type now:" + ConsoleUtils.supportChainList);
+        System.out.println(
+                "firstKeyPath  -- if ([chainType] == BCOS*);   then it stand for pubKeyPath");
+        System.out.println(
+                "            else if ([chainType] == Fabric*); then it stand for certPath");
+        System.out.println(
+                "secondKeyPath -- if ([chainType] == BCOS*);   then it stand for secretKeyPath");
+        System.out.println(
+                "            else if ([chainType] == Fabric*); then it stand for keyPath");
+        System.out.println("extraData -- if ([chainType] == BCOS*);   then it stand for address");
+        System.out.println(
+                "        else if ([chainType] == Fabric*); then it stand for membershipID");
+        System.out.println(
+                "isDefault -- whether this new chain Account is the default sendTransaction chain account in this [chainType]");
+        ConsoleUtils.singleLine();
+        System.out.println("Example:");
+        System.out.println(
+                "    addChainAccount BCOS2.0 path/to/pubKey path/to/secretKey address true");
+        System.out.println(
+                "    addChainAccount GM_BCOS2.0 path/to/pubKey path/to/secretKey address false");
+        System.out.println(
+                "    addChainAccount Fabric1.4 path/to/cert path/to/key membershipID true");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void setDefaultAccountHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println(
+                "Set the chain account to be the default account to send transaction in a certain [chainType]");
+        System.out.println("Usage: setDefaultAccount [chainType][keyID]");
+        System.out.println("chainType -- supported chain type");
+        System.out.println("    support chain type now:" + ConsoleUtils.supportChainList);
+        System.out.println("keyID -- the primary key stand for chain account");
+        System.out.println("[note]: you can do command listAccount to check chain account's keyID");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void genTimeLockHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Generate two valid timelocks");
         System.out.println("Usage: genTimelock [interval]");
@@ -171,96 +258,88 @@ public class HelpInfo {
     public static void callTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Call constant method of smart contract during transaction");
-        System.out.println(
-                "Usage: callTransaction [path] [account] [transactionID] [method] [args]");
+        System.out.println("Usage: callTransaction [path] [method] [args]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- choose an account to sign");
-        System.out.println("transactionID -- transaction identifier");
         System.out.println("method -- the method in contract");
         System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
     }
 
     public static void execTransactionHelp() {
+        ConsoleUtils.singleLine();
         System.out.println("Call non-constant method of smart contract during transaction");
-        System.out.println(
-                "Usage: execTransaction [path] [account] [transactionID] [seq] [method] [args]");
+        System.out.println("Usage: execTransaction [path] [method] [args]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- choose an account to sign");
-        System.out.println("transactionID -- transaction identifier");
-        System.out.println("seq -- sequence for each step in transaction");
         System.out.println("method -- the method in contract");
         System.out.println("args -- variable parameter list");
+        ConsoleUtils.singleLine();
     }
 
     public static void startTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Start a 2pc transaction");
-        System.out.println(
-                "Usage: startTransaction [transactionID] [account_1] ... [account_n] [path_1] ... [path_n]");
-        System.out.println("transactionID -- transaction identifier");
-        System.out.println("account -- choose an account to sign");
+        System.out.println("Start an xa transaction");
+        System.out.println("Usage: startTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
         ConsoleUtils.singleLine();
     }
 
     public static void commitTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Commit a 2pc transaction");
-        System.out.println(
-                "Usage: commitTransaction [transactionID] [account_1] ... [account_n] [path_1] ... [path_n]");
-        System.out.println("transactionID -- transaction identifier");
-        System.out.println("account -- choose an account to sign");
+        System.out.println("Commit an xa transaction");
+        System.out.println("Usage: commitTransaction [path_1] ... [path_n]");
         System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println(
+                "[note]: It will auto-complete args if you call \"commitTransaction\" without args");
         ConsoleUtils.singleLine();
     }
 
     public static void rollbackTransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Rollback a 2pc transaction");
+        System.out.println("Rollback an xa transaction");
+        System.out.println("Usage: rollbackTransaction [path_1] ... [path_n]");
+        System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
-                "Usage: rollbackTransaction [transactionID] [account_1] ... [account_n] [path_1] ... [path_n]");
+                "[note]: It will auto-complete args if you call \"rollbackTransaction\" without args");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void loadTransactionHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Load a specified transaction context");
+        System.out.println("Usage: loadTransaction [transactionID] [path_1] ... [path_n]");
         System.out.println("transactionID -- transaction identifier");
-        System.out.println("account -- choose an account to sign");
         System.out.println("path -- the path of the contract resource in wecross router");
         ConsoleUtils.singleLine();
     }
 
-    public static void getTransactionInfoHelp() {
+    public static void getXATransactionHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Get info of specified transaction");
-        System.out.println(
-                "Usage: getTransactionInfo [transactionID] [account_1] ... [account_n] [path_1] ... [path_n]");
+        System.out.println("Get info of specified XA transaction");
+        System.out.println("Usage: getXATransaction [transactionID] [path_1] ... [path_n]");
         System.out.println("transactionID -- transaction identifier");
-        System.out.println("account -- choose an account to sign");
         System.out.println("path -- the path of the contract resource in wecross router");
         ConsoleUtils.singleLine();
     }
 
-    public static void getTransactionIDsHelp() {
+    public static void getCurrentTransactionIDHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Get transaction ids of 2pc");
-        System.out.println("Usage: getTransactionIDs [path] [account] [option]");
-        System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- choose an account to sign");
-        System.out.println("option -- 0 all, 1 finished, 2 unfinished");
+        System.out.println("get Current xa Transaction ID");
+        System.out.println("Usage: getCurrentTransaction [without args]");
         ConsoleUtils.singleLine();
     }
 
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Deploy contract and register contract info to CNS in BCOS chain ");
-        System.out.println(
-                "Usage: bcosDeploy [Path] [Account] [Source file path] [Class name] [Version]");
+        System.out.println("Usage: bcosDeploy [Path] [Source file path] [Class name] [Version]");
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be deployed");
-        System.out.println("Account -- Choose an account to send transaction");
         System.out.println(
                 "Source file path from conf/ -- The solidity source code file path, e.g: HelloWorld.sol");
-        System.out.println("Class name -- The contract to be deploy");
+        System.out.println("Contract name -- The contract to be deploy");
         System.out.println("Version -- The contract version");
         System.out.println("Example:");
         System.out.println(
-                "    bcosDeploy payment.bcos.HelloWorld bcos_user1 contracts/solidity/HelloWorld.sol HelloWorld 1.0");
+                "    bcosDeploy payment.bcos.HelloWorld contracts/solidity/HelloWorld.sol HelloWorld 1.0");
         ConsoleUtils.singleLine();
     }
 
@@ -268,37 +347,36 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Register contract info to CNS in BCOS chain");
         System.out.println(
-                "Usage: bcosRegister [Path] [Account] [Source file path] [Contract address] [Version]");
+                "Usage: bcosRegister [Path] [Source file path] [Contract address] [Contract name] [Version]");
         System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be register");
-        System.out.println("Account -- Choose an account to send transaction");
         System.out.println(
                 "Source file path from conf/ -- The solidity source code/solidity abi file path, e.g: HelloWorld.sol or HelloWorld.abi");
         System.out.println("Contract address -- contract address");
+        System.out.println("Contract name -- contract name to be register");
         System.out.println("Version -- The contract version");
         System.out.println("Example:");
         System.out.println(
-                "    bcosRegister payment.bcos.HelloWorld bcos_user1 contracts/solidity/HelloWorld.sol 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
+                "    bcosRegister payment.bcos.HelloWorld contracts/solidity/HelloWorld.sol 0x2c8595f82dc930208314030abc6f5c4ddbc8864f HelloWorld 1.0");
         System.out.println(
-                "    bcosRegister payment.bcos.HelloWorld bcos_user1 /data/app/HelloWorld.abi 0x2c8595f82dc930208314030abc6f5c4ddbc8864f 1.0");
+                "    bcosRegister payment.bcos.HelloWorld /data/app/HelloWorld.abi 0x2c8595f82dc930208314030abc6f5c4ddbc8864f HelloWorld 1.0");
         ConsoleUtils.singleLine();
     }
 
     public static void fabricInstallHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Install chaincode in fabric chain");
-        System.out.println("Usage: fabricInstall [path] [account] [version] [orgName] [language]");
+        System.out.println("Usage: fabricInstall [path] [version] [orgName] [language]");
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be installed by name");
-        System.out.println("account -- choose an account to sign");
         System.out.println("orgName -- organization");
         System.out.println("sourcePath -- chaincode project dir from conf/");
         System.out.println("version -- contract version");
         System.out.println("language -- contract language GO_LANG/JAVA");
         System.out.println("Example:");
         System.out.println(
-                "    fabricInstall payment.fabric.sacc fabric_admin_org1 Org1 contracts/chaincode/sacc 1.0 GO_LANG");
+                "    fabricInstall payment.fabric.sacc Org1 contracts/chaincode/sacc 1.0 GO_LANG");
         System.out.println(
-                "    fabricInstall payment.fabric.sacc fabric_admin_org2 Org2 contracts/chaincode/sacc 1.0 GO_LANG");
+                "    fabricInstall payment.fabric.sacc Org2 contracts/chaincode/sacc 1.0 GO_LANG");
         ConsoleUtils.singleLine();
     }
 
@@ -306,10 +384,9 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Instantiate chaincode in fabric chain");
         System.out.println(
-                "Usage: fabricInstantiate [path] [account] [version] [orgName] [language] [policy] [initArgs]");
+                "Usage: fabricInstantiate [path] [version] [orgName] [language] [policy] [initArgs]");
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be instantiated by name");
-        System.out.println("account -- choose an account to sign");
         System.out.println("orgNames -- every organization which has installed the chaincode");
         System.out.println("sourcePath -- chaincode project dir from conf/");
         System.out.println("version -- contract version");
@@ -319,9 +396,9 @@ public class HelpInfo {
         System.out.println("initArgs -- args of int function");
         System.out.println("Example:");
         System.out.println(
-                "    fabricInstantiate payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG default [\"a\",\"10\"]");
+                "    fabricInstantiate payment.fabric.sacc [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG default [\"a\",\"10\"]");
         System.out.println(
-                "    fabricInstantiate payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG policy.yaml [\"a\",\"10\"]");
+                "    fabricInstantiate payment.fabric.sacc [\"Org1\",\"Org2\"] contracts/chaincode/sacc 1.0 GO_LANG policy.yaml [\"a\",\"10\"]");
         ConsoleUtils.singleLine();
     }
 
@@ -329,10 +406,9 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
         System.out.println("Upgrade chaincode in fabric chain");
         System.out.println(
-                "Usage: fabricUpgrade [path] [account] [version] [orgName] [language] [policy] [initArgs]");
+                "Usage: fabricUpgrade [path] [version] [orgName] [language] [policy] [initArgs]");
         System.out.println(
                 "path -- [zone.chain.contractName], specify which contract to be instantiated by name");
-        System.out.println("account -- choose an account to sign");
         System.out.println("orgNames -- every organization which has installed the chaincode");
         System.out.println("sourcePath -- chaincode project dir from conf/");
         System.out.println("version -- contract version");
@@ -342,18 +418,17 @@ public class HelpInfo {
         System.out.println("initArgs -- args of int function");
         System.out.println("Example:");
         System.out.println(
-                "    fabricUpgrade payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG default [\"a\",\"10\"]");
+                "    fabricUpgrade payment.fabric.sacc [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG default [\"a\",\"10\"]");
         System.out.println(
-                "    fabricUpgrade payment.fabric.sacc fabric_admin [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG policy.yaml [\"a\",\"10\"]");
+                "    fabricUpgrade payment.fabric.sacc [\"Org1\",\"Org2\"] contracts/chaincode/sacc 2.0 GO_LANG policy.yaml [\"a\",\"10\"]");
         ConsoleUtils.singleLine();
     }
 
     public static void checkTransferStatusHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Check htlc transfer status by hash");
-        System.out.println("Usage: checkTransferStatus [path] [account] [hash]");
+        System.out.println("Usage: checkTransferStatus [path] [hash]");
         System.out.println("path -- the path of the contract resource in wecross router");
-        System.out.println("account -- choose an account to sign");
         System.out.println("hash -- transfer contract-id");
         ConsoleUtils.singleLine();
     }

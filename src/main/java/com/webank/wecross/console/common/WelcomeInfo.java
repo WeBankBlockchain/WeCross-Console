@@ -20,40 +20,49 @@ public class WelcomeInfo {
         }
         ConsoleUtils.singleLine();
         StringBuilder sb = new StringBuilder();
-        sb.append("quit                               Quit console.\n");
-        sb.append("supportedStubs                     List supported stubs of WeCross router.\n");
+        sb.append("quit                             Quit console.\n");
+        sb.append("registerAccount                  Register a Universal Account.\n");
+        sb.append("login                            Login SDK if you have already registered.\n");
+        sb.append("logout                           Logout SDK.\n");
         sb.append(
-                "listAccounts                       List all accounts stored in WeCross router.\n");
+                "addChainAccount                  Add a Chain Account to your Universal Account.\n");
         sb.append(
-                "listLocalResources                 List local resources configured by WeCross server.\n");
+                "setDefaultAccount                Set the chain account to be the default account to send transaction.\n");
+        sb.append("supportedStubs                   List supported stubs of WeCross router.\n");
+        sb.append("listAccount                      List your Universal Account's information.\n");
         sb.append(
-                "listResources                      List all resources including remote resources.\n");
-        sb.append("status                             Check if the resource exists.\n");
-        sb.append("detail                             Get resource information.\n");
-        sb.append("call                               Call constant method of smart contract.\n");
+                "listLocalResources               List local resources configured by WeCross server.\n");
         sb.append(
-                "sendTransaction                    Call non-constant method of smart contract.\n");
+                "listResources                    List all resources including remote resources.\n");
+        sb.append("status                           Check if the resource exists.\n");
+        sb.append("detail                           Get resource information.\n");
+        sb.append("call                             Call constant method of smart contract.\n");
         sb.append(
-                "callTransaction                    Call constant method of smart contract during transaction.\n");
+                "invoke                           Call non-constant method of smart contract, will auto-transfer to command execTransaction during transaction.\n");
+        sb.append("sendTransaction                  Call non-constant method of smart contract.\n");
         sb.append(
-                "execTransaction                    Call non-constant method of smart contract during transaction.\n");
-        sb.append("startTransaction                   Start a 2pc transaction.\n");
-        sb.append("commitTransaction                  Commit a 2pc transaction.\n");
-        sb.append("rollbackTransaction                Rollback a 2pc transaction.\n");
-        sb.append("getTransactionInfo                 Get info of specified transaction.\n");
-        sb.append("getTransactionIDs                  Get transaction ids of 2pc.\n");
-        sb.append("bcosDeploy                         Deploy contract in BCOS chain.\n");
-        sb.append("bcosRegister                       Register contract abi in BCOS chain.\n");
-        sb.append("fabricInstall                      Install chaincode in fabric chain.\n");
-        sb.append("fabricInstantiate                  Instantiate chaincode in fabric chain.\n");
-        sb.append("fabricUpgrade                      Upgrade chaincode in fabric chain.\n");
-        sb.append("genTimelock                        Generate two valid timelocks.\n");
-        sb.append("genSecretAndHash                   Generate a secret and its hash.\n");
-        sb.append("newHTLCProposal                    Create a htlc transfer proposal .\n");
-        sb.append("checkTransferStatus                Check htlc transfer status by hash.\n");
+                "callTransaction                  Call constant method of smart contract during transaction.\n");
         sb.append(
-                "WeCross.getResource                Init resource by path and account name, and assign it to a custom variable.\n");
-        sb.append("[resource].[command]               Equal to: command [path] [account name].\n");
+                "execTransaction                  Call non-constant method of smart contract during transaction.\n");
+        sb.append("startTransaction                 Start an xa transaction.\n");
+        sb.append("commitTransaction                Commit an xa transaction.\n");
+        sb.append("rollbackTransaction              Rollback an xa transaction.\n");
+        sb.append("loadTransaction                  Load a specified transaction context.\n");
+        sb.append("getXATransaction                 Get info of specified XA transaction.\n");
+        sb.append("listXATransactions               List XA transactions in route.\n");
+        sb.append("bcosDeploy                       Deploy contract in BCOS chain.\n");
+        sb.append("bcosRegister                     Register contract abi in BCOS chain.\n");
+        sb.append("fabricInstall                    Install chaincode in fabric chain.\n");
+        sb.append("fabricInstantiate                Instantiate chaincode in fabric chain.\n");
+        sb.append("fabricUpgrade                    Upgrade chaincode in fabric chain.\n");
+        sb.append("genTimelock                      Generate two valid timelocks.\n");
+        sb.append("genSecretAndHash                 Generate a secret and its hash.\n");
+        sb.append("newHTLCProposal                  Create a htlc transfer proposal .\n");
+        sb.append("checkTransferStatus              Check htlc transfer status by hash.\n");
+        sb.append("getCurrentTransactionID          Get Current xa Transaction ID.\n");
+        sb.append(
+                "WeCross.getResource              Init resource by path, and assign it to a custom variable.\n");
+        sb.append("[resource].[command]             Equal to: command [path].\n");
 
         System.out.println(sb.toString());
         ConsoleUtils.singleLine();

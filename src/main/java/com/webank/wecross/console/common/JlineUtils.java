@@ -1,12 +1,16 @@
 package com.webank.wecross.console.common;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
+import org.jline.builtins.Completers.DirectoriesCompleter;
+import org.jline.builtins.Completers.FilesCompleter;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.completer.ArgumentCompleter;
+import org.jline.reader.impl.completer.NullCompleter;
 import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Attributes;
 import org.jline.terminal.Attributes.ControlChar;
@@ -16,41 +20,46 @@ import org.jline.terminal.TerminalBuilder;
 public class JlineUtils {
 
     private static Set<String> paths = new HashSet<>();
-    private static Set<String> accounts = new HashSet<>();
     private static Set<String> pathVars = new HashSet<>();
     private static Set<String> resourceVars = new HashSet<>();
+    private static Set<String> contractMethods = new HashSet<>();
+    private static Set<String> orgs = new HashSet<>();
+    private static final List<String> pathVarSupportedCommands =
+            Arrays.asList("status", "detail", "call", "sendTransaction");
 
-    private static List<String> pathVarSupportedCommands =
-            Arrays.asList(
-                    "status",
-                    "detail",
-                    "call",
-                    "sendTransaction",
-                    "newHTLCProposal",
-                    "checkTransferStatus",
-                    "callTransaction",
-                    "execTransaction");
+    private static final List<String> callContractCommands =
+            Arrays.asList("call", "sendTransaction");
 
-    private static List<String> pathVarNotSupportedCommands =
+    private static final List<String> pathVarNotSupportedCommands =
             Arrays.asList(
                     "bcosDeploy",
                     "bcosRegister",
                     "fabricInstall",
                     "fabricInstantiate",
                     "fabricUpgrade",
-                    "getTransactionIDs");
+                    "login",
+                    "registerAccount",
+                    "logout",
+                    "addChainAccount",
+                    "setDefaultAccount");
 
-    private static List<String> allCommands =
+    private static final List<String> fabricCommands =
+            Arrays.asList("fabricInstall", "fabricInstantiate", "fabricUpgrade");
+
+    private static final List<String> bcosCommands = Arrays.asList("bcosDeploy", "bcosRegister");
+
+    private static final List<String> allCommands =
             Arrays.asList(
                     "help",
                     "quit",
                     "supportedStubs",
-                    "listAccounts",
+                    "listAccount",
                     "listLocalResources",
                     "listResources",
                     "status",
                     "detail",
                     "call",
+                    "invoke",
                     "sendTransaction",
                     "newHTLCProposal",
                     "genTimelock",
@@ -61,54 +70,39 @@ public class JlineUtils {
                     "startTransaction",
                     "commitTransaction",
                     "rollbackTransaction",
-                    "getTransactionInfo",
-                    "getTransactionIDs",
+                    "getXATransaction",
+                    "listXATransactions",
+                    "loadTransaction",
                     "bcosDeploy",
                     "bcosRegister",
                     "fabricInstall",
                     "fabricInstantiate",
-                    "fabricUpgrade");
+                    "fabricUpgrade",
+                    "login",
+                    "registerAccount",
+                    "logout",
+                    "addChainAccount",
+                    "setDefaultAccount",
+                    "getCurrentTransactionID");
 
     public static void addCommandCompleters(List<Completer> completers) {
         // commands
         for (String command : allCommands) {
             completers.add(
                     new ArgumentCompleter(
-                            new IgnoreCaseCompleter(command), new StringsCompleter()));
+                            new IgnoreCaseCompleter(command), NullCompleter.INSTANCE));
         }
     }
 
-    public static List<Completer> getCompleters(
-            Set<String> paths,
-            Set<String> accounts,
-            Set<String> resourceVars,
-            Set<String> pathVars) {
-        JlineUtils.paths.addAll(paths);
-        JlineUtils.accounts.addAll(accounts);
-        JlineUtils.pathVars.addAll(pathVars);
-        JlineUtils.resourceVars.addAll(resourceVars);
-
+    public static List<Completer> getNoAuthCompleters() {
         List<Completer> completers = new ArrayList<>();
-
         addCommandCompleters(completers);
-        addPathsCompleters(completers, paths);
-        addVarsCompleters(completers, resourceVars, pathVars);
-
-        ArgumentCompleter argumentCompleter1 =
-                new ArgumentCompleter(
-                        new StringsCompleter(""),
-                        new StringsCompleter("="),
-                        new StringsCompleter("WeCross.getResource"));
-        argumentCompleter1.setStrict(false);
-        completers.add(argumentCompleter1);
-
         return completers;
     }
 
     public static void updateCompleters(
             List<Completer> completers,
             Set<String> paths,
-            Set<String> accounts,
             Set<String> resourceVars,
             Set<String> pathVars) {
         if (!completers.isEmpty()) {
@@ -116,7 +110,6 @@ public class JlineUtils {
         }
 
         JlineUtils.paths.addAll(paths);
-        JlineUtils.accounts.addAll(accounts);
         JlineUtils.pathVars.addAll(pathVars);
         JlineUtils.resourceVars.addAll(resourceVars);
 
@@ -126,11 +119,28 @@ public class JlineUtils {
 
         ArgumentCompleter argumentCompleter1 =
                 new ArgumentCompleter(
-                        new StringsCompleter(""),
+                        new StringsCompleter(),
                         new StringsCompleter("="),
-                        new StringsCompleter("WeCross.getResource"));
+                        new StringsCompleter("WeCross.getResource"),
+                        NullCompleter.INSTANCE);
         argumentCompleter1.setStrict(false);
         completers.add(argumentCompleter1);
+
+        ArgumentCompleter addChainAccountCompleter =
+                new ArgumentCompleter(
+                        new StringsCompleter("addChainAccount"),
+                        new StringsCompleter(ConsoleUtils.supportChainList),
+                        new FilesCompleter(Paths.get(System.getProperty("user.dir")), true),
+                        new FilesCompleter(Paths.get(System.getProperty("user.dir")), true),
+                        NullCompleter.INSTANCE);
+        completers.add(addChainAccountCompleter);
+
+        ArgumentCompleter setDefaultAccountCompleter =
+                new ArgumentCompleter(
+                        new StringsCompleter("setDefaultAccount"),
+                        new StringsCompleter(ConsoleUtils.supportChainList),
+                        NullCompleter.INSTANCE);
+        completers.add(setDefaultAccountCompleter);
     }
 
     public static void addPathsCompleters(List<Completer> completers, Set<String> paths) {
@@ -159,48 +169,25 @@ public class JlineUtils {
         }
     }
 
-    public static void updateAccountsCompleters(List<Completer> completers, Set<String> accounts) {
-        if (!completers.isEmpty()) {
-            completers.clear();
-        }
-        if (!JlineUtils.accounts.isEmpty()) {
-            JlineUtils.accounts.clear();
-        }
-        JlineUtils.accounts = accounts;
-
-        addCommandCompleters(completers);
-        addPathsCompleters(completers, paths);
-        addVarsCompleters(completers, resourceVars, pathVars);
-
-        ArgumentCompleter argumentCompleter1 =
-                new ArgumentCompleter(
-                        new StringsCompleter(""),
-                        new StringsCompleter("="),
-                        new StringsCompleter("WeCross.getResource"));
-        argumentCompleter1.setStrict(false);
-        completers.add(argumentCompleter1);
-    }
-
     public static void addPathCompleters(List<Completer> completers, String path) {
         JlineUtils.paths.add(path);
 
         ArgumentCompleter argumentCompleter1 =
                 new ArgumentCompleter(
-                        new StringsCompleter(""),
+                        new StringsCompleter(),
                         new StringsCompleter("="),
                         new StringsCompleter(path),
-                        new StringsCompleter());
+                        NullCompleter.INSTANCE);
         argumentCompleter1.setStrict(false);
         completers.add(argumentCompleter1);
 
         ArgumentCompleter argumentCompleter2 =
                 new ArgumentCompleter(
-                        new StringsCompleter(""),
+                        new StringsCompleter(),
                         new StringsCompleter("="),
                         new StringsCompleter("WeCross.getResource"),
                         new StringsCompleter(path),
-                        new StringsCompleter(accounts),
-                        new StringsCompleter());
+                        NullCompleter.INSTANCE);
         argumentCompleter2.setStrict(false);
         completers.add(argumentCompleter2);
 
@@ -208,39 +195,60 @@ public class JlineUtils {
                 new ArgumentCompleter(
                         new StringsCompleter(pathVarSupportedCommands),
                         new StringsCompleter(path),
-                        new StringsCompleter(accounts),
-                        new StringsCompleter()));
+                        NullCompleter.INSTANCE));
 
         completers.add(
                 new ArgumentCompleter(
                         new StringsCompleter(pathVarNotSupportedCommands),
                         new StringsCompleter(path),
-                        new StringsCompleter(accounts),
-                        new StringsCompleter()));
+                        NullCompleter.INSTANCE));
+
+        ArgumentCompleter bcosArgumentCompleter =
+                new ArgumentCompleter(
+                        new StringsCompleter(bcosCommands),
+                        new StringsCompleter(path),
+                        new FilesCompleter(Paths.get(System.getProperty("user.dir"), "conf")),
+                        NullCompleter.INSTANCE);
+        completers.add(bcosArgumentCompleter);
+
+        ArgumentCompleter fabricArgumentCompleter =
+                new ArgumentCompleter(
+                        new StringsCompleter(fabricCommands),
+                        new StringsCompleter(path),
+                        new StringsCompleter(orgs),
+                        new DirectoriesCompleter(Paths.get(System.getProperty("user.dir"), "conf")),
+                        new StringsCompleter(),
+                        new StringsCompleter("GO_LANG", "JAVA"),
+                        NullCompleter.INSTANCE);
+        fabricArgumentCompleter.setStrict(false);
+        completers.add(fabricArgumentCompleter);
     }
 
     public static void addResourceVarCompleters(List<Completer> completers, String resourceVar) {
         completers.add(
                 new ArgumentCompleter(
-                        new StringsCompleter(resourceVar + ".call"), new StringsCompleter()));
+                        new StringsCompleter(resourceVar + ".call"), NullCompleter.INSTANCE));
         completers.add(
                 new ArgumentCompleter(
                         new StringsCompleter(resourceVar + ".sendTransaction"),
-                        new StringsCompleter()));
+                        NullCompleter.INSTANCE));
 
-        completers.add(new ArgumentCompleter(new StringsCompleter(resourceVar + ".status")));
-        completers.add(new ArgumentCompleter(new StringsCompleter(resourceVar + ".detail")));
+        completers.add(
+                new ArgumentCompleter(
+                        new StringsCompleter(resourceVar + ".status"), NullCompleter.INSTANCE));
+        completers.add(
+                new ArgumentCompleter(
+                        new StringsCompleter(resourceVar + ".detail"), NullCompleter.INSTANCE));
     }
 
     public static void addPathVarCompleters(List<Completer> completers, String pathVar) {
         ArgumentCompleter argumentCompleter2 =
                 new ArgumentCompleter(
-                        new StringsCompleter(""),
+                        new StringsCompleter(),
                         new StringsCompleter("="),
                         new StringsCompleter("WeCross.getResource"),
                         new StringsCompleter(pathVar),
-                        new StringsCompleter(accounts),
-                        new StringsCompleter());
+                        NullCompleter.INSTANCE);
         argumentCompleter2.setStrict(false);
         completers.add(argumentCompleter2);
 
@@ -248,8 +256,35 @@ public class JlineUtils {
                 new ArgumentCompleter(
                         new StringsCompleter(pathVarSupportedCommands),
                         new StringsCompleter(pathVar),
-                        new StringsCompleter(accounts),
-                        new StringsCompleter()));
+                        NullCompleter.INSTANCE));
+    }
+
+    public static void addOrgCompleters(List<Completer> completers, String org) {
+        if (!JlineUtils.orgs.contains(org)) {
+            JlineUtils.orgs.add(org);
+            completers.add(
+                    new ArgumentCompleter(
+                            new StringsCompleter(fabricCommands),
+                            new StringsCompleter(paths),
+                            new StringsCompleter(org),
+                            new DirectoriesCompleter(
+                                    Paths.get(System.getProperty("user.dir"), "conf"), true),
+                            new StringsCompleter(contractMethods),
+                            NullCompleter.INSTANCE));
+        }
+    }
+
+    public static void addContractMethodCompleters(
+            List<Completer> completers, String contractMethod) {
+        if (!JlineUtils.contractMethods.contains(contractMethod)) {
+            JlineUtils.contractMethods.add(contractMethod);
+            completers.add(
+                    new ArgumentCompleter(
+                            new StringsCompleter(callContractCommands),
+                            new StringsCompleter(paths),
+                            new StringsCompleter(contractMethod),
+                            NullCompleter.INSTANCE));
+        }
     }
 
     public static LineReader getLineReader(List<Completer> completers) throws IOException {
@@ -267,7 +302,6 @@ public class JlineUtils {
         termAttribs.setControlChar(ControlChar.VINTR, 0);
 
         terminal.setAttributes(termAttribs);
-
         return LineReaderBuilder.builder()
                 .terminal(terminal)
                 .completer(new AggregateCompleter(completers))

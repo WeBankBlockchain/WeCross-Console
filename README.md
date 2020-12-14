@@ -1,10 +1,11 @@
 ![](docs/images/menu_logo_wecross.svg)
 
 # WeCross-Console
-[![CodeFactor](https://www.codefactor.io/repository/github/webankfintech/WeCross-Console/badge)](https://www.codefactor.io/repository/github/webankfintech/WeCross--Console) [![Build Status](https://travis-ci.org/WeBankFinTech/WeCross-Console.svg?branch=dev)](https://travis-ci.org/WeBankFinTech/WeCross-Console) [![Latest release](https://img.shields.io/github/release/WeBankFinTech/WeCross-Console.svg)](https://github.com/WeBankFinTech/WeCross-Console/releases/latest)
-![](https://img.shields.io/github/license/WeBankFinTech/WeCross-Console) 
 
-WeCross Console是[WeCross](https://github.com/WeBankFinTech/WeCross)的重要交互式客户端工具。
+[![CodeFactor](https://www.codefactor.io/repository/github/webankblockchain/WeCross-Console/badge)](https://www.codefactor.io/repository/github/webankblockchain/WeCross-Console) [![Build Status](https://travis-ci.org/WeBankBlockchain/WeCross-Console.svg?branch=dev)](https://travis-ci.org/WeBankBlockchain/WeCross-Console) [![Latest release](https://img.shields.io/github/release/WeBankBlockchain/WeCross-Console.svg)](https://github.com/WeBankBlockchain/WeCross-Console/releases/latest)
+[![License](https://img.shields.io/github/license/WeBankBlockchain/WeCross-Console)](https://www.apache.org/licenses/LICENSE-2.0) [![Language](https://img.shields.io/badge/Language-Java-blue.svg)](https://www.java.com)
+
+WeCross Console是[WeCross](https://github.com/WeBankBlockchain/WeCross)的重要交互式客户端工具。
 
 ## 关键特性
 
@@ -13,7 +14,7 @@ WeCross Console是[WeCross](https://github.com/WeBankFinTech/WeCross)的重要�
 
 ## 部署使用
 
-* 可直接下载WeCross控制台压缩包，然后解压并使用。具体请参考[部署和使用文档](https://wecross.readthedocs.io/zh_CN/latest/docs/tutorial/networks.html#id5)
+* 可直接下载WeCross控制台压缩包，然后解压并使用。具体请参考[部署和使用文档](https://wecross.readthedocs.io/zh_CN/latest/docs/tutorial/networks.html#id11)
 
 ## 源码编译
 
@@ -35,9 +36,8 @@ $ ./gradlew assemble
 
 欢迎参与WeCross社区的维护和建设：
 
-- 如项目对您有帮助，欢迎点亮我们的小星星(点击项目左上方Star按钮)。
-- 提交代码(Pull requests)，参考我们的[代码贡献流程](CONTRIBUTING.md)。
-- [提问和提交BUG](https://github.com/WeBankFinTech/WeCross-Console/issues/new)。
+- 提交代码(Pull requests)，可参考[代码贡献流程](CONTRIBUTING.md)以及[wiki指南](https://github.com/WeBankBlockchain/WeCross/wiki/%E8%B4%A1%E7%8C%AE%E4%BB%A3%E7%A0%81)
+- [提问和提交BUG](https://github.com/WeBankBlockchain/WeCross-Console/issues/new)
 
 希望在您的参与下，WeCross会越来越好！
 
@@ -46,6 +46,4 @@ $ ./gradlew assemble
 
 ## License
 
-![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)
-
-WeCross Console的开源协议为[Apache License 2.0](http://www.apache.org/licenses/). 详情参考[LICENSE](./LICENSE)。
+WeCross Console的开源协议为Apache License 2.0，详情参考[LICENSE](./LICENSE)。

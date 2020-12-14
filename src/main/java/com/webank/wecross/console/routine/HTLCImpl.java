@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class HTLCImpl implements HTLCFace {
     private WeCrossRPC weCrossRPC;
-    private Logger logger = LoggerFactory.getLogger(HTLCImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HTLCImpl.class);
     private static final String TRUE_FLAG = "true";
     private static final String NULL_FLAG = "null";
     private static final String SPLIT_REGEX = "##";
@@ -25,12 +25,12 @@ public class HTLCImpl implements HTLCFace {
 
     @Override
     public void genTimelock(String[] params) {
-        if (params.length == 1) {
+        if (params.length != 2) {
             HelpInfo.promptHelp("genTimelock");
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.genTimelockHelp();
+            HelpInfo.genTimeLockHelp();
             return;
         }
 
@@ -63,7 +63,7 @@ public class HTLCImpl implements HTLCFace {
     @Override
     public void checkTransferStatus(String[] params, Map<String, String> pathMaps)
             throws Exception {
-        if (params.length == 1) {
+        if (params.length == 1 || params.length > 3) {
             HelpInfo.promptHelp("checkTransferStatus");
             return;
         }
@@ -71,45 +71,47 @@ public class HTLCImpl implements HTLCFace {
             HelpInfo.checkTransferStatusHelp();
             return;
         }
+        if (params.length == 2) {
+            HelpInfo.promptHelp("checkTransferStatus");
+        } else {
+            String path = ConsoleUtils.parsePath(params, pathMaps);
+            if (path == null) {
+                return;
+            }
 
-        String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) {
-            return;
+            String hash = params[2];
+
+            Resource resource = ResourceFactory.build(weCrossRPC, path);
+            String proposalInfo = resource.call("getProposalInfo", hash)[0].trim();
+            if (NULL_FLAG.equals(proposalInfo)) {
+                System.out.println("status: proposal not found!");
+                return;
+            }
+            String[] proposalItems = proposalInfo.split(SPLIT_REGEX);
+            BigInteger timelock = new BigInteger(proposalItems[2]);
+
+            boolean selfUnlocked = TRUE_FLAG.equals(proposalItems[4]);
+            boolean selfRolledback = TRUE_FLAG.equals(proposalItems[5]);
+            boolean counterpartyUnlocked = TRUE_FLAG.equals(proposalItems[8]);
+
+            if (selfUnlocked && counterpartyUnlocked) {
+                System.out.println("status: succeeded!");
+                return;
+            }
+
+            if (selfRolledback) {
+                System.out.println("status: rolled back!");
+                return;
+            }
+
+            BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
+            if (timelock.compareTo(now) <= 0) {
+                System.out.println("status: failed!");
+                return;
+            }
+
+            System.out.println("status: ongoing!");
         }
-
-        String account = params[2];
-        String hash = params[3];
-
-        Resource resource = ResourceFactory.build(weCrossRPC, path, account);
-        String proposalInfo = resource.call("getProposalInfo", hash)[0].trim();
-        if (NULL_FLAG.equals(proposalInfo)) {
-            System.out.println("status: proposal not found!");
-            return;
-        }
-        String[] proposalItems = proposalInfo.split(SPLIT_REGEX);
-        BigInteger timelock = new BigInteger(proposalItems[2]);
-
-        boolean selfUnlocked = TRUE_FLAG.equals(proposalItems[4]);
-        boolean selfRolledback = TRUE_FLAG.equals(proposalItems[5]);
-        boolean counterpartyUnlocked = TRUE_FLAG.equals(proposalItems[8]);
-
-        if (selfUnlocked && counterpartyUnlocked) {
-            System.out.println("status: succeeded!");
-            return;
-        }
-
-        if (selfRolledback) {
-            System.out.println("status: rolled back!");
-            return;
-        }
-
-        BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000);
-        if (timelock.compareTo(now) <= 0) {
-            System.out.println("status: failed!");
-            return;
-        }
-
-        System.out.println("status: ongoing!");
     }
 
     @Override
@@ -119,7 +121,7 @@ public class HTLCImpl implements HTLCFace {
             return;
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.newProposaltHelp();
+            HelpInfo.newProposalHelp();
             return;
         }
 
@@ -131,15 +133,13 @@ public class HTLCImpl implements HTLCFace {
         if (path == null) {
             return;
         }
-        String account = params[2];
         String[] args = new String[10];
-        args[0] = ConsoleUtils.parseString(params[3]);
+        args[0] = ConsoleUtils.parseString(params[2]);
         for (int i = 1; i < 10; i++) {
-            args[i] = ConsoleUtils.parseString(params[i + 4]);
+            args[i] = ConsoleUtils.parseString(params[i + 3]);
         }
 
-        TransactionResponse response =
-                weCrossRPC.sendTransaction(path, account, "newProposal", args).send();
+        TransactionResponse response = weCrossRPC.sendTransaction(path, "newProposal", args).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS) {
             ConsoleUtils.printJson(response.toString());
@@ -155,14 +155,12 @@ public class HTLCImpl implements HTLCFace {
             if (SUCCESS_FLAG.equalsIgnoreCase(result)) {
                 String txHash = response.getReceipt().getHash();
                 long blockNum = response.getReceipt().getBlockNumber();
-                setNewContractTxInfo(
-                        path, account, ConsoleUtils.parseString(params[3]), txHash, blockNum);
-                if (TRUE_FLAG.equalsIgnoreCase(params[5])) {
+                setNewContractTxInfo(path, ConsoleUtils.parseString(params[2]), txHash, blockNum);
+                if (TRUE_FLAG.equalsIgnoreCase(params[4])) {
                     setSecret(
                             path,
-                            account,
-                            ConsoleUtils.parseString(params[3]),
-                            ConsoleUtils.parseString(params[4]));
+                            ConsoleUtils.parseString(params[2]),
+                            ConsoleUtils.parseString(params[3]));
                 }
                 System.out.println("Result: create a htlc proposal successfully");
             } else {
@@ -172,25 +170,25 @@ public class HTLCImpl implements HTLCFace {
     }
 
     private boolean checkProposal(String[] params) throws NoSuchAlgorithmException {
-        if (params.length != 14) {
+        if (params.length != 13) {
             System.out.println("invalid number of parameters, 14 params needed");
             return false;
         }
 
         Hash hash = new Hash();
-        if (TRUE_FLAG.equalsIgnoreCase(params[5])) {
-            if (!params[3].equals(hash.sha256(params[4]))) {
+        if (TRUE_FLAG.equalsIgnoreCase(params[4])) {
+            if (!params[2].equals(hash.sha256(params[3]))) {
                 System.out.println("hash not matched");
                 return false;
             }
         }
 
-        if (params[6].equals(params[7]) || params[10].equals(params[11])) {
+        if (params[5].equals(params[6]) || params[9].equals(params[10])) {
             System.out.println("the sender and receiver must be different");
         }
 
-        BigInteger amount0 = new BigInteger(params[8]);
-        BigInteger amount1 = new BigInteger(params[12]);
+        BigInteger amount0 = new BigInteger(params[7]);
+        BigInteger amount1 = new BigInteger(params[11]);
 
         if (amount0.compareTo(BigInteger.valueOf(0)) > 0
                 && amount1.compareTo(BigInteger.valueOf(0)) > 0) {
@@ -201,14 +199,12 @@ public class HTLCImpl implements HTLCFace {
         }
     }
 
-    private void setNewContractTxInfo(
-            String path, String account, String hash, String txHash, long blockNum)
+    private void setNewContractTxInfo(String path, String hash, String txHash, long blockNum)
             throws Exception {
         TransactionResponse response =
                 weCrossRPC
                         .sendTransaction(
                                 path,
-                                account,
                                 "setNewProposalTxInfo",
                                 hash,
                                 txHash,
@@ -218,7 +214,7 @@ public class HTLCImpl implements HTLCFace {
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {
             if (receipt != null) {
-                System.out.println("failed to setNewProposalTxInfo: " + receipt.getErrorMessage());
+                System.out.println("failed to setNewProposalTxInfo: " + receipt.getMessage());
             } else {
                 System.out.println("failed to setNewProposalTxInfo: " + response.getMessage());
             }
@@ -231,15 +227,14 @@ public class HTLCImpl implements HTLCFace {
         }
     }
 
-    private void setSecret(String path, String account, String hash, String secret)
-            throws Exception {
+    private void setSecret(String path, String hash, String secret) throws Exception {
         TransactionResponse response =
-                weCrossRPC.sendTransaction(path, account, "setSecret", hash, secret).send();
+                weCrossRPC.sendTransaction(path, "setSecret", hash, secret).send();
         Receipt receipt = response.getReceipt();
         if (response.getErrorCode() != StatusCode.SUCCESS
                 || receipt.getErrorCode() != StatusCode.SUCCESS) {
             if (receipt != null) {
-                System.out.println("failed to setSecret: " + receipt.getErrorMessage());
+                System.out.println("failed to setSecret: " + receipt.getMessage());
             } else {
                 System.out.println("failed to setSecret: " + response.getMessage());
             }

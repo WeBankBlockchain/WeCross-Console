@@ -6,8 +6,8 @@ import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.routine.HTLCFace;
 import com.webank.wecross.console.routine.HTLCImpl;
-import com.webank.wecross.console.routine.TwoPcFace;
-import com.webank.wecross.console.routine.TwoPcImpl;
+import com.webank.wecross.console.routine.XAFace;
+import com.webank.wecross.console.routine.XAImpl;
 import com.webank.wecross.console.rpc.RPCFace;
 import com.webank.wecross.console.rpc.RPCImpl;
 import com.webank.wecrosssdk.exception.WeCrossSDKException;
@@ -23,7 +23,7 @@ public class Initializer {
 
     private WeCrossRPC weCrossRPC;
     private RPCFace rpcFace;
-    private TwoPcFace twoPcFace;
+    private XAFace xaFace;
     private HTLCFace htlcFace;
     private BCOSCommand bcosCommand;
     private FabricCommand fabricCommand;
@@ -33,15 +33,15 @@ public class Initializer {
         try {
             weCrossRPC = WeCrossRPCFactory.build(weCrossRPCService);
         } catch (WeCrossSDKException e) {
-            logger.error("init wecross service failed: {}", e);
+            logger.error("init wecross service failed: {}", e.getMessage());
             throw new WeCrossConsoleException(ErrorCode.INIT_WECROSS_SERVICE_ERROR, e.getMessage());
         }
         rpcFace = new RPCImpl();
         rpcFace.setWeCrossRPC(weCrossRPC);
         htlcFace = new HTLCImpl();
         htlcFace.setWeCrossRPC(weCrossRPC);
-        twoPcFace = new TwoPcImpl();
-        twoPcFace.setWeCrossRPC(weCrossRPC);
+        xaFace = new XAImpl();
+        xaFace.setWeCrossRPC(weCrossRPC);
         bcosCommand = new BCOSCommand(weCrossRPC);
         fabricCommand = new FabricCommand(weCrossRPC);
     }
@@ -70,12 +70,12 @@ public class Initializer {
         this.htlcFace = htlcFace;
     }
 
-    public TwoPcFace getTwoPcFace() {
-        return twoPcFace;
+    public XAFace getXaFace() {
+        return xaFace;
     }
 
-    public void setTwoPcFace(TwoPcFace twoPcFace) {
-        this.twoPcFace = twoPcFace;
+    public void setXaFace(XAFace xaFace) {
+        this.xaFace = xaFace;
     }
 
     public BCOSCommand getBcosCommand() {

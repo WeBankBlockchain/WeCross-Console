@@ -15,7 +15,7 @@
 
 ### Issue
 
-可直接去[issues page](https://github.com/WeBankFinTech/WeCross-Console/issues)提issue。
+可直接去[issues page](https://github.com/WeBankBlockchain/WeCross-Console/issues)提issue。
 
 ### 修复bug
 
@@ -50,14 +50,3 @@
 ```          
 ./gradlew verGJF
 ```
-
-## 持续集成（CI）
-
-持续集成框架
-
-* travis-ci: [![Build Status](https://travis-ci.org/WeBankFinTech/WeCross-Console.svg?branch=master)](https://travis-ci.org/WeBankFinTech/WeCross-Console)
-
-
-代码质量
-
-* Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a2a6c2eb499e42739d066ff775d1b288)](https://www.codacy.com/app/WeBankFinTech/WeCross-Console?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WeBankFinTech/WeCross-Console&amp;utm_campaign=Badge_Grade)

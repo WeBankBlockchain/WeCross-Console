@@ -4,13 +4,24 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
-import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConsoleUtils {
+    public static ThreadLocal<String> runtimeUsernameThreadLocal = new ThreadLocal<>();
+    public static ThreadLocal<String> runtimePasswordThreadLocal = new ThreadLocal<>();
+
+    public static final String fabricType = "Fabric1.4";
+    public static final String BCOSType = "BCOS2.0";
+    public static final String BCOSGMType = "GM_BCOS2.0";
+    public static final List<String> supportChainList =
+            Arrays.asList(fabricType, BCOSType, BCOSGMType);
+    private static final Logger logger = LoggerFactory.getLogger(ConsoleUtils.class);
+
     public static boolean isValidPath(String path) {
         if (path == null || path.length() == 0 || path.charAt(0) == '.' || path.endsWith(".")) {
             return false;
@@ -58,7 +69,7 @@ public class ConsoleUtils {
         }
         if (params[1].equals("=")) {
             if (params[2].equals("WeCross.getResource")) {
-                if (length != 5) {
+                if (length != 4) {
                     return false;
                 }
                 if (pathMaps.keySet().contains(params[3])) {
@@ -99,7 +110,7 @@ public class ConsoleUtils {
         return input;
     }
 
-    public static String[] parseAgrs(String[] args) {
+    public static String[] parseArgs(String[] args) {
         String[] result = new String[args.length];
         for (int i = 0; i < args.length; i++) {
             result[i] = parseString(args[i]);
@@ -274,16 +285,16 @@ public class ConsoleUtils {
                 result = new StringBuilder(params[0] + "()");
                 return result.toString();
             } else if (length > 3 && params[2].equals("WeCross.getResource")) {
-                if (length != 5) {
+                if (length != 4) {
                     throw new WeCrossConsoleException(
-                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path] [accountName]");
+                            ErrorCode.ILLEGAL_PARAM, "Parameter:q error: [path]");
                 }
                 result = new StringBuilder(params[0] + " " + params[1] + " " + params[2] + " ");
                 String path = params[3];
                 if (ConsoleUtils.isValidPath(parseString(params[3]))) {
                     path = "\"" + path + "\"";
                 }
-                result.append(path).append(",").append("\"").append(params[4]).append("\"");
+                result.append(path);
                 return result.toString();
             }
             for (; start < length; ++start) {
