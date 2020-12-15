@@ -17,6 +17,8 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: ./gradlew assemble
+    - name: Download scripts
+      run: mkdir -p dist/conf/accounts && cd dist/conf/accounts && curl -LO https://raw.githubusercontent.com/FISCO-BCOS/console/master/tools/get_account.sh && curl -LO https://raw.githubusercontent.com/FISCO-BCOS/console/master/tools/get_gm_account.sh && chmod +x *.sh && cd -
     - name: Pack
       run: chmod +x dist/*.sh && mv dist WeCross-Console && tar -zcvf WeCross-Console.tar.gz WeCross-Console
     - name: Checksum
