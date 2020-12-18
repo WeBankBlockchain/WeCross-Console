@@ -14,7 +14,7 @@ WeCross Console是[WeCross](https://github.com/WeBankBlockchain/WeCross)的重�
 
 ## 部署使用
 
-* 可直接下载WeCross控制台压缩包，然后解压并使用。具体请参考[部署和使用文档](https://wecross.readthedocs.io/zh_CN/latest/docs/tutorial/networks.html#id11)
+可直接下载WeCross控制台压缩包，然后解压并使用，具体请参考[部署和使用文档](https://wecross.readthedocs.io/zh_CN/latest/docs/tutorial/networks.html#id11)。
 
 ## 源码编译
 
