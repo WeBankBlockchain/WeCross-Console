@@ -24,19 +24,8 @@ public class JlineUtils {
     private static Set<String> resourceVars = new HashSet<>();
     private static Set<String> contractMethods = new HashSet<>();
     private static Set<String> orgs = new HashSet<>();
-    private static ArgumentCompleter commitCompleter = new ArgumentCompleter();
-    private static ArgumentCompleter rollbackCompleter = new ArgumentCompleter();
     private static final List<String> pathVarSupportedCommands =
-            Arrays.asList(
-                    "status",
-                    "detail",
-                    "call",
-                    "sendTransaction",
-                    "invoke",
-                    "newHTLCProposal",
-                    "checkTransferStatus",
-                    "callTransaction",
-                    "execTransaction");
+            Arrays.asList("status", "detail", "call", "sendTransaction");
 
     private static final List<String> callContractCommands =
             Arrays.asList("call", "sendTransaction");
@@ -48,7 +37,6 @@ public class JlineUtils {
                     "fabricInstall",
                     "fabricInstantiate",
                     "fabricUpgrade",
-                    "getTransactionIDs",
                     "login",
                     "registerAccount",
                     "logout",
@@ -82,8 +70,9 @@ public class JlineUtils {
                     "startTransaction",
                     "commitTransaction",
                     "rollbackTransaction",
-                    "getTransactionInfo",
-                    "getTransactionIDs",
+                    "getXATransaction",
+                    "listXATransactions",
+                    "loadTransaction",
                     "bcosDeploy",
                     "bcosRegister",
                     "fabricInstall",
@@ -141,9 +130,8 @@ public class JlineUtils {
                 new ArgumentCompleter(
                         new StringsCompleter("addChainAccount"),
                         new StringsCompleter(ConsoleUtils.supportChainList),
-                        new FilesCompleter(Paths.get(System.getProperty("user.dir"), "conf"), true),
-                        new FilesCompleter(Paths.get(System.getProperty("user.dir"), "conf"), true),
-                        new StringsCompleter(Arrays.asList("true", "false")),
+                        new FilesCompleter(Paths.get(System.getProperty("user.dir")), true),
+                        new FilesCompleter(Paths.get(System.getProperty("user.dir")), true),
                         NullCompleter.INSTANCE);
         completers.add(addChainAccountCompleter);
 
@@ -178,32 +166,6 @@ public class JlineUtils {
             if (!JlineUtils.paths.contains(path)) {
                 addPathCompleters(completers, path);
             }
-        }
-    }
-
-    public static void addTransactionInfoCompleters(List<Completer> completers) {
-        if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
-            String runtimeTransaction =
-                    ConsoleUtils.runtimeTransactionThreadLocal.get().toPathString();
-            commitCompleter =
-                    new ArgumentCompleter(
-                            new StringsCompleter("commitTransaction"),
-                            new StringsCompleter(runtimeTransaction),
-                            NullCompleter.INSTANCE);
-            rollbackCompleter =
-                    new ArgumentCompleter(
-                            new StringsCompleter("rollbackTransaction"),
-                            new StringsCompleter(runtimeTransaction),
-                            NullCompleter.INSTANCE);
-            completers.add(rollbackCompleter);
-            completers.add(commitCompleter);
-        }
-    }
-
-    public static void removeTransactionInfoCompleters(List<Completer> completers) {
-        if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
-            completers.removeIf(completer -> completer.equals(commitCompleter));
-            completers.removeIf(completer -> completer.equals(rollbackCompleter));
         }
     }
 
@@ -254,8 +216,7 @@ public class JlineUtils {
                         new StringsCompleter(fabricCommands),
                         new StringsCompleter(path),
                         new StringsCompleter(orgs),
-                        new DirectoriesCompleter(
-                                Paths.get(System.getProperty("user.dir"), "conf"), true),
+                        new DirectoriesCompleter(Paths.get(System.getProperty("user.dir"), "conf")),
                         new StringsCompleter(),
                         new StringsCompleter("GO_LANG", "JAVA"),
                         NullCompleter.INSTANCE);

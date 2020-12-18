@@ -11,6 +11,7 @@ import com.webank.wecross.console.mock.MockWeCross;
 import com.webank.wecross.console.routine.HTLCFace;
 import com.webank.wecross.console.routine.XAFace;
 import com.webank.wecross.console.rpc.RPCFace;
+import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -81,9 +82,10 @@ public class Shell {
 
         while (true) {
             logger.info(Arrays.toString(args));
-            if (ConsoleUtils.runtimeTransactionThreadLocal.get() != null) {
-                runtimeTransaction =
-                        ConsoleUtils.runtimeTransactionThreadLocal.get().getTransactionID();
+            if (TransactionContext.txThreadLocal.get() != null) {
+                runtimeTransaction = TransactionContext.currentXATransactionID();
+            } else {
+                runtimeTransaction = null;
             }
             try {
                 String prompt =
@@ -91,7 +93,7 @@ public class Shell {
                                 ? ""
                                 : "[Transaction running: " + runtimeTransaction + "]\n";
                 loginUser = ConsoleUtils.runtimeUsernameThreadLocal.get();
-                prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]>";
+                prompt += (loginUser == null) ? "[WeCross]> " : "[WeCross." + loginUser + "]> ";
                 String request = lineReader.readLine(prompt);
 
                 String[] params;
@@ -208,6 +210,14 @@ public class Shell {
                             htlcFace.checkTransferStatus(params, pathMaps);
                             break;
                         }
+                    case "loadTransaction":
+                        {
+                            xaFace.loadTransaction(params);
+                            if (params.length >= 3) {
+                                runtimeTransaction = TransactionContext.currentXATransactionID();
+                            }
+                            break;
+                        }
                     case "callTransaction":
                         {
                             xaFace.callTransaction(params, pathMaps);
@@ -223,11 +233,7 @@ public class Shell {
                             xaFace.startTransaction(params);
                             if (params.length >= 2
                                     && (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
-                                runtimeTransaction =
-                                        ConsoleUtils.runtimeTransactionThreadLocal
-                                                .get()
-                                                .getTransactionID();
-                                JlineUtils.addTransactionInfoCompleters(completers);
+                                runtimeTransaction = TransactionContext.currentXATransactionID();
                             }
                             break;
                         }
@@ -238,8 +244,8 @@ public class Shell {
                             if (params.length == 1
                                     || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
-                                JlineUtils.removeTransactionInfoCompleters(completers);
-                                ConsoleUtils.runtimeTransactionThreadLocal.remove();
+                                TransactionContext.txThreadLocal.remove();
+                                TransactionContext.pathInTransactionThreadLocal.remove();
                             }
                             break;
                         }
@@ -250,19 +256,19 @@ public class Shell {
                             if (params.length == 1
                                     || (!"-h".equals(params[1]) && !"--help".equals(params[1]))) {
                                 runtimeTransaction = null;
-                                JlineUtils.removeTransactionInfoCompleters(completers);
-                                ConsoleUtils.runtimeTransactionThreadLocal.remove();
+                                TransactionContext.txThreadLocal.remove();
+                                TransactionContext.pathInTransactionThreadLocal.remove();
                             }
                             break;
                         }
-                    case "getTransactionInfo":
+                    case "getXATransaction":
                         {
-                            xaFace.getTransactionInfo(params);
+                            xaFace.getXATransaction(params);
                             break;
                         }
-                    case "getTransactionIDs":
+                    case "listXATransactions":
                         {
-                            xaFace.getTransactionIDs(params);
+                            xaFace.listXATransactions(params);
                             break;
                         }
                     case "getCurrentTransactionID":
@@ -351,7 +357,8 @@ public class Shell {
                             if (loginUser == null) {
                                 completers = JlineUtils.getNoAuthCompleters();
                                 runtimeTransaction = null;
-                                ConsoleUtils.runtimeTransactionThreadLocal.remove();
+                                TransactionContext.txThreadLocal.remove();
+                                TransactionContext.pathInTransactionThreadLocal.remove();
                             }
                             break;
                         }

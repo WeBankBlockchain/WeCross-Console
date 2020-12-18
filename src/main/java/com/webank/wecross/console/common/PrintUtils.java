@@ -1,8 +1,10 @@
 package com.webank.wecross.console.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.common.StatusCode;
+import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import com.webank.wecrosssdk.rpc.methods.response.*;
 import java.util.Arrays;
 import org.slf4j.Logger;
@@ -48,6 +50,9 @@ public class PrintUtils {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
+            TransactionContext.txThreadLocal.remove();
+            TransactionContext.pathInTransactionThreadLocal.remove();
+            FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
             throw new WeCrossConsoleException(
                     ErrorCode.INTERNAL_ERROR,
                     "Error: code("
@@ -56,6 +61,9 @@ public class PrintUtils {
                             + response.getMessage()
                             + ")");
         } else if (response.getXARawResponse().getStatus() != StatusCode.SUCCESS) {
+            TransactionContext.txThreadLocal.remove();
+            TransactionContext.pathInTransactionThreadLocal.remove();
+            FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
             throw new WeCrossConsoleException(
                     ErrorCode.INTERNAL_ERROR,
                     Arrays.toString(response.getXARawResponse().getChainErrorMessages().toArray()));
@@ -109,8 +117,7 @@ public class PrintUtils {
         }
     }
 
-    public static void printRoutineIDResponse(XATransactionListResponse response)
-            throws WeCrossConsoleException {
+    public static void printRoutineIDResponse(XATransactionListResponse response) throws Exception {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
@@ -122,12 +129,14 @@ public class PrintUtils {
                             + response.getMessage()
                             + ")");
         } else {
+            ObjectMapper objectMapper = new ObjectMapper();
             System.out.println(
                     "Result: "
-                            + Arrays.toString(
-                                    response.getRawXATransactionListResponse()
-                                            .getXaList()
-                                            .toArray()));
+                            + objectMapper
+                                    .writerWithDefaultPrettyPrinter()
+                                    .writeValueAsString(
+                                            response.getRawXATransactionListResponse()
+                                                    .getXaList()));
         }
     }
 

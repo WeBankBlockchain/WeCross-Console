@@ -22,4 +22,8 @@ contract Evidence {
     function queryEvidence(string memory id) public view returns(string memory) {
         return infos[id];
     }
+
+    function queryEvidence_revert(string memory id) public view returns(string memory) {
+        return infos[id];
+    }
 }

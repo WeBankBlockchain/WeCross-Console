@@ -5,6 +5,7 @@ import com.moandjiezana.toml.TomlWriter;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecross.console.routine.XAFace;
+import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -117,8 +118,8 @@ public class FileUtils {
             }
             return new String(Files.readAllBytes(path));
         } catch (Exception e) {
-            logger.error("Read file error: {}", e.getMessage());
-            throw new IOException("Read file error: " + e.getMessage());
+            logger.error("Read file error: ", e);
+            throw new IOException("Read file error: " + e);
         }
     }
 
@@ -159,11 +160,11 @@ public class FileUtils {
                     transactionID, transactionPath.toArray(new String[0]))) {
                 logger.error(
                         "loadTransactionLog error: the transaction in toml file had already been committed/rollbacked or even doesn't exist.");
+                FileUtils.cleanFile(FileUtils.CONF, FileUtils.TRANSACTION_LOG_TOML);
                 return;
             }
-            TransactionInfo transactionInfo = new TransactionInfo(transactionID, transactionPath);
-            ConsoleUtils.runtimeTransactionThreadLocal.set(transactionInfo);
-            JlineUtils.addTransactionInfoCompleters(completers);
+            TransactionContext.txThreadLocal.set(transactionID);
+            TransactionContext.pathInTransactionThreadLocal.set(transactionPath);
         } catch (WeCrossConsoleException e) {
             if (e.getErrorCode() == ErrorCode.TX_LOG_NOT_EXIST) {
                 logger.info("Load transactionLog Toml file fail, {}", e.getMessage());
@@ -177,10 +178,12 @@ public class FileUtils {
 
     public static void writeTransactionLog() {
         TomlWriter writer = new TomlWriter();
+        TransactionInfo transactionInfo =
+                new TransactionInfo(
+                        TransactionContext.currentXATransactionID(),
+                        TransactionContext.pathInTransactionThreadLocal.get());
         try {
-            writer.write(
-                    ConsoleUtils.runtimeTransactionThreadLocal.get(),
-                    new File(CONF, TRANSACTION_LOG_TOML));
+            writer.write(transactionInfo, new File(CONF, TRANSACTION_LOG_TOML));
         } catch (IOException e) {
             logger.error("Write TransactionLogTOML file error: {}", e.getMessage());
         }
