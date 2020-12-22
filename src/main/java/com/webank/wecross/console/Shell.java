@@ -155,11 +155,6 @@ public class Shell {
                             JlineUtils.updatePathsCompleters(completers, rpcFace.getPaths());
                             break;
                         }
-                    case "status":
-                        {
-                            rpcFace.getResourceStatus(params, pathMaps);
-                            break;
-                        }
                     case "detail":
                         {
                             rpcFace.getResourceInfo(params, pathMaps);
