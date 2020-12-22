@@ -192,7 +192,6 @@ public class ConsoleUtils {
         if (!isValidPath(path)) {
             if (!isValidPathVar(params[1], pathMaps)) {
                 System.out.println("Please provide a valid path");
-                HelpInfo.statusHelp();
                 return null;
             }
             path = pathMaps.get(params[1]);
