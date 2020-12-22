@@ -17,7 +17,6 @@ import com.webank.wecrosssdk.rpc.common.account.BCOSAccount;
 import com.webank.wecrosssdk.rpc.common.account.ChainAccount;
 import com.webank.wecrosssdk.rpc.common.account.FabricAccount;
 import com.webank.wecrosssdk.rpc.common.account.UniversalAccount;
-import com.webank.wecrosssdk.rpc.methods.Response;
 import com.webank.wecrosssdk.rpc.methods.response.*;
 import com.webank.wecrosssdk.utils.ConfigUtils;
 import java.io.Console;
@@ -124,31 +123,6 @@ public class RPCImpl implements RPCFace {
             System.out.println("total: " + resourceDetails.length);
         }
         logger.info("listResources response: {}", resourcesResponse);
-    }
-
-    @Override
-    public void getResourceStatus(String[] params, Map<String, String> pathMaps) throws Exception {
-        if (params.length != 2) {
-            HelpInfo.promptHelp("status");
-            return;
-        }
-        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.statusHelp();
-            return;
-        }
-
-        String path = ConsoleUtils.parsePath(params, pathMaps);
-        if (path == null) {
-            return;
-        }
-
-        Response response = weCrossRPC.status(path).send();
-        if (response.getErrorCode() != 0) {
-            ConsoleUtils.printJson(response.toString());
-        } else {
-            System.out.println(response.getData());
-        }
-        logger.info("getResourceStatus response: {}", response);
     }
 
     @Override
@@ -377,7 +351,7 @@ public class RPCImpl implements RPCFace {
                 readIn = in.nextLine();
             } while (Objects.equals(readIn, "\t"));
             if (readIn.equals("y") || readIn.equals("Y")) {
-                System.out.println("Saving to conf/registerAccount.tx ...");
+                System.out.println("Saving to conf/registerAccount.txt ...");
                 String content = "username: " + username + "\npassword: " + password;
                 FileUtils.writeFile("conf/registerAccount.txt", content, true);
             }
@@ -393,7 +367,6 @@ public class RPCImpl implements RPCFace {
         String username = params[1];
         String password = params[2];
         UAResponse uaResponse = weCrossRPC.register(username, password).send();
-        ;
         PrintUtils.printUAResponse(uaResponse);
     }
 

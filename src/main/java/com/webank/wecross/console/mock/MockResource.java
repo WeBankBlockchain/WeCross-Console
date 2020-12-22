@@ -24,14 +24,6 @@ public class MockResource implements Serializable {
         }
     }
 
-    public void status() {
-        try {
-            System.out.println(resource.status());
-        } catch (WeCrossSDKException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void detail() {
         try {
             ConsoleUtils.printJson(resource.detail().toString());
