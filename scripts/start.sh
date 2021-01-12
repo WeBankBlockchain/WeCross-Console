@@ -1,4 +1,6 @@
 #!/bin/bash
+dirpath="$(cd "$(dirname "$0")" && pwd)"
+cd ${dirpath}
 
 SECURIY_FILE='./.wecross.security'
 
