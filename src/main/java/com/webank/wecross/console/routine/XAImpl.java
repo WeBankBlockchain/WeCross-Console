@@ -299,7 +299,8 @@ public class XAImpl implements XAFace {
 
         XATransactionResponse response =
                 weCrossRPC.getXATransaction(transactionID, paths.toArray(new String[0])).send();
-        PrintUtils.printRoutineInfoResponse(response);
+
+        PrintUtils.printRoutineInfoResponse(response, paths);
     }
 
     @Override
@@ -362,10 +363,11 @@ public class XAImpl implements XAFace {
                     response.getRawXATransactionResponse().getXaTransaction().getPaths();
             if (pathList.size() != paths.length) {
                 return false;
-            }
-            for (String path : paths) {
-                if (!pathList.contains(path)) {
-                    return false;
+            } else {
+                for (String path : paths) {
+                    if (!pathList.contains(path)) {
+                        return false;
+                    }
                 }
             }
         }

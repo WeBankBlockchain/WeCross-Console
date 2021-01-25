@@ -7,6 +7,7 @@ import com.webank.wecrosssdk.common.StatusCode;
 import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import com.webank.wecrosssdk.rpc.methods.response.*;
 import java.util.Arrays;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,8 @@ public class PrintUtils {
         }
     }
 
-    public static void printRoutineInfoResponse(XATransactionResponse response) throws Exception {
+    public static void printRoutineInfoResponse(XATransactionResponse response, List<String> paths)
+            throws Exception {
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {
@@ -112,8 +114,26 @@ public class PrintUtils {
                                     .getChainErrorMessages()
                                     .toArray()));
         } else {
-            ConsoleUtils.printJson(
-                    response.getRawXATransactionResponse().getXaTransaction().toString());
+            List<String> pathList =
+                    response.getRawXATransactionResponse().getXaTransaction().getPaths();
+            boolean checkPathFlag = true;
+            if (pathList.size() != paths.size()) {
+                checkPathFlag = false;
+            } else {
+                for (String path : paths) {
+                    if (!pathList.contains(path)) {
+                        checkPathFlag = false;
+                        break;
+                    }
+                }
+            }
+            if (!checkPathFlag) {
+                System.out.println(
+                        "ERROR: path not fit in response, please use command 'listXATransactions' to check correct transaction path.");
+            } else {
+                ConsoleUtils.printJson(
+                        response.getRawXATransactionResponse().getXaTransaction().toString());
+            }
         }
     }
 
