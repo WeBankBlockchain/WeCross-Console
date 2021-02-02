@@ -109,18 +109,13 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void statusHelp() {
-        ConsoleUtils.singleLine();
-        System.out.println("Check if the resource exists.");
-        System.out.println("Usage: status [path]");
-        System.out.println("path -- the path of resource in wecross router");
-        ConsoleUtils.singleLine();
-    }
-
     public static void detailHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Get the resource information");
         System.out.println("Usage: detail [path]");
+        System.out.println(
+                "note: if 'isTemporary' filed in properties is 'true', it means this resource may not exist");
+        System.out.println("      or this resource can be unregistered in chain.");
         ConsoleUtils.singleLine();
     }
 

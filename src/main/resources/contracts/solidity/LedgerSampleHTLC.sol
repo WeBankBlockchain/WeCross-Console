@@ -97,10 +97,9 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
         @param: address
     */
     function balanceOf(string memory account) public view
-    returns(string memory result)
+    returns(uint256)
     {
-        uint b = LedgerSample(assetContract).balance(stringToAddress(account));
-        result = uint256ToString(b);
+        return LedgerSample(assetContract).balance(stringToAddress(account));
     }
 
     function queryAddress() public view

@@ -25,7 +25,7 @@ public class JlineUtils {
     private static Set<String> contractMethods = new HashSet<>();
     private static Set<String> orgs = new HashSet<>();
     private static final List<String> pathVarSupportedCommands =
-            Arrays.asList("status", "detail", "call", "sendTransaction");
+            Arrays.asList("detail", "call", "sendTransaction");
 
     private static final List<String> callContractCommands =
             Arrays.asList("call", "sendTransaction");
@@ -56,7 +56,6 @@ public class JlineUtils {
                     "listAccount",
                     "listLocalResources",
                     "listResources",
-                    "status",
                     "detail",
                     "call",
                     "invoke",
@@ -233,9 +232,6 @@ public class JlineUtils {
                         new StringsCompleter(resourceVar + ".sendTransaction"),
                         NullCompleter.INSTANCE));
 
-        completers.add(
-                new ArgumentCompleter(
-                        new StringsCompleter(resourceVar + ".status"), NullCompleter.INSTANCE));
         completers.add(
                 new ArgumentCompleter(
                         new StringsCompleter(resourceVar + ".detail"), NullCompleter.INSTANCE));
