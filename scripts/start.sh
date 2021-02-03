@@ -15,5 +15,4 @@ function run_console() {
     fi
 }
 
-create_jvm_security
 run_console
