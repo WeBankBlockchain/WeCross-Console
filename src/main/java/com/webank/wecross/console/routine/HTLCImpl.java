@@ -109,7 +109,6 @@ public class HTLCImpl implements HTLCFace {
                 System.out.println("status: failed!");
                 return;
             }
-
             System.out.println("status: ongoing!");
         }
     }
