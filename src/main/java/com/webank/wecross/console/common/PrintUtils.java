@@ -40,9 +40,10 @@ public class PrintUtils {
                 System.out.println("Txhash  : " + response.getReceipt().getHash());
                 System.out.println("BlockNum: " + response.getReceipt().getBlockNumber());
                 System.out.println(
-                        "Result  : " + Arrays.toString(response.getReceipt().getResult()));
+                        "Result  : " + stringArraysToString(response.getReceipt().getResult()));
             } else {
-                System.out.println("Result: " + Arrays.toString(response.getReceipt().getResult()));
+                System.out.println(
+                        "Result  : " + stringArraysToString(response.getReceipt().getResult()));
             }
         }
     }
@@ -203,6 +204,31 @@ public class PrintUtils {
                 ConsoleUtils.doubleLine();
                 System.out.println(response.getUAReceipt().getUniversalAccount().toFormatString());
             }
+        }
+    }
+
+    /**
+     * specific string arrays toString method, empty string "" should be shown
+     *
+     * @param a array to print
+     * @return string format of a
+     */
+    public static String stringArraysToString(String[] a) {
+        if (a == null) return "null";
+
+        int iMax = a.length - 1;
+        if (iMax == -1) return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            if ("".equals(a[i])) {
+                b.append("\"\"");
+            } else {
+                b.append(a[i]);
+            }
+            if (i == iMax) return b.append(']').toString();
+            b.append(", ");
         }
     }
 }
