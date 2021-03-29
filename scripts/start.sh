@@ -21,9 +21,7 @@ create_jvm_security() {
 }
 
 show_version() {
-  LOG_INFO "--------------------------------------------------------------------"
   LOG_INFO "WeCross-Console version: [" $(ls ${APPS_FOLDER} |awk '{gsub(/.jar$/,""); print}') "]"
-  LOG_INFO "--------------------------------------------------------------------"
 }
 
 run_console() {
