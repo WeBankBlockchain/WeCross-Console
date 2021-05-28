@@ -19,9 +19,11 @@ import com.webank.wecrosssdk.rpc.common.account.FabricAccount;
 import com.webank.wecrosssdk.rpc.common.account.UniversalAccount;
 import com.webank.wecrosssdk.rpc.methods.response.*;
 import com.webank.wecrosssdk.utils.ConfigUtils;
+
 import java.io.Console;
 import java.io.File;
 import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -401,7 +403,7 @@ public class RPCImpl implements RPCFace {
             UAResponse uaResponse = weCrossRPC.addChainAccount(type, chainAccount).send();
             PrintUtils.printUAResponse(uaResponse);
         }
-        if (params[1].equals(ConsoleUtils.fabricType)) {
+        if (params[1].equals(ConsoleUtils.fabricType) || params[1].equals(ConsoleUtils.fabricType2)) {
             String type = params[1];
             String certPath = params[2];
             String keyPath = params[3];
