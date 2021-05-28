@@ -20,7 +20,7 @@ public class ConsoleUtils {
     public static final String BCOSType = "BCOS2.0";
     public static final String BCOSGMType = "GM_BCOS2.0";
     public static final List<String> supportChainList =
-            Arrays.asList(fabricType, BCOSType, BCOSGMType,fabricType2);
+            Arrays.asList(fabricType, BCOSType, BCOSGMType, fabricType2);
     private static final Logger logger = LoggerFactory.getLogger(ConsoleUtils.class);
 
     public static boolean isValidPath(String path) {
