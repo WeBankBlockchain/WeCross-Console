@@ -401,7 +401,8 @@ public class RPCImpl implements RPCFace {
             UAResponse uaResponse = weCrossRPC.addChainAccount(type, chainAccount).send();
             PrintUtils.printUAResponse(uaResponse);
         }
-        if (params[1].equals(ConsoleUtils.fabricType)) {
+        if (params[1].equals(ConsoleUtils.fabricType)
+                || params[1].equals(ConsoleUtils.fabricType2)) {
             String type = params[1];
             String certPath = params[2];
             String keyPath = params[3];

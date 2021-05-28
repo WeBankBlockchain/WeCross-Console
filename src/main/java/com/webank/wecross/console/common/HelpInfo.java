@@ -219,6 +219,8 @@ public class HelpInfo {
                 "    addChainAccount GM_BCOS2.0 path/to/pubKey path/to/secretKey address false");
         System.out.println(
                 "    addChainAccount Fabric1.4 path/to/cert path/to/key membershipID true");
+        System.out.println(
+                "    addChainAccount Fabric2.0 path/to/cert path/to/key membershipID true");
         ConsoleUtils.singleLine();
     }
 
