@@ -418,7 +418,8 @@ public class XAImpl implements XAFace {
 
         for (int i = startPos; i < params.length; i++) {
             if (!allPaths.contains(params[i])) {
-                throw new Exception("resource " + params[i] + " not found");
+                throw new Exception(
+                        "resource " + params[i] + " not found, or can't access this resource.");
             }
 
             if (paths.contains(params[i])) {
