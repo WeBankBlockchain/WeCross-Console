@@ -256,6 +256,11 @@ public class Shell {
                             }
                             break;
                         }
+                    case "autoCommitTransaction":
+                        {
+                            xaFace.autoCommitXATransaction(params, pathMaps);
+                            break;
+                        }
                     case "getXATransaction":
                         {
                             xaFace.getXATransaction(params);
