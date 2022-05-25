@@ -300,6 +300,17 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void autoCommitTransactionHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Transactional call same method of multi resources in one transaction");
+        System.out.println("Usage: autoCommitTransaction [path...] [method] [args]");
+        System.out.println(
+                "[path] -- a array of paths, what are the contract resource in wecross router");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
+        ConsoleUtils.singleLine();
+    }
+
     public static void loadTransactionHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Load a specified transaction context");
