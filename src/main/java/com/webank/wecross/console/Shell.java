@@ -345,6 +345,14 @@ public class Shell {
                             }
                             break;
                         }
+                    case "setDefaultFabricAccount":
+                        {
+                            rpcFace.setDefaultFabricAccount(params);
+                            if (params.length == 3) {
+                                rpcFace.internalLogin();
+                            }
+                            break;
+                        }  
                     case "logout":
                         {
                             rpcFace.logout(params);

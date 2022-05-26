@@ -82,6 +82,7 @@ public class JlineUtils {
                     "logout",
                     "addChainAccount",
                     "setDefaultAccount",
+                    "setDefaultFabricAccount",
                     "getCurrentTransactionID");
 
     public static void addCommandCompleters(List<Completer> completers) {
@@ -140,6 +141,13 @@ public class JlineUtils {
                         new StringsCompleter(ConsoleUtils.supportChainList),
                         NullCompleter.INSTANCE);
         completers.add(setDefaultAccountCompleter);
+
+        ArgumentCompleter setDefaultFabricAccountCompleter =
+                new ArgumentCompleter(
+                        new StringsCompleter("setDefaultFabricAccount"),
+                        new StringsCompleter(ConsoleUtils.supportChainList),
+                        NullCompleter.INSTANCE);
+        completers.add(setDefaultFabricAccountCompleter);
     }
 
     public static void addPathsCompleters(List<Completer> completers, Set<String> paths) {

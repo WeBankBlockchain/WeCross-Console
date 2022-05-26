@@ -442,6 +442,30 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
+    public void setDefaultFabricAccount(String[] params) throws Exception {
+        if (params.length == 1) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultFabricAccount");
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.setDefaultFabricAccountHelp();
+            return;
+        }
+        if (params.length != 3) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultFabricAccount");
+        }
+        String chainName = params[1];
+        String keyID = params[2];
+        if (keyID.startsWith("keyID:")) {
+            keyID = keyID.substring(5);
+        }
+        if (!ConsoleUtils.isNumeric(keyID)) {
+            throw new WeCrossConsoleException(ErrorCode.ILLEGAL_PARAM, "Invalid keyID");
+        }
+        UAResponse uaResponse = weCrossRPC.setDefaultFabricAccount(chainName,Integer.valueOf(keyID)).send();
+        PrintUtils.printUAResponse(uaResponse);
+    }
+
+    @Override
     public void logout(String[] params) throws Exception {
         if (params.length == 1) {
             UAResponse uaResponse = weCrossRPC.logout().send();
