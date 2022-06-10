@@ -454,6 +454,9 @@ public class RPCImpl implements RPCFace {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultChainAccount");
         }
         String chainName = params[1];
+        if (chainName.equals("NULL") || chainName.equals("null")){
+            chainName = "";
+        }
         String keyID = params[2];
         if (keyID.startsWith("keyID:")) {
             keyID = keyID.substring(5);
