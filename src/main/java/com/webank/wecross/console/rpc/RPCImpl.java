@@ -442,16 +442,16 @@ public class RPCImpl implements RPCFace {
     }
 
     @Override
-    public void setDefaultFabricAccount(String[] params) throws Exception {
+    public void setDefaultChainAccount(String[] params) throws Exception {
         if (params.length == 1) {
-            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultFabricAccount");
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultChainAccount");
         }
         if ("-h".equals(params[1]) || "--help".equals(params[1])) {
-            HelpInfo.setDefaultFabricAccountHelp();
+            HelpInfo.setDefaultChainAccountHelp();
             return;
         }
         if (params.length != 3) {
-            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultFabricAccount");
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultChainAccount");
         }
         String chainName = params[1];
         String keyID = params[2];
@@ -461,7 +461,7 @@ public class RPCImpl implements RPCFace {
         if (!ConsoleUtils.isNumeric(keyID)) {
             throw new WeCrossConsoleException(ErrorCode.ILLEGAL_PARAM, "Invalid keyID");
         }
-        UAResponse uaResponse = weCrossRPC.setDefaultFabricAccount(chainName,Integer.valueOf(keyID)).send();
+        UAResponse uaResponse = weCrossRPC.setDefaultChainAccount(chainName,Integer.valueOf(keyID)).send();
         PrintUtils.printUAResponse(uaResponse);
     }
 

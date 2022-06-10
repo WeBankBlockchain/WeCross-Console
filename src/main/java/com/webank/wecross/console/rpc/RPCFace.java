@@ -33,7 +33,7 @@ public interface RPCFace {
 
     void setDefaultAccount(String[] params) throws Exception;
 
-    void setDefaultFabricAccount(String[] params) throws Exception;
+    void setDefaultChainAccount(String[] params) throws Exception;
 
     void logout(String[] params) throws Exception;
 

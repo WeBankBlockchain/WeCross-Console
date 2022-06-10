@@ -236,11 +236,11 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
-    public static void setDefaultFabricAccountHelp() {
+    public static void setDefaultChainAccountHelp() {
         ConsoleUtils.singleLine();
         System.out.println(
-                "Set the chain account to be the default account to send transaction in a certain [fabric chain]");
-        System.out.println("Usage: setDefaultFabricAccount [chainName][keyID]");
+                "Set the chain account to be the default account to send transaction in a certain [chain]");
+        System.out.println("Usage: setDefaultChainAccount [chainName][keyID]");
         System.out.println("chainName -- the full name of the chain");
         System.out.println("    chainName is like: payment.fabric-mychannel");
         System.out.println("keyID -- the primary key stand for chain account");

@@ -345,9 +345,9 @@ public class Shell {
                             }
                             break;
                         }
-                    case "setDefaultFabricAccount":
+                    case "setDefaultChainAccount":
                         {
-                            rpcFace.setDefaultFabricAccount(params);
+                            rpcFace.setDefaultChainAccount(params);
                             if (params.length == 3) {
                                 rpcFace.internalLogin();
                             }
