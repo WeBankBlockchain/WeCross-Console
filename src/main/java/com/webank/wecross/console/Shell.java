@@ -350,6 +350,14 @@ public class Shell {
                             }
                             break;
                         }
+                    case "setDefaultChainAccount":
+                        {
+                            rpcFace.setDefaultChainAccount(params);
+                            if (params.length == 3) {
+                                rpcFace.internalLogin();
+                            }
+                            break;
+                        }  
                     case "logout":
                         {
                             rpcFace.logout(params);
