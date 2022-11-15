@@ -19,8 +19,12 @@ public class ConsoleUtils {
     public static final String fabricType2 = "Fabric2.0";
     public static final String BCOSType = "BCOS2.0";
     public static final String BCOSGMType = "GM_BCOS2.0";
+    public static final String BCOSType3 = "BCOS3.0";
+    public static final String BCOSGMType3 = "GM_BCOS3.0";
+    public static final List<String> bcosChainList =
+            Arrays.asList(BCOSType, BCOSGMType, BCOSType3, BCOSGMType3);
     public static final List<String> supportChainList =
-            Arrays.asList(fabricType, BCOSType, BCOSGMType, fabricType2);
+            Arrays.asList(fabricType, BCOSType, BCOSGMType, fabricType2, BCOSType3, BCOSGMType3);
     private static final Logger logger = LoggerFactory.getLogger(ConsoleUtils.class);
 
     public static boolean isValidPath(String path) {

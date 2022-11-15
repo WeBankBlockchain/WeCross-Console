@@ -1,13 +1,9 @@
-pragma solidity >=0.5.0 <0.6.0;
+pragma solidity >=0.6.0 <0.8.20;
 pragma experimental ABIEncoderV2;
 
 contract Evidence {
     
     mapping(string => string) infos;
-    
-    function() external {
-        
-    }
     
     function newEvidence(string memory id, string memory evidenceInfo) public returns(bool) {
         infos[id] = evidenceInfo;
