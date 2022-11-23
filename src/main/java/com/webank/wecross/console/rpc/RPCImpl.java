@@ -388,7 +388,7 @@ public class RPCImpl implements RPCFace {
         if (params.length < 6 || !ConsoleUtils.supportChainList.contains(params[1])) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "addChainAccount");
         }
-        if (params[1].equals(ConsoleUtils.BCOSGMType) || params[1].equals(ConsoleUtils.BCOSType)) {
+        if (ConsoleUtils.bcosChainList.contains(params[1])) {
             String type = params[1];
             String pubKeyPath = params[2];
             String secKeyPath = params[3];
