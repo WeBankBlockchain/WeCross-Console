@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.6.0 <0.8.20;
 
 contract HTLC {
@@ -50,7 +49,11 @@ contract HTLC {
     /*  please override it
         @param: hash
     */
-    function lock(string memory _hash) public returns (string memory result) {
+    function lock(string memory _hash)
+        public
+        virtual
+        returns (string memory result)
+    {
         if (!proposalIsExisted(_hash)) {
             result = "proposal not exists";
             return result;
@@ -62,7 +65,7 @@ contract HTLC {
         }
 
         uint256 timelock = getTimelock(_hash);
-        if (getRollbackState(_hash) || timelock <= (now / 1000)) {
+        if (getRollbackState(_hash) || timelock <= (block.timestamp / 1000)) {
             result = "has rolled back";
             return result;
         }
@@ -74,8 +77,9 @@ contract HTLC {
         @param: hash | secret
     */
     function unlock(string memory _hash, string memory _secret)
-    public
-    returns (string memory result)
+        public
+        virtual
+        returns (string memory result)
     {
         if (!proposalIsExisted(_hash)) {
             result = "proposal not exists";
@@ -98,7 +102,7 @@ contract HTLC {
         }
 
         uint256 timelock = getTimelock(_hash);
-        if (getRollbackState(_hash) || timelock <= (now / 1000)) {
+        if (getRollbackState(_hash) || timelock <= (block.timestamp / 1000)) {
             result = "has rolled back";
             return result;
         }
@@ -110,8 +114,9 @@ contract HTLC {
         @param: hash
     */
     function rollback(string memory _hash)
-    public
-    returns (string memory result)
+        public
+        virtual
+        returns (string memory result)
     {
         if (!proposalIsExisted(_hash)) {
             result = "proposal not exists";
@@ -124,7 +129,7 @@ contract HTLC {
         }
 
         uint256 timelock = getTimelock(_hash);
-        if (timelock > (now / 1000)) {
+        if (timelock > (block.timestamp / 1000)) {
             result = "not_yet";
             return result;
         }
@@ -235,9 +240,9 @@ contract HTLC {
         @param: hash
     */
     function getNewProposalTxInfo(string memory _hash)
-    public
-    view
-    returns (string memory result)
+        public
+        view
+        returns (string memory result)
     {
         string memory info = newProposalTxInfos[_hash];
         if (bytes(info).length == 0) {
@@ -251,9 +256,9 @@ contract HTLC {
         @param: hash
     */
     function getNegotiatedData(string memory _hash)
-    public
-    view
-    returns (string memory result)
+        public
+        view
+        returns (string memory result)
     {
         if (!proposalIsExisted(_hash)) {
             result = "proposal not exists";
@@ -285,9 +290,9 @@ contract HTLC {
         @param: hash
     */
     function getProposalInfo(string memory _hash)
-    public
-    view
-    returns (string memory result)
+        public
+        view
+        returns (string memory result)
     {
         if (!proposalIsExisted(_hash)) {
             result = nullFlag;
@@ -345,8 +350,8 @@ contract HTLC {
         @param: hash | secret
     */
     function setSecret(string memory _hash, string memory _secret)
-    public
-    returns (string memory result)
+        public
+        returns (string memory result)
     {
         if (!hashMatched(_hash, _secret)) {
             result = "hash not matched";
@@ -387,8 +392,8 @@ contract HTLC {
         @param: proposal id
     */
     function deleteProposalID(string memory _id)
-    public
-    returns (string memory result)
+        public
+        returns (string memory result)
     {
         uint256 index = proposalIndexs[_id];
 
@@ -404,9 +409,9 @@ contract HTLC {
     }
 
     function getIndex(string memory _hash)
-    public
-    view
-    returns (uint256, uint256)
+        public
+        view
+        returns (uint256, uint256)
     {
         return (proposalIndexs[_hash], depth);
     }
@@ -494,9 +499,9 @@ contract HTLC {
     }
 
     function getRollbackState(string memory _hash)
-    internal
-    view
-    returns (bool)
+        internal
+        view
+        returns (bool)
     {
         if (htlcRoles[_hash]) {
             return initiators[_hash].rolledback;
@@ -530,9 +535,9 @@ contract HTLC {
     }
 
     function hashMatched(string memory _hash, string memory _secret)
-    internal
-    pure
-    returns (bool)
+        internal
+        pure
+        returns (bool)
     {
         bytes memory a = abi.encodePacked(sha256(bytes(_secret)));
         bytes memory b = hexStringToBytes(_hash);
@@ -540,44 +545,44 @@ contract HTLC {
     }
 
     function proposalIsExisted(string memory _hash)
-    internal
-    view
-    returns (bool)
+        internal
+        view
+        returns (bool)
     {
         return (bytes(initiators[_hash].sender).length > 0 &&
-        bytes(participants[_hash].sender).length > 0);
+            bytes(participants[_hash].sender).length > 0);
     }
 
     function rightTimelock(string memory _t0, string memory _t1)
-    internal
-    view
-    returns (bool)
+        internal
+        view
+        returns (bool)
     {
         uint256 t0 = stringToUint256(_t0);
         uint256 t1 = stringToUint256(_t1);
-        return t0 > (t1 + 200) && t1 > (now / 1000 + 200);
+        return t0 > (t1 + 200) && t1 > (block.timestamp / 1000 + 200);
     }
 
     function sameString(string memory _str1, string memory _str2)
-    internal
-    pure
-    returns (bool)
+        internal
+        pure
+        returns (bool)
     {
         return keccak256(bytes(_str1)) == keccak256(bytes(_str2));
     }
 
     // these are utilities
     function stringToAddress(string memory _address)
-    internal
-    pure
-    returns (address)
+        internal
+        pure
+        returns (address)
     {
         bytes memory temp = bytes(_address);
         if (temp.length != 42) {
             revert(
-            string(
-                abi.encodePacked(_address, " is not a valid BCOS address")
-            )
+                string(
+                    abi.encodePacked(_address, " is not a valid BCOS address")
+                )
             );
         }
 
@@ -609,9 +614,9 @@ contract HTLC {
     }
 
     function stringToUint256(string memory _str)
-    internal
-    pure
-    returns (uint256)
+        internal
+        pure
+        returns (uint256)
     {
         bytes memory bts = bytes(_str);
         uint256 result = 0;
@@ -625,9 +630,9 @@ contract HTLC {
     }
 
     function hexStringToBytes(string memory _hexStr)
-    internal
-    pure
-    returns (bytes memory)
+        internal
+        pure
+        returns (bytes memory)
     {
         bytes memory bts = bytes(_hexStr);
         require(bts.length % 2 == 0);
@@ -636,22 +641,22 @@ contract HTLC {
         for (uint256 i = 0; i < len; ++i) {
             result[i] = bytes1(
                 fromHexChar(uint8(bts[2 * i])) *
-                16 +
-                fromHexChar(uint8(bts[2 * i + 1]))
+                    16 +
+                    fromHexChar(uint8(bts[2 * i + 1]))
             );
         }
         return result;
     }
 
-    function fromHexChar(uint8 _char) internal pure returns (uint8) {
+    function fromHexChar(uint8 _char) internal pure returns (uint8 result) {
         if (bytes1(_char) >= bytes1("0") && bytes1(_char) <= bytes1("9")) {
-            return _char - uint8(bytes1("0"));
+            result = _char - uint8(bytes1("0"));
         }
         if (bytes1(_char) >= bytes1("a") && bytes1(_char) <= bytes1("f")) {
-            return 10 + _char - uint8(bytes1("a"));
+            result = 10 + _char - uint8(bytes1("a"));
         }
         if (bytes1(_char) >= bytes1("A") && bytes1(_char) <= bytes1("F")) {
-            return 10 + _char - uint8(bytes1("A"));
+            result = 10 + _char - uint8(bytes1("A"));
         }
     }
 
@@ -664,9 +669,9 @@ contract HTLC {
     }
 
     function uint256ToString(uint256 _value)
-    internal
-    pure
-    returns (string memory)
+        internal
+        pure
+        returns (string memory)
     {
         bytes32 result;
         if (_value == 0) {
@@ -682,9 +687,9 @@ contract HTLC {
     }
 
     function bytes32ToString(bytes32 _bts32)
-    internal
-    pure
-    returns (string memory)
+        internal
+        pure
+        returns (string memory)
     {
         bytes memory result = new bytes(_bts32.length);
 

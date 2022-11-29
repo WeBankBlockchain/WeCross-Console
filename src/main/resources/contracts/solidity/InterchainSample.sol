@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.6.0 <0.8.20;
 pragma experimental ABIEncoderV2;
 
@@ -24,18 +23,18 @@ contract InterchainSample {
         args[0] = _args;
 
         return
-        hub.interchainInvoke(
-            _path,
-            _method,
-            args,
-            _callbackPath,
-            _callbackMethod
-        );
+            hub.interchainInvoke(
+                _path,
+                _method,
+                args,
+                _callbackPath,
+                _callbackMethod
+            );
     }
 
     function callback(bool state, string[] memory _result)
-    public
-    returns (string[] memory)
+        public
+        returns (string[] memory)
     {
         if (state) {
             data = _result;
