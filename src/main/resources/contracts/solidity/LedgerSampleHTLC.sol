@@ -1,18 +1,18 @@
-pragma solidity >=0.4.22 <0.8.20;
+pragma solidity >=0.4.22 <0.6.0;
 
 import "./LedgerSample.sol";
 import "./HTLC.sol";
 
 contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
+
     // asset contract address
     address assetContract;
 
     /*
         @param: assetContract
     */
-    function init(string memory _assetContract)
-        public
-        returns (string memory result)
+    function init(string memory _assetContract) public
+    returns (string memory result)
     {
         assetContract = stringToAddress(_assetContract);
         result = successFlag;
@@ -21,13 +21,11 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
     /*
         @param: hash
     */
-    function lock(string memory _hash)
-        public
-        override
-        returns (string memory result)
+    function lock(string memory _hash) public
+    returns (string memory result)
     {
         result = super.lock(_hash);
-        if (sameString(result, "done")) {
+        if(sameString(result, "done")) {
             result = successFlag;
             return result;
         } else if (!sameString(result, "continue")) {
@@ -35,22 +33,14 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
         }
 
         address sender = getSender(_hash);
-        uint256 amount = getAmount(_hash);
-        if (
-            LedgerSample(assetContract).allowance(sender, address(this)) <
-            uint256(amount)
-        ) {
+        uint amount = getAmount(_hash);
+        if (LedgerSample(assetContract).allowance(sender, address(this)) < uint(amount)) {
             result = "insufficient authorized assets";
             return result;
         }
 
         // This htlc contract becomes the temporary owner of the assets
-        LedgerSample(assetContract).sendFrom(
-            sender,
-            address(this),
-            uint256(amount),
-            ""
-        );
+        LedgerSample(assetContract).sendFrom(sender, address(this), uint(amount),"");
 
         setLockState(_hash);
         result = successFlag;
@@ -59,13 +49,11 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
     /*
         @param: hash | secret
     */
-    function unlock(string memory _hash, string memory _secret)
-        public
-        override
-        returns (string memory result)
+    function unlock(string memory _hash, string memory _secret) public
+    returns (string memory result)
     {
         result = super.unlock(_hash, _secret);
-        if (sameString(result, "done")) {
+        if(sameString(result, "done")) {
             result = successFlag;
             return result;
         } else if (!sameString(result, "continue")) {
@@ -74,8 +62,8 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
 
         // transfer from htlc contract to receiver
         address receiver = getReceiver(_hash);
-        uint256 amount = getAmount(_hash);
-        LedgerSample(assetContract).send(receiver, uint256(amount), "");
+        uint amount = getAmount(_hash);
+        LedgerSample(assetContract).send(receiver, uint(amount),"");
 
         setUnlockState(_hash);
         setSecret(_hash, _secret);
@@ -85,13 +73,11 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
     /*
         @param: hash
     */
-    function rollback(string memory _hash)
-        public
-        override
-        returns (string memory result)
+    function rollback(string memory _hash) public
+    returns (string memory result)
     {
         result = super.rollback(_hash);
-        if (sameString(result, "done")) {
+        if(sameString(result, "done")) {
             result = successFlag;
             return result;
         } else if (!sameString(result, "continue")) {
@@ -100,8 +86,8 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
 
         // transfer from htlc contract to sender
         address sender = getSender(_hash);
-        uint256 amount = getAmount(_hash);
-        LedgerSample(assetContract).send(sender, uint256(amount), "");
+        uint amount = getAmount(_hash);
+        LedgerSample(assetContract).send(sender, uint(amount),"");
 
         setRollbackState(_hash);
         result = successFlag;
@@ -110,11 +96,15 @@ contract LedgerSampleHTLC is HTLC, LedgerSampleHolder {
     /*
         @param: address
     */
-    function balanceOf(string memory account) public view returns (uint256) {
+    function balanceOf(string memory account) public view
+    returns(uint256)
+    {
         return LedgerSample(assetContract).balance(stringToAddress(account));
     }
 
-    function queryAddress() public returns (address) {
+    function queryAddress() public view
+    returns(address)
+    {
         return tx.origin;
     }
 }

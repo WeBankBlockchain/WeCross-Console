@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.4.24 <0.8.20;
+pragma solidity >=0.4.24 <0.6.0;
 pragma experimental ABIEncoderV2;
 
 contract HelloWeCross {
@@ -10,7 +9,13 @@ contract HelloWeCross {
         return ss;
     }
 
-    function get() public view returns (string[] memory) {
+    function getAndClear() public returns(string[] memory) {
+        string[] memory _ss = ss;
+        ss.length = 0;
+        return _ss;
+    }
+
+    function get() public view returns(string[] memory) {
         return ss;
     }
 }

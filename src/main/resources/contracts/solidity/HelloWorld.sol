@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.4.0 <0.8.20;
+pragma solidity >=0.4.0 <0.6.0;
 
 contract HelloWorld {
     string name;
