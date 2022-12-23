@@ -357,7 +357,7 @@ public class Shell {
                                 rpcFace.internalLogin();
                             }
                             break;
-                        }  
+                        }
                     case "logout":
                         {
                             rpcFace.logout(params);

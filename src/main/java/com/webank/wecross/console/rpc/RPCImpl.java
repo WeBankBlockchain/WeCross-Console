@@ -454,7 +454,7 @@ public class RPCImpl implements RPCFace {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultChainAccount");
         }
         String chainName = params[1];
-        if (chainName.equals("NULL") || chainName.equals("null")){
+        if (chainName.equals("NULL") || chainName.equals("null")) {
             chainName = "";
         }
         String keyID = params[2];
@@ -464,7 +464,8 @@ public class RPCImpl implements RPCFace {
         if (!ConsoleUtils.isNumeric(keyID)) {
             throw new WeCrossConsoleException(ErrorCode.ILLEGAL_PARAM, "Invalid keyID");
         }
-        UAResponse uaResponse = weCrossRPC.setDefaultChainAccount(chainName,Integer.valueOf(keyID)).send();
+        UAResponse uaResponse =
+                weCrossRPC.setDefaultChainAccount(chainName, Integer.valueOf(keyID)).send();
         PrintUtils.printUAResponse(uaResponse);
     }
 
