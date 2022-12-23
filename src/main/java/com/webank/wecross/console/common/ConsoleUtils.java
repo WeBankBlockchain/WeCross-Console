@@ -6,6 +6,7 @@ import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -204,7 +205,7 @@ public class ConsoleUtils {
         return path;
     }
 
-    public static String[] tokenizeCommand(String line) throws Exception {
+    public static String[] tokenizeCommand(String line) {
         // example: callByCNS HelloWorld.sol set"Hello" parse [callByCNS, HelloWorld.sol,
         // set"Hello"]
 
@@ -259,10 +260,7 @@ public class ConsoleUtils {
         }
 
         return items.stream()
-                .map(
-                        (s) -> {
-                            return s.toString();
-                        })
+                .map(StringBuffer::toString)
                 .collect(Collectors.toList())
                 .toArray(new String[] {});
     }
@@ -315,6 +313,22 @@ public class ConsoleUtils {
         }
         // System.out.println(result);
         return result.toString();
+    }
+
+    public static List<String> parseArrayInParams(String params) {
+        // pathString => paths[]
+        List<String> pathList = new ArrayList<>();
+        // [a.b.c] or [a.b.c,a.b.d]
+        Pattern pattern =
+                Pattern.compile(
+                        "^\\[(([\\u4e00-\\u9fa5\\w-]+\\.){2}[\\u4e00-\\u9fa5\\w-]+\\,){0,}(([\\u4e00-\\u9fa5\\w-]+\\.){2}[\\u4e00-\\u9fa5\\w-]+)\\]$");
+        Matcher matcher = pattern.matcher(params);
+        if (matcher.find()) {
+            String pathString = params.substring(1, params.length() - 1);
+            pathString = pathString.replaceAll(" ", "");
+            Collections.addAll(pathList, pathString.split(","));
+        }
+        return pathList;
     }
 
     public static void singleLine() {

@@ -280,6 +280,50 @@ public class XAImpl implements XAFace {
     }
 
     @Override
+    public void autoCommitXATransaction(String[] params, Map<String, String> pathMaps)
+            throws Exception {
+        if (params.length == 1) {
+            HelpInfo.promptHelp("autoCommitTransaction");
+            return;
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.autoCommitTransactionHelp();
+            return;
+        }
+        if (params.length < 3) {
+            HelpInfo.promptHelp("autoCommitTransaction");
+            return;
+        }
+
+        String transactionID = RPCUtils.genTransactionID();
+        List<String> paths = ConsoleUtils.parseArrayInParams(params[1]);
+        String method = params[2];
+        XAResponse response;
+        if (params.length == 3) {
+            // no param given means: null (not String[0])
+            response =
+                    weCrossRPC
+                            .autoCommitXATransaction(
+                                    transactionID,
+                                    paths.toArray(new String[0]),
+                                    method,
+                                    (String[]) null)
+                            .send();
+        } else {
+            response =
+                    weCrossRPC
+                            .autoCommitXATransaction(
+                                    transactionID,
+                                    paths.toArray(new String[0]),
+                                    method,
+                                    ConsoleUtils.parseArgs(
+                                            Arrays.copyOfRange(params, 3, params.length)))
+                            .send();
+        }
+        PrintUtils.printRoutineResponse(response);
+    }
+
+    @Override
     public void getXATransaction(String[] params) throws Exception {
         if (params.length == 1) {
             HelpInfo.promptHelp("getXATransaction");
