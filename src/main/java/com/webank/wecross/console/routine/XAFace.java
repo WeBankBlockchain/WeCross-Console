@@ -16,6 +16,8 @@ public interface XAFace {
 
     void rollbackTransaction(String[] params) throws Exception;
 
+    void autoCommitXATransaction(String[] params, Map<String, String> pathMaps) throws Exception;
+
     void getXATransaction(String[] params) throws Exception;
 
     void getCurrentTransactionID(String[] params) throws Exception;
