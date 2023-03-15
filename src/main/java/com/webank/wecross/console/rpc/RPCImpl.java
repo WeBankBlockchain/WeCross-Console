@@ -388,7 +388,7 @@ public class RPCImpl implements RPCFace {
         if (params.length < 6 || !ConsoleUtils.supportChainList.contains(params[1])) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "addChainAccount");
         }
-        if (params[1].equals(ConsoleUtils.BCOSGMType) || params[1].equals(ConsoleUtils.BCOSType)) {
+        if (ConsoleUtils.bcosChainList.contains(params[1])) {
             String type = params[1];
             String pubKeyPath = params[2];
             String secKeyPath = params[3];
@@ -438,6 +438,34 @@ public class RPCImpl implements RPCFace {
             throw new WeCrossConsoleException(ErrorCode.ILLEGAL_PARAM, "Invalid keyID");
         }
         UAResponse uaResponse = weCrossRPC.setDefaultAccount(type, Integer.valueOf(keyID)).send();
+        PrintUtils.printUAResponse(uaResponse);
+    }
+
+    @Override
+    public void setDefaultChainAccount(String[] params) throws Exception {
+        if (params.length == 1) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultChainAccount");
+        }
+        if ("-h".equals(params[1]) || "--help".equals(params[1])) {
+            HelpInfo.setDefaultChainAccountHelp();
+            return;
+        }
+        if (params.length != 3) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "setDefaultChainAccount");
+        }
+        String chainName = params[1];
+        if (chainName.equals("NULL") || chainName.equals("null")) {
+            chainName = "";
+        }
+        String keyID = params[2];
+        if (keyID.startsWith("keyID:")) {
+            keyID = keyID.substring(5);
+        }
+        if (!ConsoleUtils.isNumeric(keyID)) {
+            throw new WeCrossConsoleException(ErrorCode.ILLEGAL_PARAM, "Invalid keyID");
+        }
+        UAResponse uaResponse =
+                weCrossRPC.setDefaultChainAccount(chainName, Integer.valueOf(keyID)).send();
         PrintUtils.printUAResponse(uaResponse);
     }
 

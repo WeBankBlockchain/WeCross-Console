@@ -256,6 +256,11 @@ public class Shell {
                             }
                             break;
                         }
+                    case "autoCommitTransaction":
+                        {
+                            xaFace.autoCommitXATransaction(params, pathMaps);
+                            break;
+                        }
                     case "getXATransaction":
                         {
                             xaFace.getXATransaction(params);
@@ -340,6 +345,14 @@ public class Shell {
                     case "setDefaultAccount":
                         {
                             rpcFace.setDefaultAccount(params);
+                            if (params.length == 3) {
+                                rpcFace.internalLogin();
+                            }
+                            break;
+                        }
+                    case "setDefaultChainAccount":
+                        {
+                            rpcFace.setDefaultChainAccount(params);
                             if (params.length == 3) {
                                 rpcFace.internalLogin();
                             }

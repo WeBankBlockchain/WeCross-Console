@@ -236,6 +236,18 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void setDefaultChainAccountHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println(
+                "Set the chain account to be the default account to send transaction in a certain [chain]");
+        System.out.println("Usage: setDefaultChainAccount [chainName][keyID]");
+        System.out.println("chainName -- the full name of the chain");
+        System.out.println("    chainName is like: payment.fabric-mychannel");
+        System.out.println("keyID -- the primary key stand for chain account");
+        System.out.println("[note]: you can do command listAccount to check chain account's keyID");
+        ConsoleUtils.singleLine();
+    }
+
     public static void genTimeLockHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Generate two valid timelocks");
@@ -297,6 +309,17 @@ public class HelpInfo {
         System.out.println("path -- the path of the contract resource in wecross router");
         System.out.println(
                 "[note]: It will auto-complete args if you call \"rollbackTransaction\" without args");
+        ConsoleUtils.singleLine();
+    }
+
+    public static void autoCommitTransactionHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Transactional call same method of multi resources in one transaction");
+        System.out.println("Usage: autoCommitTransaction [path...] [method] [args]");
+        System.out.println(
+                "[path] -- a array of paths, what are the contract resource in wecross router");
+        System.out.println("method -- the method in contract");
+        System.out.println("args -- variable parameter list");
         ConsoleUtils.singleLine();
     }
 
