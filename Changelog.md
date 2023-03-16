@@ -1,3 +1,18 @@
+### v1.3.0
+
+(2023-03-15)
+
+**新增**
+
+* 新增HelloWorld的Fabric chaincode #169，新增Sacc的Solidity合约 #170。
+* 新增单笔事务写交易接口 `autoCommitXATransaction`
+* 新增对FISCO BCOS 3.x 版本的支持
+
+**更改**
+
+* 优化Fabric交易接口。 #177
+* 更新commons-compress、log4j的版本号。
+
 ### v1.2.1
 
 (2021-12-15)
