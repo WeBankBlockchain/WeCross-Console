@@ -106,6 +106,8 @@ public class FileUtils {
 
     public static String readFileContent(String fileName) throws IOException {
         try {
+            // to avoid path manipulation
+            fileName = fileName.replace("..", "");
             Path path;
 
             if (fileName.indexOf("classpath:") != 0) {
