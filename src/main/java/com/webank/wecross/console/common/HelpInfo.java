@@ -350,17 +350,30 @@ public class HelpInfo {
 
     public static void BCOSDeployHelp() {
         ConsoleUtils.singleLine();
-        System.out.println("Deploy contract and register contract info to CNS in BCOS chain ");
-        System.out.println("Usage: bcosDeploy [Path] [Source file path] [Class name] [Version]");
-        System.out.println("Path -- e.g: [zone.chain.res], specify which the path to be deployed");
+        System.out.println("Deploy contract and register contract info to CNS/BFS in BCOS chain ");
+        System.out.println("If you deploy Solidity contract:");
+        System.out.println("\tUsage: bcosDeploy [Path] [Source file path] [Class name] [Version]");
         System.out.println(
-                "Source file path from conf/ -- The solidity source code file path, e.g: HelloWorld.sol");
-        System.out.println("Contract name -- The contract to be deploy");
-        System.out.println("Version -- The contract version");
-        System.out.println("Example:");
+                "\tPath -- e.g: [zone.chain.res], specify which the path to be deployed");
         System.out.println(
-                "    bcosDeploy payment.bcos.HelloWorld contracts/solidity/HelloWorld.sol HelloWorld 1.0");
+                "\tSource file path from conf/ -- The solidity source code file path, e.g: HelloWorld.sol");
+        System.out.println("\tContract name -- The contract to be deploy");
+        System.out.println("\tVersion -- The contract version");
+        System.out.println("\tExample:");
+        System.out.println(
+                "    \tbcosDeploy payment.bcos.HelloWorld contracts/solidity/HelloWorld.sol HelloWorld 1.0");
         ConsoleUtils.singleLine();
+        System.out.println("If you deploy WASM contract:");
+        System.out.println("\tUsage: bcosDeploy [Path] [BIN file path] [ABI file path]");
+        System.out.println(
+                "\tPath -- e.g: [zone.chain.res], specify which the path to be deployed");
+        System.out.println(
+                "\tBIN file path from conf/ -- The binary file after contract being compiled via cargo-liquid, e.g: hello_world.wasm");
+        System.out.println(
+                "\tABI file path from conf/ -- The ABI file after contract being compiled via cargo-liquid, e.g: hello_world.abi");
+        System.out.println("\tExample:");
+        System.out.println(
+                "    \tbcosDeploy payment.bcos3.HelloWorld contracts/liquid/hello_world.wasm  contracts/liquid/hello_world.abi");
     }
 
     public static void BCOSRegisterHelp() {
