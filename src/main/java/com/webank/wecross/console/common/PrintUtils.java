@@ -163,6 +163,7 @@ public class PrintUtils {
 
     public static void printCommandResponse(CommandResponse response)
             throws WeCrossConsoleException {
+        logger.debug("response: {}", response.getResult());
         if (response == null) {
             throw new WeCrossConsoleException(ErrorCode.NO_RESPONSE, "Error: no response");
         } else if (response.getErrorCode() != StatusCode.SUCCESS) {

@@ -358,7 +358,8 @@ public class HelpInfo {
         System.out.println(
                 "\tSource file path from conf/ -- The solidity source code file path, e.g: HelloWorld.sol");
         System.out.println("\tContract name -- The contract to be deploy");
-        System.out.println("\tVersion -- The contract version");
+        System.out.println(
+                "\tVersion -- The contract version, if chain version is BCOS3.0, should not use version");
         System.out.println("\tExample:");
         System.out.println(
                 "    \tbcosDeploy payment.bcos.HelloWorld contracts/solidity/HelloWorld.sol HelloWorld 1.0");
