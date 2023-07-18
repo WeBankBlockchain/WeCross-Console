@@ -61,7 +61,7 @@ public class BCOSCommand {
         // BCOSDeployWasm [path] [abi] [bin]
         if (stubType.contains("WASM")) {
             String name = path.split("\\.")[2];
-            String binContent = FileUtils.readFileContent(params[2]);
+            String binContent = FileUtils.readFileContentToHexString(params[2]);
             String abiContent = FileUtils.readFileContent(params[3]);
             args.addAll(Arrays.asList(name, abiContent, binContent));
             for (int i = 4; i < params.length; i++) {

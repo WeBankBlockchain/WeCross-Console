@@ -19,6 +19,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.bouncycastle.util.encoders.Hex;
 import org.jline.reader.Completer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +120,27 @@ public class FileUtils {
                 path = Paths.get(resolver.getResource(fileName).getURI());
             }
             return new String(Files.readAllBytes(path));
+        } catch (Exception e) {
+            logger.error("Read file error: ", e);
+            throw new IOException("Read file error: " + e);
+        }
+    }
+
+    public static String readFileContentToHexString(String fileName) throws IOException {
+        try {
+            // to avoid path manipulation
+            fileName = fileName.replace("..", "");
+            Path path;
+
+            if (fileName.indexOf("classpath:") != 0) {
+                path = Paths.get(fileName);
+            } else {
+                // Start with "classpath:"
+                PathMatchingResourcePatternResolver resolver =
+                        new PathMatchingResourcePatternResolver();
+                path = Paths.get(resolver.getResource(fileName).getURI());
+            }
+            return Hex.toHexString(Files.readAllBytes(path));
         } catch (Exception e) {
             logger.error("Read file error: ", e);
             throw new IOException("Read file error: " + e);
