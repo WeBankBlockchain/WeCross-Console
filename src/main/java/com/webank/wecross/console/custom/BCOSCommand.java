@@ -7,7 +7,9 @@ import com.webank.wecross.console.common.PrintUtils;
 import com.webank.wecross.console.exception.ErrorCode;
 import com.webank.wecross.console.exception.WeCrossConsoleException;
 import com.webank.wecrosssdk.rpc.WeCrossRPC;
+import com.webank.wecrosssdk.rpc.common.ResourceDetail;
 import com.webank.wecrosssdk.rpc.methods.response.CommandResponse;
+import com.webank.wecrosssdk.rpc.methods.response.ResourceResponse;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import java.io.File;
 import java.util.*;
@@ -36,40 +38,74 @@ public class BCOSCommand {
             HelpInfo.BCOSDeployHelp();
             return;
         }
-        if (params.length < 5) {
+        if (params.length < 4) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "bcosDeploy");
         }
 
         String path = params[1];
+        String chain = path.substring(0, path.lastIndexOf('.') + 1);
         RPCUtils.checkPath(path);
-        String cnsName = path.split("\\.")[2];
-        String sourcePath = params[2];
-        String contractName = params[3];
-        String version = params[4];
-
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        org.springframework.core.io.Resource resource = resolver.getResource("file:" + sourcePath);
-        if (!resource.exists()) {
-            resource = resolver.getResource("classpath:" + sourcePath);
-            if (!resource.exists()) {
-                logger.error("Source file: {} not exists", sourcePath);
-                throw new Exception("Source file: " + sourcePath + " not exists");
+        String stubType = "";
+        ResourceResponse resources = weCrossRPC.listResources(false).send();
+        for (ResourceDetail resourceDetail : resources.getResources().getResourceDetails()) {
+            if (resourceDetail.getPath().startsWith(chain)) {
+                stubType = resourceDetail.getStubType();
+                break;
             }
         }
-
-        String filename = resource.getFilename();
-        String realPath = resource.getFile().getAbsolutePath();
-        String dir = realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
-
-        String sourceContent = FileUtils.mergeSource(dir, filename, resolver, new HashSet<>());
-
-        List<Object> args =
-                new ArrayList<>(Arrays.asList(cnsName, sourceContent, contractName, version));
-        for (int i = 5; i < params.length; i++) {
-            // for constructor
-            args.add(ConsoleUtils.parseString(params[i]));
+        if (stubType.equals("")) {
+            throw new WeCrossConsoleException(ErrorCode.INVALID_PATH, path);
         }
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        List<Object> args = new ArrayList<>();
+        // BCOSDeployWasm [path] [abi] [bin]
+        if (stubType.contains("WASM")) {
+            String name = path.split("\\.")[2];
+            String binContent = FileUtils.readFileContentToHexString(params[2]);
+            String abiContent = FileUtils.readFileContent(params[3]);
+            args.addAll(Arrays.asList(name, abiContent, binContent));
+            for (int i = 4; i < params.length; i++) {
+                // for constructor
+                args.add(ConsoleUtils.parseString(params[i]));
+            }
+        } else {
+            // Solidity
+            String cnsName = path.split("\\.")[2];
+            String sourcePath = params[2];
+            String contractName = params[3];
 
+            org.springframework.core.io.Resource resource =
+                    resolver.getResource("file:" + sourcePath);
+            if (!resource.exists()) {
+                resource = resolver.getResource("classpath:" + sourcePath);
+                if (!resource.exists()) {
+                    logger.error("Source file: {} not exists", sourcePath);
+                    throw new Exception("Source file: " + sourcePath + " not exists");
+                }
+            }
+
+            String filename = resource.getFilename();
+            String realPath = resource.getFile().getAbsolutePath();
+            String dir =
+                    realPath.substring(0, realPath.lastIndexOf(File.separator)) + File.separator;
+
+            String sourceContent = FileUtils.mergeSource(dir, filename, resolver, new HashSet<>());
+
+            if (stubType.contains("BCOS3")) {
+                args.addAll(Arrays.asList(cnsName, sourceContent, contractName));
+                for (int i = 4; i < params.length; i++) {
+                    // for constructor
+                    args.add(ConsoleUtils.parseString(params[i]));
+                }
+            } else {
+                String version = params[4];
+                args.addAll(Arrays.asList(cnsName, sourceContent, contractName, version));
+                for (int i = 5; i < params.length; i++) {
+                    // for constructor
+                    args.add(ConsoleUtils.parseString(params[i]));
+                }
+            }
+        }
         CommandResponse response = weCrossRPC.customCommand("deploy", path, args.toArray()).send();
         PrintUtils.printCommandResponse(response);
     }

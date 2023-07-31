@@ -279,7 +279,7 @@ public class Shell {
                     case "bcosDeploy":
                         {
                             bcosCommand.deploy(params);
-                            if (params.length >= 6 && isPath(params[1])) {
+                            if (params.length >= 4 && isPath(params[1])) {
                                 JlineUtils.addPathCompleters(completers, params[1]);
                             }
                             break;
