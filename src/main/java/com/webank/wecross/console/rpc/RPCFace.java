@@ -38,4 +38,6 @@ public interface RPCFace {
     void logout(String[] params) throws Exception;
 
     Set<String> getPaths() throws WeCrossConsoleException;
+
+    void getBlock(String[] params) throws Exception;
 }

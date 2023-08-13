@@ -21,6 +21,7 @@ import com.webank.wecrosssdk.rpc.methods.response.*;
 import com.webank.wecrosssdk.utils.ConfigUtils;
 import java.io.Console;
 import java.io.File;
+import java.math.BigInteger;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -484,6 +485,26 @@ public class RPCImpl implements RPCFace {
         if (params.length > 2) {
             throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "logout");
         }
+    }
+
+    @Override
+    public void getBlock(String[] params) throws Exception {
+        if (params.length == 2 && ("-h".equals(params[1]) || "--help".equals(params[1]))) {
+            HelpInfo.getBlockHelp();
+            return;
+        }
+        if (params.length != 3) {
+            throw new WeCrossConsoleException(ErrorCode.PARAM_MISSING, "getBlock");
+        }
+        String chain = ConsoleUtils.parseString(params[1]);
+        String blockNumber = params[2];
+        if (!ConsoleUtils.isNumeric(blockNumber)) {
+            throw new WeCrossConsoleException(
+                    ErrorCode.ILLEGAL_PARAM, "Error: blockNumber is not a number!");
+        }
+        CommandResponse blockResponse =
+                weCrossRPC.getBlock(chain, BigInteger.valueOf(Long.parseLong(blockNumber))).send();
+        ConsoleUtils.printJson(blockResponse.getResult());
     }
 
     private String uniformPath(String path) {
