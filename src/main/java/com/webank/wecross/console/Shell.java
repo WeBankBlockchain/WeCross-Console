@@ -185,6 +185,11 @@ public class Shell {
                             }
                             break;
                         }
+                    case "getBlock":
+                        {
+                            rpcFace.getBlock(params);
+                            break;
+                        }
                     case "genTimelock":
                         {
                             htlcFace.genTimelock(params);

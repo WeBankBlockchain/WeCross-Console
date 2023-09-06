@@ -80,6 +80,7 @@ public class JlineUtils {
                     "login",
                     "registerAccount",
                     "logout",
+                    "getBlock",
                     "addChainAccount",
                     "setDefaultAccount",
                     "setDefaultChainAccount",
