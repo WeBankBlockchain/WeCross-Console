@@ -15,12 +15,6 @@ import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import org.jline.keymap.KeyMap;
-import org.jline.reader.Completer;
-import org.jline.reader.LineReader;
-import org.jline.reader.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jline.keymap.KeyMap;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Shell {
     private static final Logger logger = LoggerFactory.getLogger(Shell.class);

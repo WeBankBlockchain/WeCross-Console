@@ -51,6 +51,7 @@ dependencies {
     compile 'org.apache.commons:commons-compress:1.21'
     compile 'commons-io:commons-io:2.8.0'
     compile 'com.moandjiezana.toml:toml4j:0.7.2'
+    implementation 'com.google.guava:guava:32.0.1-jre'
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
 }
