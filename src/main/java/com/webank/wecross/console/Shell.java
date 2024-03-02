@@ -15,7 +15,13 @@ import com.webank.wecrosssdk.rpc.common.TransactionContext;
 import com.webank.wecrosssdk.utils.RPCUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -183,6 +189,11 @@ public class Shell {
                             if (params.length >= 3) {
                                 JlineUtils.addContractMethodCompleters(completers, params[2]);
                             }
+                            break;
+                        }
+                    case "getBlock":
+                        {
+                            rpcFace.getBlock(params);
                             break;
                         }
                     case "genTimelock":

@@ -467,6 +467,15 @@ public class HelpInfo {
         ConsoleUtils.singleLine();
     }
 
+    public static void getBlockHelp() {
+        ConsoleUtils.singleLine();
+        System.out.println("Get block by number in specific chain");
+        System.out.println("Usage: getBlock [path] [number]");
+        System.out.println("path -- the path of the contract resource in wecross router");
+        System.out.println("number -- block number");
+        ConsoleUtils.singleLine();
+    }
+
     public static void quitHelp() {
         ConsoleUtils.singleLine();
         System.out.println("Quit console");
