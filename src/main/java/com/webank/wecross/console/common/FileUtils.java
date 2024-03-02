@@ -19,7 +19,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.bouncycastle.util.encoders.Hex;
 import org.jline.reader.Completer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +139,7 @@ public class FileUtils {
                         new PathMatchingResourcePatternResolver();
                 path = Paths.get(resolver.getResource(fileName).getURI());
             }
-            return Hex.toHexString(Files.readAllBytes(path));
+            return byteArrayToHex(Files.readAllBytes(path));
         } catch (Exception e) {
             logger.error("Read file error: ", e);
             throw new IOException("Read file error: " + e);
@@ -150,6 +149,19 @@ public class FileUtils {
     public static String readFileToBytesString(String filePath) throws Exception {
         String content = readFileContent(filePath);
         return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    static String byteArrayToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (int index = 0, len = bytes.length; index <= len - 1; index += 1) {
+            int char1 = ((bytes[index] >> 4) & 0xF);
+            char chara1 = Character.forDigit(char1, 16);
+            int char2 = ((bytes[index]) & 0xF);
+            char chara2 = Character.forDigit(char2, 16);
+            result.append(chara1);
+            result.append(chara2);
+        }
+        return result.toString();
     }
 
     public static String getTransactionID(Toml toml) throws WeCrossConsoleException {
