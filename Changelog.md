@@ -1,3 +1,16 @@
+### v1.4.0
+
+(2024-03-01)
+
+**新增**
+
+- 增加获取区块的命令 `getBlock` https://github.com/WeBankBlockchain/WeCross-Console/pull/187
+- 增加跨链获取区块的示例合约 https://github.com/WeBankBlockchain/WeCross-Console/pull/188
+
+**更新**
+
+- 更新版本依赖，修复安全问题 https://github.com/WeBankBlockchain/WeCross-Console/pull/190
+
 ### v1.3.1
 
 (2023-07-31)
@@ -5,7 +18,6 @@
 **新增**
 
 * 支持FISCO BCOS 3.+ WASM执行版本，支持WASM合约部署、调用等功能。
-
 
 ### v1.3.0
 
@@ -81,6 +93,7 @@
 * 文件名补全：部署相关命令支持文件名补全
 
 **更改**
+
 * 删除获取账户列表的命令：listAccounts
 * 资源调用相关命令参数列表去掉账户名
 * 部分事务命令重命名：
@@ -94,15 +107,15 @@
 **新增**
 
 * 资源部署命令
-  * FISCO BCOS：bcosDeploy、bcosRegister
-  * Fabric：fabricInstall、fabricInstantiate、fabricUpgrade
+    * FISCO BCOS：bcosDeploy、bcosRegister
+    * Fabric：fabricInstall、fabricInstantiate、fabricUpgrade
 * 2PC事务操作命令
-  * 操作：startTransaction、execTransaction、callTransaction、commitTransaction、rollbackTransaction
-  * 查询：getTransactionInfo、getTransactionIDs
+    * 操作：startTransaction、execTransaction、callTransaction、commitTransaction、rollbackTransaction
+    * 查询：getTransactionInfo、getTransactionIDs
 * 跨链资源集
-  * 一般示例代码：HelloWorld.sol、sacc.go、fabcar.java
-  * HTLC合约代码：HTLC.sol、htlc.go等
-  * 两阶段示例：EvidenceSample.sol、EvidenceSample.go等
+    * 一般示例代码：HelloWorld.sol、sacc.go、fabcar.java
+    * HTLC合约代码：HTLC.sol、htlc.go等
+    * 两阶段示例：EvidenceSample.sol、EvidenceSample.go等
 
 ### v1.0.0-rc3
 
@@ -121,12 +134,12 @@
 
 * 安全通讯：控制台和Router之间采用TLS协议通讯
 * 增加命令：
-  * detail：查看资源详情信息
-  * supportedStubs：查看连接Router支持的Stub插件列表
-  * listAccounts：查看Router配置的账户列表
-  * genSecretAndHash：跨链转账辅助命令，生成一个秘密和它的哈希
-  * genTimelock：跨链转账辅助命令，生成两个合法的时间戳
-  * newContract：创建一个基于哈希时间锁合约的跨链转账合同
+    * detail：查看资源详情信息
+    * supportedStubs：查看连接Router支持的Stub插件列表
+    * listAccounts：查看Router配置的账户列表
+    * genSecretAndHash：跨链转账辅助命令，生成一个秘密和它的哈希
+    * genTimelock：跨链转账辅助命令，生成两个合法的时间戳
+    * newContract：创建一个基于哈希时间锁合约的跨链转账合同
 
 **更改**
 
@@ -177,8 +190,6 @@ WeCross.getResource                Init resource by path, and assign it to a cus
 
 ---------------------------------------------------------------------------------------------
 ```
-
-
 
 **框架**
 

@@ -48,7 +48,7 @@ dependencies {
     compile 'org.jline:jline:3.15.0'
     compile 'org.codehaus.groovy:groovy-all:3.0.10'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.14.3'
-    compile 'com.webank:wecross-java-sdk:1.4.0-SNAPSHOT'
+    compile 'com.webank:wecross-java-sdk:1.4.0'
     compile 'org.apache.commons:commons-compress:1.26.0'
     compile 'commons-io:commons-io:2.8.0'
     compile 'com.moandjiezana.toml:toml4j:0.7.2'
